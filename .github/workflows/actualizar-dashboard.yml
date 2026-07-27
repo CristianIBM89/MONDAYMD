@@ -1,11 +1,11 @@
-name: Actualizar Dashboard MD
+﻿name: Actualizar Dashboard MD
 
 on:
-  # Martes y jueves a las 10:00pm UTC = 5:00pm Bogotá (UTC-5)
+  # Martes y jueves a las 10:00pm UTC = 5:00pm Bogot├í (UTC-5)
   schedule:
     - cron: "0 22 * * 2"   # martes
     - cron: "0 22 * * 4"   # jueves
-  # Botón manual: GitHub → Actions → "Actualizar Dashboard MD" → Run workflow
+  # Bot├│n manual: GitHub ÔåÆ Actions ÔåÆ "Actualizar Dashboard MD" ÔåÆ Run workflow
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
             process.env.SKIP_GH_PUSH = '1';
           " || true
           node generate-dashboard-md.js || true
-          # Si el script no generó el archivo, falla el workflow
+          # Si el script no gener├│ el archivo, falla el workflow
           test -f dashboard-md-workspace.html
 
       - name: Copiar como index.html
@@ -49,5 +49,5 @@ jobs:
           publish_branch: gh-pages
           publish_dir: .
           include_files: index.html
-          commit_message: "Dashboard actualizado automáticamente"
+          commit_message: "Dashboard actualizado autom├íticamente"
           keep_files: false
