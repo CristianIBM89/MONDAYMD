@@ -8,15 +8,37 @@ const https  = require("https");
 const http   = require("http");
 const PORT   = process.env.PORT || 3000;
 
-// Token de Monday.com — configurar en .env (local) o en Render Environment (producción)
+// Token de Monday.com — configurar en .env (local) o en Railway Environment
 const MONDAY_TOKEN = process.env.MONDAY_TOKEN;
 if (!MONDAY_TOKEN) {
   console.error("ERROR: Variable de entorno MONDAY_TOKEN no definida.");
-  console.error("  Local : crea .env con MONDAY_TOKEN=tu_token");
-  console.error("  Render: agrega MONDAY_TOKEN en Environment Settings");
+  console.error("  Local   : crea .env con MONDAY_TOKEN=tu_token");
+  console.error("  Railway : agrega MONDAY_TOKEN en Variables");
   process.exit(1);
 }
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
+// ── Slack cron: martes y jueves 5pm Bogotá ─────────────────────────────────
+// Solo activo si SLACK_WEBHOOK_URL está definido
+if (process.env.SLACK_WEBHOOK_URL) {
+  const { publishToSlack } = require("./slack-bot");
+
+  // Cron manual sin dependencias externas — verifica cada minuto
+  setInterval(() => {
+    const now  = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Bogota" }));
+    const day  = now.getDay();   // 2 = martes, 4 = jueves
+    const hour = now.getHours();
+    const min  = now.getMinutes();
+    if ((day === 2 || day === 4) && hour === 17 && min === 0) {
+      console.log("[Slack] Ejecutando publicación programada...");
+      publishToSlack().catch(err => console.error("[Slack] Error:", err.message));
+    }
+  }, 60 * 1000);
+
+  console.log("  Slack  : activo — publica mar/jue 5pm Bogotá");
+} else {
+  console.log("  Slack  : no configurado (agrega SLACK_WEBHOOK_URL para activar)");
+}
 
 // ── Caché ──────────────────────────────────────────────────────────────────
 let cache = { html: null, builtAt: 0 };
