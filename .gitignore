@@ -1,3 +1,10 @@
+﻿# Dependencias y secretos — nunca subir a GitHub
+node_modules/
+.env
+dashboard-md-workspace.html
+dashboard-md-time.html
+dashboard-log.txt
+
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,maven,intellij+all,visualstudiocode,gradle
@@ -183,3 +190,4 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,intellij+all,visualstudiocode,gradle
+
