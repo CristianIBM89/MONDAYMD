@@ -636,35 +636,30 @@ async function main() {
   console.log(`   Request OFF items: ${Object.values(requestOff.groupsData).reduce((s,g)=>s+g.items.length,0)}`);
   console.log(`   Actualizado      : ${updatedAt}`);
 
-  // ── Publicar en GitHub Pages (usando worktree temporal) ───────────────
-  console.log("\n🌐 Publicando en GitHub Pages...");
-  const tmpDir = path.join(__dirname, ".gh-pages-tmp");
-  try {
-    const remote     = "https://github.com/CristianIBM89/MONDAYMD.git";
-    const commitMsg  = `Dashboard update: ${updatedAt}`;
+  // ── Publicar en GitHub Pages (solo cuando se corre localmente) ────────
+  if (process.env.SKIP_GH_PUSH === "1") {
+    console.log("\n⏭️  Push a GitHub Pages omitido (modo GitHub Actions).");
+  } else {
+    console.log("\n🌐 Publicando en GitHub Pages...");
+    const tmpDir = path.join(__dirname, ".gh-pages-tmp");
+    try {
+      const remote    = "https://github.com/CristianIBM89/MONDAYMD.git";
+      const commitMsg = `Dashboard update: ${updatedAt}`;
 
-    // Limpiar worktree anterior si existe
-    if (fs.existsSync(tmpDir)) {
+      if (fs.existsSync(tmpDir)) {
+        execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" });
+      }
+      execSync(`git worktree add "${tmpDir}" gh-pages`, { cwd: __dirname, stdio: "pipe" });
+      fs.copyFileSync(OUTPUT_FILE, path.join(tmpDir, "index.html"));
+      execSync(`git add index.html`,                         { cwd: tmpDir, stdio: "pipe" });
+      execSync(`git commit -m "${commitMsg}" --allow-empty`, { cwd: tmpDir, stdio: "pipe" });
+      execSync(`git push ${remote} gh-pages`,                { cwd: tmpDir, stdio: "pipe" });
       execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" });
+      console.log("✅ Publicado en: https://cristianibm89.github.io/MONDAYMD/");
+    } catch(e) {
+      console.warn("⚠️  No se pudo publicar en GitHub Pages:", e.message.split("\n")[0]);
+      try { execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" }); } catch(_) {}
     }
-    // Crear worktree apuntando a gh-pages
-    execSync(`git worktree add "${tmpDir}" gh-pages`, { cwd: __dirname, stdio: "pipe" });
-
-    // Copiar el HTML como index.html al worktree
-    fs.copyFileSync(OUTPUT_FILE, path.join(tmpDir, "index.html"));
-
-    // Commit y push desde el worktree
-    execSync(`git add index.html`,                         { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "${commitMsg}" --allow-empty`, { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git push ${remote} gh-pages`,                { cwd: tmpDir, stdio: "pipe" });
-
-    // Limpiar worktree
-    execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" });
-
-    console.log("✅ Publicado en: https://cristianibm89.github.io/MONDAYMD/");
-  } catch(e) {
-    console.warn("⚠️  No se pudo publicar en GitHub Pages:", e.message.split("\n")[0]);
-    try { execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" }); } catch(_) {}
   }
 }
 

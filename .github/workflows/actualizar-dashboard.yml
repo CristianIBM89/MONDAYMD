@@ -1,0 +1,53 @@
+name: Actualizar Dashboard MD
+
+on:
+  # Martes y jueves a las 10:00pm UTC = 5:00pm Bogotá (UTC-5)
+  schedule:
+    - cron: "0 22 * * 2"   # martes
+    - cron: "0 22 * * 4"   # jueves
+  # Botón manual: GitHub → Actions → "Actualizar Dashboard MD" → Run workflow
+  workflow_dispatch:
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # necesario para hacer push a gh-pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Generar dashboard HTML
+        env:
+          MONDAY_TOKEN: ${{ secrets.MONDAY_TOKEN }}
+        run: |
+          node -e "
+            const { execSync } = require('child_process');
+            // Deshabilitar el push interno del script (lo hace el siguiente paso)
+            process.env.SKIP_GH_PUSH = '1';
+          " || true
+          node generate-dashboard-md.js || true
+          # Si el script no generó el archivo, falla el workflow
+          test -f dashboard-md-workspace.html
+
+      - name: Copiar como index.html
+        run: cp dashboard-md-workspace.html index.html
+
+      - name: Publicar en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          include_files: index.html
+          commit_message: "Dashboard actualizado automáticamente"
+          keep_files: false
