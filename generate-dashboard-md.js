@@ -184,10 +184,8 @@ function buildHtml(mdTime, requestOff, updatedAt) {
   const offAlerts = [];
   if (solData) {
     solData.items.forEach(row => {
-      const missing = [];
-      const soporte = row.cv["file_mm1ht7j7"];
-      if (!soporte || soporte.trim() === "") missing.push("Soporte");
-      if (missing.length > 0) offAlerts.push({ name: row.name, missing });
+      if (!row.cv["file_mm1ht7j7"] || row.cv["file_mm1ht7j7"].trim() === "")
+        offAlerts.push({ name: row.name });
     });
   }
 
@@ -205,219 +203,300 @@ function buildHtml(mdTime, requestOff, updatedAt) {
     return `<option value="${gid}"${sel}>${esc(gd.title)}</option>`;
   }).join("\n");
 
+  const curWeekTitle = curWeek ? esc(curWeek.title) : "";
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard MD Workspace</title>
+<title>Dashboard MD · Workspace IBM</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1f2328;background:#f0f2f5;display:flex;flex-direction:column;min-height:100vh}
-
-/* Topbar */
-.topbar{background:#1f2328;color:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
-.topbar-title{font-size:16px;font-weight:700}
-.topbar-meta{font-size:11px;color:#9ca3af;margin-top:1px}
-.topbar-updated{font-size:11px;color:#6b7280}
-
-/* Layout */
-.layout{display:flex;flex:1;overflow:hidden}
-
-/* Sidebar */
-.sidebar{width:230px;background:#fff;border-right:1px solid #e5e7eb;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.sidebar-section{padding:10px 14px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent;user-select:none}
-.nav-item:hover{background:#f7f8fa}
-.nav-item.active{background:#eff6ff;border-left-color:#3b82d4}
-.nav-alerts.active{background:#fff5f5;border-left-color:#dc2626}
-.nav-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
-.nav-label{font-size:12px;font-weight:500;flex:1;line-height:1.3}
-.nav-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;flex-shrink:0}
-.badge-red{background:#fee2e2;color:#991b1b}
-.badge-green{background:#dcfce7;color:#15803d}
-
-/* Content */
-.content{flex:1;overflow-y:auto;padding:20px}
-
-/* Panel */
-.panel{display:none}
-.panel.active{display:block}
-
-/* Board header */
-.board-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.board-icon-lg{font-size:26px}
-.board-title{font-size:17px;font-weight:700}
-.board-link{font-size:11px;color:#3b82d4;text-decoration:none}
-.board-link:hover{text-decoration:underline}
-
-/* Selector row */
-.selector-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.selector-row label{font-size:13px;font-weight:500;color:#57606a;white-space:nowrap}
-.selector-row select{border:1px solid #d1d5db;border-radius:5px;padding:5px 10px;font-size:13px;background:#fff;cursor:pointer;min-width:170px}
-.badge-current{background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:600;padding:2px 9px;border-radius:12px}
-
-/* Summary cards */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:20px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center}
-.card .num{font-size:30px;font-weight:700;line-height:1}
-.card .lbl{font-size:11px;color:#57606a;margin-top:3px}
-.c-total .num{color:#3b82d4}.c-ok .num{color:#16a34a}.c-warn .num{color:#d97706}.c-danger .num{color:#dc2626}
-
-/* Alert box */
-.alert-box{background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px 18px;margin-bottom:20px}
-.alert-box-title{font-size:13px;font-weight:700;color:#dc2626;margin-bottom:10px}
-.alist{list-style:none}
-.alist li{padding:5px 0;border-bottom:1px solid #fee2e2;display:flex;gap:9px;align-items:flex-start}
-.alist li:last-child{border-bottom:none}
-.dot{width:7px;height:7px;border-radius:50%;background:#dc2626;margin-top:6px;flex-shrink:0}
-.aname{font-weight:600;font-size:13px}
-.adetail{font-size:11px;color:#57606a}
-
-/* Table */
-.table-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
-.table-header{padding:11px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between}
-.table-header span{font-size:14px;font-weight:600}
-.table-header .sub{font-size:12px;color:#57606a;font-weight:400}
-.table-scroll{overflow-x:auto}
+:root{
+  --blue:#0f62fe;--blue-dark:#0043ce;--blue-light:#d0e2ff;
+  --surface:#f4f4f4;--white:#ffffff;--border:#e0e0e0;--border2:#c6c6c6;
+  --text:#161616;--muted:#6f6f6f;--ok:#24a148;--ok-bg:#defbe6;
+  --warn-bg:#fdf6dd;--danger:#da1e28;--danger-bg:#fff1f1;
+  --topbar-h:60px;--nav-h:50px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;background:var(--surface);color:var(--text);display:flex;flex-direction:column}
+.topbar{background:#fff;height:var(--topbar-h);min-height:var(--topbar-h);display:flex;align-items:center;padding:0 28px;gap:18px;border-bottom:2px solid var(--blue);flex-shrink:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.topbar-divider{width:1px;height:32px;background:var(--border2);flex-shrink:0}
+.topbar-info{flex:1}
+.topbar-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.01em}
+.topbar-sub{font-size:11px;color:var(--muted)}
+.topbar-date{font-size:11px;color:var(--muted);white-space:nowrap}
+.deck{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(48px);transition:opacity .3s ease,transform .3s ease;overflow-y:auto;background:var(--surface)}
+.slide.active{opacity:1;pointer-events:auto;transform:translateX(0)}
+.slide.out{opacity:0;transform:translateX(-48px)}
+.slide-cover{background:#fff;align-items:center;justify-content:center;text-align:center;gap:0}
+.cover-logo-wrap{margin-bottom:32px}
+.cover-title{font-size:38px;font-weight:800;color:var(--text);line-height:1.15;letter-spacing:-.02em}
+.cover-title em{color:var(--blue);font-style:normal}
+.cover-sub{font-size:15px;color:var(--muted);margin-top:12px}
+.cover-chips{display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.chip{padding:5px 15px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid}
+.chip-red{border-color:#da1e28;color:#da1e28;background:#fff1f1}
+.cover-hint{margin-top:44px;font-size:12px;color:#a0a0a0;display:flex;align-items:center;gap:8px}
+.slide-inner{padding:28px 36px 20px;display:flex;flex-direction:column;gap:18px;flex:1}
+.slide-heading{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1.5px solid var(--border);flex-shrink:0}
+.s-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.s-icon-red{background:#fff1f1;border:1.5px solid #ffd7d9}
+.s-icon-blue{background:#eff4ff;border:1.5px solid var(--blue-light)}
+.s-icon-purple{background:#f5f0ff;border:1.5px solid #d4bbff}
+.slide-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.slide-title{font-size:20px;font-weight:700;color:var(--text)}
+.s-badge{margin-left:auto;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.s-badge-red{background:#fff1f1;color:#da1e28;border:1.5px solid #ffd7d9}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex-shrink:0}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;border-top:3px solid var(--border)}
+.kpi-num{font-size:38px;font-weight:800;line-height:1}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:4px}
+.kpi-blue{border-top-color:var(--blue)}.kpi-blue .kpi-num{color:var(--blue)}
+.kpi-ok{border-top-color:var(--ok)}.kpi-ok .kpi-num{color:var(--ok)}
+.kpi-warn{border-top-color:#e07b00}.kpi-warn .kpi-num{color:#e07b00}
+.kpi-red{border-top-color:var(--danger)}.kpi-red .kpi-num{color:var(--danger)}
+.alert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;overflow-y:auto;flex:1;padding-bottom:4px}
+.alert-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;border-left:3px solid var(--danger)}
+.alert-card.cal{border-left-color:#8a3ffc}
+.ac-board{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.ac-name{font-size:13px;font-weight:700;color:var(--text)}
+.ac-detail{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.sec-div{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sec-div::after{content:'';flex:1;height:1px;background:var(--border)}
+.tbl-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;flex:1;display:flex;flex-direction:column}
+.tbl-bar{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tbl-bar .ttl{font-size:13px;font-weight:700}
+.tbl-bar .sub{font-size:11px;color:var(--muted)}
+.tbl-scroll{overflow:auto;flex:1}
 table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:#f7f8fa;padding:8px 11px;text-align:left;font-weight:600;border-bottom:2px solid #e5e7eb;white-space:nowrap;color:#374151}
-tbody td{padding:7px 11px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+thead th{background:var(--surface);padding:8px 12px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#525252;border-bottom:1.5px solid var(--border);white-space:nowrap;position:sticky;top:0}
+tbody td{padding:8px 12px;border-bottom:1px solid #f4f4f4;vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:#f7f8fa}
-.cell-name{font-weight:500;white-space:nowrap}
-.cell-group{font-size:11px;color:#57606a;white-space:nowrap}
-.cell-muted{color:#9ca3af;font-size:11px}
-
-/* Badges */
-.b{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
-.b-ok{background:#dcfce7;color:#15803d}
-.b-pending{background:#fee2e2;color:#991b1b}
-.b-file{background:#dbeafe;color:#1d4ed8}
-.b-no-file{background:#fef9c3;color:#854d0e}
-.b-people{background:#f3f4f6;color:#374151;font-size:10px}
-.b-date{background:#ede9fe;color:#5b21b6}
-.b-num{background:#f0fdf4;color:#166534}
-.b-muted{background:#f3f4f6;color:#9ca3af}
-
-/* Global alerts panel */
-.alert-panel-title{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.alert-section-title{font-size:13px;font-weight:700;color:#57606a;margin:18px 0 8px;text-transform:uppercase;letter-spacing:0.04em}
-.global-alert-item{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:7px;margin-bottom:7px}
-.ga-icon{font-size:20px;flex-shrink:0;margin-top:2px}
-.ga-board{font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
-.ga-name{font-weight:600;font-size:13px}
-.ga-detail{font-size:11px;color:#57606a}
-.all-good{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;text-align:center;color:#15803d;font-weight:600}
-
-footer{text-align:center;font-size:11px;color:#9ca3af;padding:10px;border-top:1px solid #e5e7eb;background:#fff;flex-shrink:0}
-
-@media(max-width:640px){.sidebar{display:none}.content{padding:12px}}
+tbody tr:hover td{background:#f9f9f9}
+.cell-name{font-weight:600;white-space:nowrap}
+.cell-muted{color:#c6c6c6;font-size:11px}
+.b{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-ok{background:var(--ok-bg);color:#0d6e30}
+.b-pending{background:var(--danger-bg);color:#a2191f}
+.b-file{background:var(--blue-light);color:var(--blue-dark)}
+.b-no-file{background:var(--warn-bg);color:#7d4a00}
+.b-people{background:#f4f4f4;color:#525252;font-size:10px}
+.b-date{background:#f5f0ff;color:#4a1d96}
+.b-num{background:var(--ok-bg);color:#0d6e30}
+.alert-inline{background:var(--danger-bg);border:1px solid #ffd7d9;border-radius:8px;padding:12px 16px;flex-shrink:0}
+.alert-inline-title{font-size:12px;font-weight:700;color:var(--danger);margin-bottom:8px}
+.alist{list-style:none}
+.alist li{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid #ffd7d9;align-items:flex-start}
+.alist li:last-child{border-bottom:none}
+.dot-sm{width:5px;height:5px;border-radius:50%;background:var(--danger);margin-top:7px;flex-shrink:0}
+.aname{font-weight:600;font-size:12px}
+.adetail{font-size:11px;color:var(--muted)}
+.sel-row{display:flex;align-items:center;gap:8px}
+.sel-row label{font-size:12px;font-weight:500;color:var(--muted)}
+.sel-row select{background:#fff;border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;outline:none}
+.sel-row select:focus{border-color:var(--blue)}
+.badge-cur{background:var(--blue-light);color:var(--blue-dark);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
+.arrow-btn{position:fixed;top:50%;width:38px;height:38px;border-radius:50%;background:#fff;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transform:translateY(-50%);z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.arrow-btn:hover{border-color:var(--blue);color:var(--blue)}
+.arrow-left{left:8px}.arrow-right{right:8px}
+.nav-bar{height:var(--nav-h);min-height:var(--nav-h);background:#fff;border-top:1.5px solid var(--border);display:flex;align-items:stretch;justify-content:center;flex-shrink:0;z-index:10}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:0 22px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);border-right:1px solid var(--border);user-select:none;white-space:nowrap;position:relative}
+.nav-btn:last-child{border-right:none}
+.nav-btn:hover{background:var(--surface);color:var(--text)}
+.nav-btn.active{color:var(--blue);background:#f0f4ff}
+.nav-btn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--blue)}
+.nav-btn.active.nav-alert-btn::after{background:var(--danger)}
+.nav-btn.active.nav-alert-btn{color:var(--danger);background:var(--danger-bg)}
+.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nd-blue{background:var(--blue)}.nd-red{background:var(--danger)}.nd-purple{background:#8a3ffc}
+.nav-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:#fff1f1;color:var(--danger)}
+@media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr)}.slide-inner{padding:16px 14px 12px}.cover-title{font-size:26px}.arrow-btn{display:none}}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div>
-    <div class="topbar-title">🏢 Dashboard · Workspace MD</div>
-    <div class="topbar-meta">ibm.monday.com · 2 tableros monitoreados</div>
+<header class="topbar">
+  <svg xmlns="http://www.w3.org/2000/svg" width="148" height="44" viewBox="0 0 370 110" aria-label="IBM">
+    <ellipse cx="50" cy="68" rx="34" ry="34" fill="#c8a87a"/>
+    <circle cx="50" cy="68" r="13" fill="#111"/>
+    <path d="M16 56 Q50 6 84 56" fill="none" stroke="#d2691e" stroke-width="18" stroke-linecap="round"/>
+    <ellipse cx="133" cy="46" rx="28" ry="12" fill="#2e8b2e" transform="rotate(-30 133 46)"/>
+    <ellipse cx="193" cy="46" rx="28" ry="12" fill="#2e8b2e" transform="rotate(30 193 46)"/>
+    <ellipse cx="163" cy="28" rx="13" ry="11" fill="#f5c518"/>
+    <circle cx="156" cy="23" r="6" fill="#e8a0b8"/>
+    <circle cx="170" cy="23" r="6" fill="#e8a0b8"/>
+    <rect x="148" y="38" width="30" height="10" rx="2" fill="#f5c518"/>
+    <rect x="148" y="48" width="30" height="10" rx="2" fill="#fff"/>
+    <rect x="148" y="58" width="30" height="10" rx="2" fill="#f5c518"/>
+    <rect x="148" y="68" width="30" height="10" rx="2" fill="#fff"/>
+    <rect x="148" y="78" width="30" height="10" rx="2" fill="#f5c518"/>
+    <ellipse cx="163" cy="90" rx="15" ry="7" fill="#f5c518"/>
+    <rect x="220" y="18" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="30" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="42" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="54" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="66" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="78" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="220" y="90" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="240" y="18" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="244" y="30" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="248" y="42" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="252" y="54" width="4"  height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="248" y="66" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="244" y="78" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="240" y="90" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="18" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="30" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="42" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="54" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="66" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="78" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="318" y="90" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="18" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="30" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="42" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="66" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="78" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+    <rect x="300" y="90" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+  </svg>
+  <div class="topbar-divider"></div>
+  <div class="topbar-info">
+    <div class="topbar-title">Dashboard · Workspace MD</div>
+    <div class="topbar-sub">ibm.monday.com &nbsp;·&nbsp; 2 tableros monitoreados</div>
   </div>
-  <div class="topbar-updated">Generado: ${updatedAt}</div>
-</div>
+  <div class="topbar-date">${updatedAt}</div>
+</header>
 
-<div class="layout">
+<div class="deck">
 
-  <!-- ── Sidebar ── -->
-  <nav class="sidebar">
-    <div class="sidebar-section">General</div>
-
-    <div class="nav-item nav-alerts active" id="nav-alerts" onclick="show('alerts')">
-      <span class="nav-icon">🔔</span>
-      <span class="nav-label">Panel de Alertas</span>
-      <span class="nav-badge ${totalAlerts > 0 ? 'badge-red' : 'badge-green'}">${totalAlerts}</span>
+  <!-- SLIDE 0: PORTADA -->
+  <div class="slide slide-cover active" id="slide-0">
+    <div class="cover-logo-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="260" height="80" viewBox="0 0 370 110" aria-label="IBM">
+        <ellipse cx="50" cy="68" rx="34" ry="34" fill="#c8a87a"/>
+        <circle cx="50" cy="68" r="13" fill="#111"/>
+        <path d="M16 56 Q50 6 84 56" fill="none" stroke="#d2691e" stroke-width="18" stroke-linecap="round"/>
+        <ellipse cx="133" cy="46" rx="28" ry="12" fill="#2e8b2e" transform="rotate(-30 133 46)"/>
+        <ellipse cx="193" cy="46" rx="28" ry="12" fill="#2e8b2e" transform="rotate(30 193 46)"/>
+        <ellipse cx="163" cy="28" rx="13" ry="11" fill="#f5c518"/>
+        <circle cx="156" cy="23" r="6" fill="#e8a0b8"/>
+        <circle cx="170" cy="23" r="6" fill="#e8a0b8"/>
+        <rect x="148" y="38" width="30" height="10" rx="2" fill="#f5c518"/>
+        <rect x="148" y="48" width="30" height="10" rx="2" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/>
+        <rect x="148" y="58" width="30" height="10" rx="2" fill="#f5c518"/>
+        <rect x="148" y="68" width="30" height="10" rx="2" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/>
+        <rect x="148" y="78" width="30" height="10" rx="2" fill="#f5c518"/>
+        <ellipse cx="163" cy="90" rx="15" ry="7" fill="#f5c518"/>
+        <rect x="220" y="18" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="30" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="42" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="54" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="66" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="78" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="220" y="90" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="240" y="18" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="244" y="30" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="248" y="42" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="252" y="54" width="4"  height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="248" y="66" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="244" y="78" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="240" y="90" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="18" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="30" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="42" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="54" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="66" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="78" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="318" y="90" width="18" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="18" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="30" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="42" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="66" width="8"  height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="78" width="12" height="7" rx="1.5" fill="#4a90d9"/>
+        <rect x="300" y="90" width="16" height="7" rx="1.5" fill="#4a90d9"/>
+      </svg>
     </div>
-
-    <div class="sidebar-section">Tableros</div>
-
-    <div class="nav-item" id="nav-mdtime" onclick="show('mdtime')">
-      <span class="nav-icon">⏱</span>
-      <span class="nav-label">MD-Time · HR Zone</span>
-      <span class="nav-badge ${mdAlerts.length > 0 ? 'badge-red' : 'badge-green'}">${mdAlerts.length > 0 ? mdAlerts.length : '✓'}</span>
+    <div class="cover-title">Workspace <em>MD</em><br>Monday Dashboard</div>
+    <div class="cover-sub">${curWeekTitle ? 'Semana ' + curWeekTitle + ' &nbsp;·&nbsp; ' : ''}Estado de documentación y solicitudes</div>
+    <div class="cover-chips">
+      ${totalAlerts > 0 ? \`<span class="chip chip-red">⚠ \${totalAlerts} pendientes</span>\` : ''}
+      ${mdAlerts.length > 0 ? \`<span class="chip chip-red">⏱ \${mdAlerts.length} en MD-Time</span>\` : ''}
+      ${offAlerts.length > 0 ? \`<span class="chip chip-red">🗓 \${offAlerts.length} en Request OFF</span>\` : ''}
     </div>
+    <div class="cover-hint"><span>←</span> Navega con las flechas o el menú inferior <span>→</span></div>
+  </div>
 
-    <div class="nav-item" id="nav-requestoff" onclick="show('requestoff')">
-      <span class="nav-icon">🗓</span>
-      <span class="nav-label">Request OFF</span>
-      <span class="nav-badge ${offAlerts.length > 0 ? 'badge-red' : 'badge-green'}">${offAlerts.length > 0 ? offAlerts.length : '✓'}</span>
-    </div>
-  </nav>
-
-  <!-- ── Content ── -->
-  <main class="content">
-
-    <!-- ── Panel de Alertas ── -->
-    <div class="panel active" id="panel-alerts">
-      <div class="alert-panel-title">🔔 Panel de Alertas — ${totalAlerts} pendiente(s)</div>
-
-      ${totalAlerts === 0 ? '<div class="all-good">✅ Sin alertas en ningún tablero</div>' : ''}
-
-      ${mdAlerts.length > 0 ? `
-      <div class="alert-section-title">⏱ MD-Time · Semana ${esc(curWeek ? curWeek.title : '')} — ${mdAlerts.length} pendiente(s)</div>
-      ${mdAlerts.sort((a,b) => b.missing.length - a.missing.length).map(a => `
-      <div class="global-alert-item">
-        <span class="ga-icon">⏱</span>
+  <!-- SLIDE 1: ALERTAS -->
+  <div class="slide" id="slide-1">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="s-icon s-icon-red">🔔</div>
         <div>
-          <div class="ga-board">MD-Time · HR Zone</div>
-          <div class="ga-name">${esc(a.name)}</div>
-          <div class="ga-detail">Falta: ${a.missing.map(esc).join(" · ")}</div>
+          <div class="slide-eyebrow">Resumen global</div>
+          <div class="slide-title">Panel de Alertas</div>
         </div>
-      </div>`).join("")}` : ''}
-
-      ${offAlerts.length > 0 ? `
-      <div class="alert-section-title">🗓 Request OFF · Solicitudes sin soporte — ${offAlerts.length} pendiente(s)</div>
-      ${offAlerts.map(a => `
-      <div class="global-alert-item">
-        <span class="ga-icon">🗓</span>
-        <div>
-          <div class="ga-board">Request OFF · Solicitudes</div>
-          <div class="ga-name">${esc(a.name)}</div>
-          <div class="ga-detail">Falta: ${a.missing.map(esc).join(" · ")}</div>
-        </div>
-      </div>`).join("")}` : ''}
+        <span class="s-badge s-badge-red" style="margin-left:auto">${totalAlerts} pendientes</span>
+      </div>
+      <div class="sec-div">⏱ MD-Time · Semana ${curWeekTitle} — ${mdAlerts.length} pendientes</div>
+      <div class="alert-grid">
+        ${mdAlerts.sort((a,b) => b.missing.length - a.missing.length).map(a => `
+        <div class="alert-card">
+          <div class="ac-board">MD-Time · HR Zone</div>
+          <div class="ac-name">${esc(a.name)}</div>
+          <div class="ac-detail">Falta: ${a.missing.map(esc).join(" · ")}</div>
+        </div>`).join("") || '<div style="color:var(--muted);font-size:12px">Sin pendientes ✓</div>'}
+      </div>
+      <div class="sec-div">🗓 Request OFF · Sin soporte — ${offAlerts.length} pendientes</div>
+      <div class="alert-grid" style="flex:0 0 auto">
+        ${offAlerts.map(a => `
+        <div class="alert-card cal">
+          <div class="ac-board">Request OFF · Solicitudes</div>
+          <div class="ac-name">${esc(a.name)}</div>
+          <div class="ac-detail">Sin archivo de soporte</div>
+        </div>`).join("") || '<div style="color:var(--muted);font-size:12px">Sin pendientes ✓</div>'}
+      </div>
     </div>
+  </div>
 
-    <!-- ── MD-Time panel ── -->
-    <div class="panel" id="panel-mdtime">
-      <div class="board-header">
-        <span class="board-icon-lg">⏱</span>
+  <!-- SLIDE 2: MD-TIME -->
+  <div class="slide" id="slide-2">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="s-icon s-icon-blue">⏱</div>
         <div>
-          <div class="board-title">MD-Time · HR Zone · Success Factors</div>
-          <a class="board-link" href="https://ibm.monday.com/boards/8443645710" target="_blank">Ver en Monday.com ↗</a>
+          <div class="slide-eyebrow">Tablero · ibm.monday.com</div>
+          <div class="slide-title">MD-Time · HR Zone · Success Factors</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+          <div class="sel-row">
+            <label>Semana:</label>
+            <select id="mdtime-select" onchange="renderMDTime(this.value)">
+              ${weekOpts}
+            </select>
+          </div>
+          <span class="badge-cur" id="mdtime-cur-badge">Semana actual</span>
         </div>
       </div>
-      <div class="selector-row">
-        <label>Semana:</label>
-        <select id="mdtime-select" onchange="renderMDTime(this.value)">
-          ${weekOpts}
-        </select>
-        <span class="badge-current" id="mdtime-cur-badge">Semana actual</span>
-      </div>
-      <div id="mdtime-alerts" class="alert-box" style="display:none">
-        <div class="alert-box-title" id="mdtime-alert-title"></div>
+      <div class="kpi-row" id="mdtime-cards"></div>
+      <div id="mdtime-alerts" class="alert-inline" style="display:none">
+        <div class="alert-inline-title" id="mdtime-alert-title"></div>
         <ul class="alist" id="mdtime-alert-list"></ul>
       </div>
-      <div class="cards" id="mdtime-cards"></div>
-      <div class="table-wrap">
-        <div class="table-header">
-          <span>Detalle por persona</span>
+      <div class="tbl-wrap">
+        <div class="tbl-bar">
+          <span class="ttl">Detalle por persona</span>
           <span class="sub" id="mdtime-table-sub"></span>
         </div>
-        <div class="table-scroll">
+        <div class="tbl-scroll">
           <table>
             <thead><tr>
               <th>Nombre</th>
-              <th>Time</th><th>TIME/Pantalla</th>
-              <th>HR Zone</th><th>HRZ/Pantalla</th>
+              <th>Time</th><th>TIME/Pant.</th>
+              <th>HR Zone</th><th>HRZ/Pant.</th>
               <th>My Hours</th><th>MyHours/Pant.</th>
             </tr></thead>
             <tbody id="mdtime-tbody"></tbody>
@@ -425,184 +504,157 @@ footer{text-align:center;font-size:11px;color:#9ca3af;padding:10px;border-top:1p
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ── Request OFF panel ── -->
-    <div class="panel" id="panel-requestoff">
-      <div class="board-header">
-        <span class="board-icon-lg">🗓</span>
+  <!-- SLIDE 3: REQUEST OFF -->
+  <div class="slide" id="slide-3">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="s-icon s-icon-purple">🗓</div>
         <div>
-          <div class="board-title">Request OFF</div>
-          <a class="board-link" href="https://ibm.monday.com/boards/8488385355" target="_blank">Ver en Monday.com ↗</a>
+          <div class="slide-eyebrow">Tablero · ibm.monday.com</div>
+          <div class="slide-title">Request OFF</div>
+        </div>
+        <div style="margin-left:auto">
+          <div class="sel-row">
+            <label>Grupo:</label>
+            <select id="off-select" onchange="renderRequestOff(this.value)">
+              ${groupOpts}
+            </select>
+          </div>
         </div>
       </div>
-      <div class="selector-row">
-        <label>Grupo:</label>
-        <select id="off-select" onchange="renderRequestOff(this.value)">
-          ${groupOpts}
-        </select>
-      </div>
-      <div id="off-alerts" class="alert-box" style="display:none">
-        <div class="alert-box-title" id="off-alert-title"></div>
+      <div class="kpi-row" id="off-cards"></div>
+      <div id="off-alerts" class="alert-inline" style="display:none">
+        <div class="alert-inline-title" id="off-alert-title"></div>
         <ul class="alist" id="off-alert-list"></ul>
       </div>
-      <div class="cards" id="off-cards"></div>
-      <div class="table-wrap">
-        <div class="table-header">
-          <span>Detalle de solicitudes</span>
+      <div class="tbl-wrap">
+        <div class="tbl-bar">
+          <span class="ttl">Detalle de solicitudes</span>
           <span class="sub" id="off-table-sub"></span>
         </div>
-        <div class="table-scroll">
+        <div class="tbl-scroll">
           <table>
             <thead><tr>
-              <th>Nombre</th>
-              <th>Solicitante</th>
-              <th>Motivo</th>
-              <th>Fechas</th>
-              <th>Días</th>
-              <th>Estado</th>
-              <th>Soporte</th>
-              <th>Observaciones</th>
+              <th>Nombre</th><th>Solicitante</th><th>Motivo</th>
+              <th>Fechas</th><th>Días</th><th>Estado</th>
+              <th>Soporte</th><th>Observaciones</th>
             </tr></thead>
             <tbody id="off-tbody"></tbody>
           </table>
         </div>
       </div>
     </div>
+  </div>
 
-  </main>
 </div>
 
-<footer>Made with IBM Bob · Workspace MD · ibm.monday.com</footer>
+<div class="arrow-btn arrow-left" id="btn-prev">&#8592;</div>
+<div class="arrow-btn arrow-right" id="btn-next">&#8594;</div>
+
+<nav class="nav-bar">
+  <div class="nav-btn active" id="nav-0" onclick="goTo(0)">
+    <span class="nav-dot nd-blue"></span> Inicio
+  </div>
+  <div class="nav-btn nav-alert-btn" id="nav-1" onclick="goTo(1)">
+    <span class="nav-dot nd-red"></span> Alertas
+    <span class="nav-badge">${totalAlerts}</span>
+  </div>
+  <div class="nav-btn" id="nav-2" onclick="goTo(2)">
+    <span class="nav-dot nd-blue"></span> MD-Time
+    ${mdAlerts.length > 0 ? \`<span class="nav-badge">\${mdAlerts.length}</span>\` : ''}
+  </div>
+  <div class="nav-btn" id="nav-3" onclick="goTo(3)">
+    <span class="nav-dot nd-purple"></span> Request OFF
+    ${offAlerts.length > 0 ? \`<span class="nav-badge">\${offAlerts.length}</span>\` : ''}
+  </div>
+</nav>
 
 <script>
-// ── Embedded data ──────────────────────────────────────────────────────────
-const MDTIME_DATA    = ${JSON.stringify(mdTime.weeksData)};
-const MDTIME_COLS    = ${JSON.stringify(mdTime.colDefs)};
-const MDTIME_CUR     = ${JSON.stringify(mdTime.currentGroupId)};
-const OFF_DATA       = ${JSON.stringify(requestOff.groupsData)};
+const MDTIME_DATA = ${JSON.stringify(mdTime.weeksData)};
+const MDTIME_COLS = ${JSON.stringify(mdTime.colDefs)};
+const MDTIME_CUR  = ${JSON.stringify(mdTime.currentGroupId)};
+const OFF_DATA    = ${JSON.stringify(requestOff.groupsData)};
 
-function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function kpi(cls,num,lbl){return\`<div class="kpi \${cls}"><div class="kpi-num">\${num}</div><div class="kpi-lbl">\${lbl}</div></div>\`}
+function b(cls,txt){return\`<span class="b \${cls}">\${esc(txt)}</span>\`}
+
+let current=0;const TOTAL=4;
+function goTo(n){
+  const prev=document.getElementById('slide-'+current);
+  prev.classList.remove('active');prev.classList.add('out');
+  setTimeout(()=>prev.classList.remove('out'),350);
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  current=((n%TOTAL)+TOTAL)%TOTAL;
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('nav-'+current).classList.add('active');
 }
-function card(cls,num,lbl){ return '<div class="card '+cls+'"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
-function b(cls,txt){ return '<span class="b '+cls+'">'+esc(txt)+'</span>'; }
+document.getElementById('btn-prev').addEventListener('click',()=>goTo(current-1));
+document.getElementById('btn-next').addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);
+});
 
-// ── Navigation ─────────────────────────────────────────────────────────────
-function show(panel) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-' + panel).classList.add('active');
-  document.getElementById('nav-'   + panel).classList.add('active');
-}
-
-// ── MD-Time render ─────────────────────────────────────────────────────────
-function renderMDTime(groupId) {
-  const week = MDTIME_DATA[groupId];
-  if (!week) return;
-  const isCurrent = groupId === MDTIME_CUR;
-  document.getElementById('mdtime-cur-badge').style.display = isCurrent ? '' : 'none';
-  document.getElementById('mdtime-table-sub').textContent   = 'Semana ' + week.title;
-  const rows = [...week.items].sort((a,b) => a.name.localeCompare(b.name));
-  let done=0, partial=0, none=0;
-  const pending=[];
-  let tbody='';
-  rows.forEach(row => {
-    let filled=0, missing=[];
-    MDTIME_COLS.forEach(col => {
-      const v = row.cv[col.key];
-      if (v && v.trim()) filled++; else missing.push(col.label);
+function renderMDTime(gid){
+  const wk=MDTIME_DATA[gid];if(!wk)return;
+  document.getElementById('mdtime-cur-badge').style.display=gid===MDTIME_CUR?'':'none';
+  document.getElementById('mdtime-table-sub').textContent='Semana '+wk.title;
+  const rows=[...wk.items].sort((a,b)=>a.name.localeCompare(b.name));
+  let done=0,partial=0,none=0,pending=[],tbody='';
+  rows.forEach(r=>{
+    let f=0,m=[];
+    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key];v&&v.trim()?f++:m.push(c.label);});
+    f===MDTIME_COLS.length?done++:f===0?none++:partial++;
+    if(m.length)pending.push({name:r.name,missing:m});
+    tbody+=\`<tr><td class="cell-name">\${esc(r.name)}</td>\`;
+    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key],has=v&&v.trim();
+      tbody+=\`<td>\${c.type==='status'?(has?b('b-ok',v):b('b-pending','Falta')):(has?b('b-file','Archivo'):b('b-no-file','Falta'))}</td>\`;
     });
-    if (filled===MDTIME_COLS.length) done++;
-    else if (filled===0) none++;
-    else partial++;
-    if (missing.length) pending.push({name:row.name, missing});
-    tbody += '<tr><td class="cell-name">'+esc(row.name)+'</td>';
-    MDTIME_COLS.forEach(col => {
-      const v = row.cv[col.key];
-      const has = v && v.trim();
-      if (col.type==='status') tbody += '<td>'+(has?b('b-ok',v):b('b-pending','Falta'))+'</td>';
-      else                     tbody += '<td>'+(has?b('b-file','Archivo'):b('b-no-file','Falta'))+'</td>';
-    });
-    tbody += '</tr>';
+    tbody+='</tr>';
   });
-  document.getElementById('mdtime-tbody').innerHTML = tbody;
-  document.getElementById('mdtime-cards').innerHTML =
-    card('c-total',rows.length,'Total')+card('c-ok',done,'Completos')+
-    card('c-warn',partial,'Parciales')+card('c-danger',none,'Sin datos');
-  const ab = document.getElementById('mdtime-alerts');
-  if (pending.length===0) { ab.style.display='none'; return; }
+  document.getElementById('mdtime-tbody').innerHTML=tbody;
+  document.getElementById('mdtime-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',done,'Completos')+kpi('kpi-warn',partial,'Parciales')+kpi('kpi-red',none,'Sin datos');
+  const ab=document.getElementById('mdtime-alerts');
+  if(!pending.length){ab.style.display='none';return;}
   ab.style.display='';
-  document.getElementById('mdtime-alert-title').textContent = '⚠ '+pending.length+' persona(s) con documentación pendiente';
-  let al='';
-  pending.sort((a,b)=>b.missing.length-a.missing.length).forEach(p => {
-    al += '<li><div class="dot"></div><div><div class="aname">'+esc(p.name)+'</div><div class="adetail">Falta: '+p.missing.map(esc).join(' · ')+'</div></div></li>';
-  });
-  document.getElementById('mdtime-alert-list').innerHTML = al;
+  document.getElementById('mdtime-alert-title').textContent='⚠ '+pending.length+' persona(s) con documentación pendiente';
+  document.getElementById('mdtime-alert-list').innerHTML=pending.sort((a,b)=>b.missing.length-a.missing.length).map(p=>\`<li><div class="dot-sm"></div><div><div class="aname">\${esc(p.name)}</div><div class="adetail">Falta: \${p.missing.map(esc).join(' · ')}</div></div></li>\`).join('');
 }
 
-// ── Request OFF render ─────────────────────────────────────────────────────
-function renderRequestOff(groupId) {
-  const grp = OFF_DATA[groupId];
-  if (!grp) return;
-  document.getElementById('off-table-sub').textContent = grp.title + ' — ' + grp.items.length + ' registros';
-  const rows = [...grp.items].sort((a,b) => {
-    // sort by date desc
-    const da = a.cv['date4'] || '';
-    const db = b.cv['date4'] || '';
-    return db.localeCompare(da);
+function renderRequestOff(gid){
+  const grp=OFF_DATA[gid];if(!grp)return;
+  document.getElementById('off-table-sub').textContent=grp.title+' — '+grp.items.length+' registros';
+  const rows=[...grp.items].sort((a,b)=>(b.cv['date4']||'').localeCompare(a.cv['date4']||''));
+  let aprobadas=0,pendientes=0,sinSoporte=0,alerts=[],tbody='';
+  rows.forEach(r=>{
+    const est=r.cv['status_mkn825jf']||'',sop=r.cv['file_mm1ht7j7']||'';
+    est.toLowerCase().includes('aprobad')?aprobadas++:pendientes++;
+    if(!sop){sinSoporte++;alerts.push({name:r.name});}
+    const sol=r.cv['people_mkn8wds0']||'',mot=r.cv['status_1_mkn5yhzg']||'',fec=r.cv['cronograma_mkn6bx9b']||'',dias=r.cv['n_meros_mkn6cwvj']||'',obs=r.cv['text_mkn8yf9q']||'';
+    const eCls=est.toLowerCase().includes('aprobad')?'b-ok':est.toLowerCase().includes('rechazo')?'b-pending':'b-date';
+    tbody+=\`<tr>
+      <td class="cell-name">\${esc(r.name)}</td>
+      <td>\${b('b-people',sol?sol.split('@')[0]:'—')}</td>
+      <td>\${mot?b('b-date',mot):'<span class="cell-muted">—</span>'}</td>
+      <td>\${fec?b('b-date',fec):'<span class="cell-muted">—</span>'}</td>
+      <td>\${dias?b('b-num',dias+' d'):'<span class="cell-muted">—</span>'}</td>
+      <td>\${est?b(eCls,est):'<span class="cell-muted">—</span>'}</td>
+      <td>\${sop?b('b-file','Archivo'):b('b-no-file','Falta')}</td>
+      <td>\${obs?'<span style="font-size:11px">'+esc(obs.substring(0,50))+(obs.length>50?'…':'')+'</span>':'<span class="cell-muted">—</span>'}</td>
+    </tr>\`;
   });
-  let aprobadas=0, pendientes=0, sinSoporte=0;
-  const alerts=[];
-  let tbody='';
-  rows.forEach(row => {
-    const estado = row.cv['status_mkn825jf'] || '';
-    const soporte= row.cv['file_mm1ht7j7']  || '';
-    if (estado.toLowerCase().includes('aprobad')) aprobadas++;
-    else pendientes++;
-    if (!soporte) { sinSoporte++; alerts.push({name:row.name}); }
-    tbody += '<tr>';
-    tbody += '<td class="cell-name">'+esc(row.name)+'</td>';
-    // Solicitante
-    const sol = row.cv['people_mkn8wds0']||'';
-    tbody += '<td>'+b('b-people', sol ? sol.split('@')[0] : '—')+'</td>';
-    // Motivo
-    const motivo = row.cv['status_1_mkn5yhzg']||'';
-    tbody += '<td>'+(motivo?b('b-date',motivo):'<span class="cell-muted">—</span>')+'</td>';
-    // Fechas
-    const fechas = row.cv['cronograma_mkn6bx9b']||'';
-    tbody += '<td>'+(fechas?b('b-date',fechas):'<span class="cell-muted">—</span>')+'</td>';
-    // Días
-    const dias = row.cv['n_meros_mkn6cwvj']||'';
-    tbody += '<td>'+(dias?b('b-num',dias+' d'):'<span class="cell-muted">—</span>')+'</td>';
-    // Estado
-    const est = row.cv['status_mkn825jf']||'';
-    const estCls = est.toLowerCase().includes('aprobad') ? 'b-ok' : est.toLowerCase().includes('rechazo') ? 'b-pending' : 'b-date';
-    tbody += '<td>'+(est?b(estCls,est):'<span class="cell-muted">—</span>')+'</td>';
-    // Soporte
-    tbody += '<td>'+(soporte?b('b-file','Archivo'):b('b-no-file','Falta'))+'</td>';
-    // Observaciones
-    const obs = row.cv['text_mkn8yf9q']||'';
-    tbody += '<td>'+(obs?'<span style="font-size:11px">'+esc(obs.substring(0,60))+(obs.length>60?'…':'')+'</span>':'<span class="cell-muted">—</span>')+'</td>';
-    tbody += '</tr>';
-  });
-  document.getElementById('off-tbody').innerHTML = tbody;
-  document.getElementById('off-cards').innerHTML =
-    card('c-total',rows.length,'Total')+
-    card('c-ok',aprobadas,'Aprobadas')+
-    card('c-warn',pendientes,'Pendientes')+
-    card('c-danger',sinSoporte,'Sin soporte');
-  const ab = document.getElementById('off-alerts');
-  if (alerts.length===0) { ab.style.display='none'; return; }
+  document.getElementById('off-tbody').innerHTML=tbody;
+  document.getElementById('off-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',aprobadas,'Aprobadas')+kpi('kpi-warn',pendientes,'Pendientes')+kpi('kpi-red',sinSoporte,'Sin soporte');
+  const ab=document.getElementById('off-alerts');
+  if(!alerts.length){ab.style.display='none';return;}
   ab.style.display='';
-  document.getElementById('off-alert-title').textContent = '⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
-  let al='';
-  alerts.forEach(a => {
-    al += '<li><div class="dot"></div><div><div class="aname">'+esc(a.name)+'</div><div class="adetail">Sin archivo de soporte</div></div></li>';
-  });
-  document.getElementById('off-alert-list').innerHTML = al;
+  document.getElementById('off-alert-title').textContent='⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
+  document.getElementById('off-alert-list').innerHTML=alerts.map(a=>\`<li><div class="dot-sm"></div><div><div class="aname">\${esc(a.name)}</div><div class="adetail">Sin archivo de soporte</div></div></li>\`).join('');
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────
 renderMDTime(MDTIME_CUR);
 renderRequestOff('topics');
 <\/script>
