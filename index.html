@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard MD · Workspace IBM</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --blue:#0f62fe;
+  --blue-dark:#0043ce;
+  --blue-light:#d0e2ff;
+  --navy:#161616;
+  --navy2:#1e1e1e;
+  --surface:#f4f4f4;
+  --white:#ffffff;
+  --border:#e0e0e0;
+  --text:#161616;
+  --muted:#6f6f6f;
+  --ok:#24a148;
+  --ok-bg:#defbe6;
+  --warn-bg:#fdf6dd;
+  --danger:#da1e28;
+  --danger-bg:#fff1f1;
+  --slide-h:100vh;
+}
+
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  font-size:14px;line-height:1.6;
+  background:var(--navy);color:#f4f4f4;
+  display:flex;flex-direction:column;
+}
+
+/* ══════════════════════════════════════
+   TOP BAR
+══════════════════════════════════════ */
+.topbar{
+  background:#0d0d0d;
+  height:58px;min-height:58px;
+  display:flex;align-items:center;
+  padding:0 28px;gap:20px;
+  border-bottom:2px solid var(--blue);
+  flex-shrink:0;
+  position:relative;z-index:10;
+}
+.topbar-logo{display:flex;align-items:center;flex-shrink:0}
+.topbar-divider{width:1px;height:30px;background:#333;flex-shrink:0}
+.topbar-info{flex:1}
+.topbar-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:0.01em}
+.topbar-sub{font-size:11px;color:#8d8d8d;margin-top:1px}
+.topbar-date{font-size:11px;color:#6f6f6f;white-space:nowrap}
+
+/* ══════════════════════════════════════
+   SLIDE DECK
+══════════════════════════════════════ */
+.deck{
+  flex:1;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transform:translateX(60px);
+  transition:opacity .35s ease, transform .35s ease;
+  overflow-y:auto;
+}
+.slide.active{
+  opacity:1;pointer-events:auto;
+  transform:translateX(0);
+}
+.slide.out{
+  opacity:0;
+  transform:translateX(-60px);
+}
+
+/* ── Slide: COVER ── */
+.slide-cover{
+  background:linear-gradient(135deg,#0d0d0d 0%,#0a2060 60%,#0f62fe22 100%);
+  align-items:center;justify-content:center;text-align:center;gap:0;
+}
+.cover-logo{margin-bottom:36px}
+.cover-title{font-size:42px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-0.02em}
+.cover-title span{color:var(--blue)}
+.cover-sub{font-size:16px;color:#8d8d8d;margin-top:14px;font-weight:400}
+.cover-chips{display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.chip{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid}
+.chip-blue{border-color:var(--blue);color:var(--blue-light);background:#0f62fe18}
+.chip-red{border-color:#ff8389;color:#ff8389;background:#da1e2818}
+.chip-green{border-color:#42be65;color:#42be65;background:#24a14818}
+.cover-hint{margin-top:48px;font-size:11px;color:#444;display:flex;align-items:center;gap:8px}
+.cover-hint-arrow{font-size:18px;color:#555}
+
+/* ── Slide: generic content ── */
+.slide-inner{
+  padding:32px 40px 24px;
+  display:flex;flex-direction:column;
+  gap:20px;flex:1;
+}
+.slide-heading{
+  display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid #2a2a2a;
+  padding-bottom:16px;flex-shrink:0;
+}
+.slide-icon-box{
+  width:46px;height:46px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.icon-red{background:#750e13}
+.icon-blue{background:#0043ce}
+.icon-cal{background:#4a1d96}
+.slide-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6f6f6f;margin-bottom:2px}
+.slide-title{font-size:22px;font-weight:700;color:#fff}
+.slide-count-badge{
+  margin-left:auto;
+  background:var(--danger);color:#fff;
+  font-size:12px;font-weight:700;
+  padding:4px 12px;border-radius:20px;
+  white-space:nowrap;
+}
+.slide-count-badge.ok{background:var(--ok)}
+
+/* ── KPI CARDS ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex-shrink:0}
+.kpi{
+  background:#1e1e1e;border:1px solid #2a2a2a;
+  border-radius:10px;padding:18px 16px;
+  border-top:3px solid #333;
+}
+.kpi-num{font-size:40px;font-weight:800;line-height:1}
+.kpi-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6f6f6f;margin-top:4px}
+.kpi-blue .kpi-num{color:var(--blue)}.kpi-blue{border-top-color:var(--blue)}
+.kpi-ok .kpi-num{color:#42be65}.kpi-ok{border-top-color:#42be65}
+.kpi-warn .kpi-num{color:#f1c21b}.kpi-warn{border-top-color:#f1c21b}
+.kpi-red .kpi-num{color:#ff8389}.kpi-red{border-top-color:var(--danger)}
+
+/* ── ALERT LIST ── */
+.alert-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:10px;overflow-y:auto;flex:1;
+  padding-right:4px;
+}
+.alert-card{
+  background:#1e1e1e;border:1px solid #2e2e2e;
+  border-radius:8px;padding:12px 14px;
+  border-left:3px solid var(--danger);
+  display:flex;flex-direction:column;gap:3px;
+}
+.alert-card.cal{border-left-color:#a855f7}
+.ac-board{font-size:10px;color:#6f6f6f;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.ac-name{font-size:13px;font-weight:700;color:#fff}
+.ac-detail{font-size:11px;color:#8d8d8d;line-height:1.4}
+
+/* ── SECTION DIVIDER ── */
+.section-div{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:#555;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.section-div::after{content:'';flex:1;height:1px;background:#2a2a2a}
+
+/* ── TABLE (dark) ── */
+.tbl-wrap{
+  background:#1e1e1e;border:1px solid #2a2a2a;
+  border-radius:10px;overflow:hidden;flex:1;
+  display:flex;flex-direction:column;
+}
+.tbl-head-bar{
+  padding:12px 18px;border-bottom:1px solid #2a2a2a;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.tbl-head-bar .ttl{font-size:13px;font-weight:600;color:#fff}
+.tbl-head-bar .sub{font-size:11px;color:#6f6f6f}
+.tbl-scroll{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{
+  background:#141414;padding:9px 12px;text-align:left;
+  font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;
+  border-bottom:1px solid #2a2a2a;white-space:nowrap;color:#8d8d8d;
+  position:sticky;top:0;
+}
+tbody td{padding:9px 12px;border-bottom:1px solid #222;vertical-align:middle;color:#e0e0e0}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#252525}
+.cell-name{font-weight:600;white-space:nowrap;color:#fff}
+.cell-muted{color:#555;font-size:11px}
+
+/* ── INLINE BADGES ── */
+.b{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-ok{background:#0d3a22;color:#6fdc8c}
+.b-pending{background:#750e13;color:#ffd7d9}
+.b-file{background:#0043ce30;color:#a6c8ff}
+.b-no-file{background:#7d4a0020;color:#f1c21b}
+.b-people{background:#2a2a2a;color:#8d8d8d;font-size:10px}
+.b-date{background:#4a1d9630;color:#d4bbff}
+.b-num{background:#0d3a2230;color:#6fdc8c}
+
+/* ── NAV BAR (bottom) ── */
+.nav-bar{
+  height:52px;min-height:52px;
+  background:#0d0d0d;border-top:1px solid #222;
+  display:flex;align-items:center;justify-content:center;
+  gap:0;flex-shrink:0;
+  position:relative;z-index:10;
+}
+.nav-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:0 20px;height:52px;cursor:pointer;
+  font-size:12px;font-weight:500;color:#6f6f6f;
+  border-left:1px solid #1e1e1e;
+  user-select:none;white-space:nowrap;
+  position:relative;
+}
+.nav-btn:first-child{border-left:none}
+.nav-btn:hover{background:#1a1a1a;color:#fff}
+.nav-btn.active{color:#fff;background:#1a1a1a}
+.nav-btn.active::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--blue);
+}
+.nav-btn.active.red::after{background:var(--danger)}
+.nav-dot{width:6px;height:6px;border-radius:50%}
+.dot-red{background:var(--danger)}
+.dot-blue{background:var(--blue)}
+.dot-purple{background:#a855f7}
+.nav-badge{
+  font-size:10px;font-weight:700;padding:1px 6px;
+  border-radius:10px;background:#750e13;color:#ffd7d9;
+}
+
+/* ── PREV / NEXT arrows ── */
+.arrow-btn{
+  position:fixed;top:50%;
+  width:40px;height:40px;border-radius:50%;
+  background:#1e1e1e;border:1px solid #333;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#8d8d8d;font-size:18px;
+  transform:translateY(-50%);z-index:20;
+  user-select:none;
+}
+.arrow-btn:hover{background:#2a2a2a;color:#fff}
+.arrow-left{left:10px}
+.arrow-right{right:10px}
+
+/* ── SELECTOR ── */
+.sel-row{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sel-row label{font-size:12px;font-weight:500;color:#6f6f6f}
+.sel-row select{
+  background:#1e1e1e;border:1px solid #333;color:#fff;
+  border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;
+  outline:none;
+}
+.sel-row select:focus{border-color:var(--blue)}
+.badge-cur{
+  background:#0043ce30;color:#a6c8ff;
+  font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;
+}
+
+/* ── ALERT BOX inline ── */
+.alert-inline{
+  background:#1a0a0a;border:1px solid #750e13;
+  border-radius:8px;padding:12px 16px;flex-shrink:0;
+}
+.alert-inline-title{font-size:12px;font-weight:700;color:#ff8389;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.alist{list-style:none}
+.alist li{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid #2a1010;align-items:flex-start}
+.alist li:last-child{border-bottom:none}
+.dot-sm{width:5px;height:5px;border-radius:50%;background:var(--danger);margin-top:7px;flex-shrink:0}
+.aname{font-weight:600;font-size:12px;color:#fff}
+.adetail{font-size:11px;color:#8d8d8d}
+
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .slide-inner{padding:18px 16px 12px}
+  .cover-title{font-size:28px}
+  .arrow-btn{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ TOP BAR ══════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <!-- IBM Eye-Bee-M SVG — fiel al original -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="130" height="40" viewBox="0 0 390 120" aria-label="IBM Eye Bee M">
+      <!-- ── EYE ── -->
+      <!-- eyeball -->
+      <ellipse cx="58" cy="72" rx="36" ry="36" fill="#c8a87a"/>
+      <!-- pupil -->
+      <circle cx="58" cy="72" r="15" fill="#111"/>
+      <!-- eyelid arc (orange) -->
+      <path d="M18 60 Q58 10 98 60" fill="#d2691e"/>
+      <!-- ── BEE ── -->
+      <!-- wings left -->
+      <ellipse cx="148" cy="58" rx="26" ry="14" fill="#2d8a2d" transform="rotate(-25,148,58)"/>
+      <!-- wings right -->
+      <ellipse cx="212" cy="58" rx="26" ry="14" fill="#2d8a2d" transform="rotate(25,212,58)"/>
+      <!-- bee body stripes -->
+      <rect x="163" y="50" width="34" height="10" rx="3" fill="#f5c518"/>
+      <rect x="163" y="63" width="34" height="10" rx="3" fill="#111"/>
+      <rect x="163" y="76" width="34" height="10" rx="3" fill="#f5c518"/>
+      <rect x="163" y="89" width="34" height="10" rx="3" fill="#111"/>
+      <!-- bee bottom cap -->
+      <ellipse cx="180" cy="103" rx="17" ry="8" fill="#f5c518"/>
+      <!-- bee head -->
+      <ellipse cx="180" cy="40" rx="14" ry="12" fill="#f5c518"/>
+      <!-- bee eyes -->
+      <circle cx="173" cy="36" r="7" fill="#e8b4c8"/>
+      <circle cx="187" cy="36" r="7" fill="#e8b4c8"/>
+      <!-- antennae -->
+      <line x1="173" y1="28" x2="163" y2="14" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="187" y1="28" x2="197" y2="14" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="163" cy="12" r="4" fill="#555"/>
+      <circle cx="197" cy="12" r="4" fill="#555"/>
+      <!-- ── IBM M (striped letterform) ── -->
+      <g fill="#4a90d9">
+        <!-- top bar -->
+        <rect x="242" y="24" width="136" height="11" rx="2"/>
+        <!-- left leg upper -->
+        <rect x="242" y="42" width="52" height="11" rx="2"/>
+        <!-- right leg upper -->
+        <rect x="326" y="42" width="52" height="11" rx="2"/>
+        <!-- left leg mid -->
+        <rect x="242" y="60" width="44" height="11" rx="2"/>
+        <!-- right leg mid -->
+        <rect x="334" y="60" width="44" height="11" rx="2"/>
+        <!-- left leg lower -->
+        <rect x="242" y="78" width="52" height="11" rx="2"/>
+        <!-- right leg lower -->
+        <rect x="326" y="78" width="52" height="11" rx="2"/>
+        <!-- bottom bar -->
+        <rect x="242" y="96" width="136" height="11" rx="2"/>
+        <!-- center V left slope -->
+        <polygon points="294,42 310,60 294,60"/>
+        <!-- center V right slope -->
+        <polygon points="326,42 310,60 326,60"/>
+      </g>
+    </svg>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="topbar-info">
+    <div class="topbar-title">Dashboard · Workspace MD</div>
+    <div class="topbar-sub">ibm.monday.com &nbsp;·&nbsp; 2 tableros monitoreados</div>
+  </div>
+  <div class="topbar-date">23 jul 2026 &nbsp;·&nbsp; 2:47 p.m.</div>
+</header>
+
+<!-- ══════════════════════════════════════ DECK ══════════════════════════════════════ -->
+<div class="deck">
+
+  <!-- ── SLIDE 0: COVER ── -->
+  <div class="slide slide-cover active" id="slide-0">
+    <div class="cover-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="180" height="54" viewBox="0 0 390 120" aria-label="IBM Eye Bee M">
+        <ellipse cx="58" cy="72" rx="36" ry="36" fill="#c8a87a"/>
+        <circle cx="58" cy="72" r="15" fill="#111"/>
+        <path d="M18 60 Q58 10 98 60" fill="#d2691e"/>
+        <ellipse cx="148" cy="58" rx="26" ry="14" fill="#2d8a2d" transform="rotate(-25,148,58)"/>
+        <ellipse cx="212" cy="58" rx="26" ry="14" fill="#2d8a2d" transform="rotate(25,212,58)"/>
+        <rect x="163" y="50" width="34" height="10" rx="3" fill="#f5c518"/>
+        <rect x="163" y="63" width="34" height="10" rx="3" fill="#111"/>
+        <rect x="163" y="76" width="34" height="10" rx="3" fill="#f5c518"/>
+        <rect x="163" y="89" width="34" height="10" rx="3" fill="#111"/>
+        <ellipse cx="180" cy="103" rx="17" ry="8" fill="#f5c518"/>
+        <ellipse cx="180" cy="40" rx="14" ry="12" fill="#f5c518"/>
+        <circle cx="173" cy="36" r="7" fill="#e8b4c8"/>
+        <circle cx="187" cy="36" r="7" fill="#e8b4c8"/>
+        <line x1="173" y1="28" x2="163" y2="14" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="187" y1="28" x2="197" y2="14" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="163" cy="12" r="4" fill="#555"/>
+        <circle cx="197" cy="12" r="4" fill="#555"/>
+        <g fill="#4a90d9">
+          <rect x="242" y="24" width="136" height="11" rx="2"/>
+          <rect x="242" y="42" width="52" height="11" rx="2"/>
+          <rect x="326" y="42" width="52" height="11" rx="2"/>
+          <rect x="242" y="60" width="44" height="11" rx="2"/>
+          <rect x="334" y="60" width="44" height="11" rx="2"/>
+          <rect x="242" y="78" width="52" height="11" rx="2"/>
+          <rect x="326" y="78" width="52" height="11" rx="2"/>
+          <rect x="242" y="96" width="136" height="11" rx="2"/>
+          <polygon points="294,42 310,60 294,60"/>
+          <polygon points="326,42 310,60 326,60"/>
+        </g>
+      </svg>
+    </div>
+    <div class="cover-title">Workspace <span>MD</span><br>Monday Dashboard</div>
+    <div class="cover-sub">Semana 2026/07/20 &nbsp;·&nbsp; Estado de documentación y solicitudes</div>
+    <div class="cover-chips">
+      <span class="chip chip-red">⚠ 14 pendientes</span>
+      <span class="chip chip-red">⏱ 10 en MD-Time</span>
+      <span class="chip chip-red">🗓 4 en Request OFF</span>
+    </div>
+    <div class="cover-hint">
+      <span class="cover-hint-arrow">←</span>
+      Navega con las flechas o el menú inferior
+      <span class="cover-hint-arrow">→</span>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 1: PANEL DE ALERTAS ── -->
+  <div class="slide" id="slide-1">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="slide-icon-box icon-red">🔔</div>
+        <div>
+          <div class="slide-eyebrow">Resumen global</div>
+          <div class="slide-title">Panel de Alertas</div>
+        </div>
+        <span class="slide-count-badge">14 pendientes</span>
+      </div>
+
+      <div class="section-div">⏱ MD-Time · Semana 2026/07/20 — 10 pendientes</div>
+      <div class="alert-grid" id="alert-grid-time"></div>
+
+      <div class="section-div">🗓 Request OFF · Sin soporte — 4 pendientes</div>
+      <div class="alert-grid" id="alert-grid-off"></div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: MD-TIME ── -->
+  <div class="slide" id="slide-2">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="slide-icon-box icon-blue">⏱</div>
+        <div>
+          <div class="slide-eyebrow">Tablero · ibm.monday.com</div>
+          <div class="slide-title">MD-Time · HR Zone · Success Factors</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+          <div class="sel-row">
+            <label>Semana:</label>
+            <select id="mdtime-select" onchange="renderMDTime(this.value)">
+              <option value="group_mm5ef7bn">2026/08/10</option>
+              <option value="group_mm5epege">2026/08/03</option>
+              <option value="group_mm4jw1ms">2026/07/27</option>
+              <option value="group_mm4jdfp5" selected>2026/07/20</option>
+              <option value="group_mm4j99h7">2026/07/13</option>
+              <option value="group_mm4jqz3y">2026/07/06</option>
+              <option value="group_mm4jyvw9">2026/06/29</option>
+              <option value="group_mm4j10qg">2026/06/22</option>
+            </select>
+          </div>
+          <span class="badge-cur" id="mdtime-cur-badge">Semana actual</span>
+        </div>
+      </div>
+
+      <div class="kpi-row" id="mdtime-cards"></div>
+
+      <div id="mdtime-alerts" class="alert-inline" style="display:none">
+        <div class="alert-inline-title" id="mdtime-alert-title"></div>
+        <ul class="alist" id="mdtime-alert-list"></ul>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-head-bar">
+          <span class="ttl">Detalle por persona</span>
+          <span class="sub" id="mdtime-table-sub"></span>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr>
+              <th>Nombre</th>
+              <th>Time</th><th>TIME/Pant.</th>
+              <th>HR Zone</th><th>HRZ/Pant.</th>
+              <th>My Hours</th><th>MyHours/Pant.</th>
+            </tr></thead>
+            <tbody id="mdtime-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: REQUEST OFF ── -->
+  <div class="slide" id="slide-3">
+    <div class="slide-inner">
+      <div class="slide-heading">
+        <div class="slide-icon-box icon-cal">🗓</div>
+        <div>
+          <div class="slide-eyebrow">Tablero · ibm.monday.com</div>
+          <div class="slide-title">Request OFF</div>
+        </div>
+        <div style="margin-left:auto">
+          <div class="sel-row">
+            <label>Grupo:</label>
+            <select id="off-select" onchange="renderRequestOff(this.value)">
+              <option value="topics" selected>Solicitudes</option>
+              <option value="new_group_mkn8gp5j">Aprobadas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-row" id="off-cards"></div>
+
+      <div id="off-alerts" class="alert-inline" style="display:none">
+        <div class="alert-inline-title" id="off-alert-title"></div>
+        <ul class="alist" id="off-alert-list"></ul>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-head-bar">
+          <span class="ttl">Detalle de solicitudes</span>
+          <span class="sub" id="off-table-sub"></span>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr>
+              <th>Nombre</th><th>Solicitante</th><th>Motivo</th>
+              <th>Fechas</th><th>Días</th><th>Estado</th>
+              <th>Soporte</th><th>Observaciones</th>
+            </tr></thead>
+            <tbody id="off-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── ARROWS ── -->
+<div class="arrow-btn arrow-left" id="btn-prev">&#8592;</div>
+<div class="arrow-btn arrow-right" id="btn-next">&#8594;</div>
+
+<!-- ══════════════════════════════════════ BOTTOM NAV ══════════════════════════════════════ -->
+<nav class="nav-bar">
+  <div class="nav-btn active" id="nav-0" onclick="goTo(0)">
+    <span class="nav-dot dot-blue"></span> Inicio
+  </div>
+  <div class="nav-btn red" id="nav-1" onclick="goTo(1)">
+    <span class="nav-dot dot-red"></span> Alertas
+    <span class="nav-badge">14</span>
+  </div>
+  <div class="nav-btn" id="nav-2" onclick="goTo(2)">
+    <span class="nav-dot dot-blue"></span> MD-Time
+    <span class="nav-badge">10</span>
+  </div>
+  <div class="nav-btn" id="nav-3" onclick="goTo(3)">
+    <span class="nav-dot" style="background:#a855f7"></span> Request OFF
+    <span class="nav-badge">4</span>
+  </div>
+</nav>
+
+<script>
+// ── DATA ───────────────────────────────────────────────────────────────────
+const MDTIME_DATA={"group_mm4j10qg":{"title":"2026/06/22","items":[{"name":"Alvaro  Morea Martinez","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074730813/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074730899/image.png","color_mknvzcn3":"OK","file_mknvemd2":""}},{"name":"Cristian Avilan","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074887163/26%20JUNIO%201.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3087793609/Captura%20de%20pantalla%202026-07-03%20122340.png","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Cristian Galindo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3079177302/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3079189414/image.png","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Erick Gutiérrez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3069742382/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3069740989/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3069746969/image.png"}},{"name":"Jairo Jimenez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3083175927/TIME%2028%20DE%20JUNIO.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3083176443/SUCESS%2028%20DE%20JUNIO.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3083177161/MY%20HOURS%2028%20DE%20JUNIO.png"}},{"name":"Jorge Garcia","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074750400/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074762501/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3074754760/image.png"}},{"name":"Jose David Restrepo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074866315/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074869619/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3074872044/image.png"}},{"name":"Ligia Torres","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074819710/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074822085/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3074823516/image.png"}},{"name":"Lorena Arcila","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074797488/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074802247/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3074808268/image.png"}},{"name":"Lorena Sanchez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3076027697/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3076030151/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3076031617/image.png"}},{"name":"Susana Ramirez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3074843617/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3074845820/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3074846844/image.png"}}]},"group_mm4jyvw9":{"title":"2026/06/29","items":[{"name":"Alvaro  Morea Martinez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091804763/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091807557/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091808730/image.png"}},{"name":"Cristian Avilan","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3087797690/03.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091786706/Captura%20de%20pantalla%202026-07-03%20122340.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091790029/Captura%20de%20pantalla%202026-07-03%20122422.png"}},{"name":"Cristian Galindo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091822015/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091823641/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091825258/image.png"}},{"name":"Erick Gutiérrez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3087783264/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3087784557/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3087785637/image.png"}},{"name":"Jairo Jimenez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3094951459/TIME%205%20DE%20JULIO.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3094952466/SUCCESS%205%20DE%20JULIO.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3094953397/MY%20HOURS%205%20DE%20JULIO.png"}},{"name":"Jorge Garcia","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091810945/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091812462/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091814310/image.png"}},{"name":"Jose David Restrepo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091792894/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091795148/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091796804/image.png"}},{"name":"Ligia Torres","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3093049509/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3093051110/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3093052428/image.png"}},{"name":"Lorena Arcila","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091799213/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091800936/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091802369/image.png"}},{"name":"Lorena Sanchez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3093059086/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3093061053/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3093063111/image.png"}},{"name":"Susana Ramirez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3091817066/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3091818987/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3091820315/image.png"}}]},"group_mm4jqz3y":{"title":"2026/07/06","items":[{"name":"Alvaro  Morea Martinez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101388060/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101389534/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101390628/image.png"}},{"name":"Cristian Avilan","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3099099533/Captura%20de%20pantalla%202026-07-10%20081543.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3099101021/Captura%20de%20pantalla%202026-07-10%20081616.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3099103381/Captura%20de%20pantalla%202026-07-10%20081700.png"}},{"name":"Cristian Galindo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101377626/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101378774/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101380190/image.png"}},{"name":"Erick Gutiérrez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3097448767/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3097449826/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3097451262/image.png"}},{"name":"Jairo Jimenez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101395507/TIME%2012%20DE%20JULIO.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101396524/SUCCESS%2012%20DE%20JULIO.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101397398/MY%20HOURS%2012%20DE%20JULIO.png"}},{"name":"Jorge Garcia","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101391896/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101393108/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101394345/image.png"}},{"name":"Jose David Restrepo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3100026876/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3100028095/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3100029279/image.png"}},{"name":"Ligia Torres","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101383217/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101384571/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101385860/image.png"}},{"name":"Lorena Arcila","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3099110038/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3099111513/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3099112805/image.png"}},{"name":"Lorena Sanchez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101399379/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101400583/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101401670/image.png"}},{"name":"Susana Ramirez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3101403488/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3101404499/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3101405363/image.png"}}]},"group_mm4j99h7":{"title":"2026/07/13","items":[{"name":"Alvaro  Morea Martinez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107989050/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107990476/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3107991768/image.png"}},{"name":"Cristian Avilan","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3106361697/Captura%20de%20pantalla%202026-07-17%20083100.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3106363088/Captura%20de%20pantalla%202026-07-17%20083129.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3106364416/Captura%20de%20pantalla%202026-07-17%20083201.png"}},{"name":"Cristian Galindo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107980247/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107982009/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3107983367/image.png"}},{"name":"Erick Gutiérrez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3105001559/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3105002696/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3105003918/image.png"}},{"name":"Jairo Jimenez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3108004124/TIME%2019%20DE%20JULIO.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3108005163/SUCCESS%2019%20DE%20JULIO.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3108006181/MY%20HOURS%2019%20DE%20JULIO.png"}},{"name":"Jorge Garcia","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107993303/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107994893/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3107996374/image.png"}},{"name":"Jose David Restrepo","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107963048/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107964740/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3107966189/image.png"}},{"name":"Ligia Torres","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107997975/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107999341/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3108000603/image.png"}},{"name":"Lorena Arcila","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3107969078/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3107970831/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3107972277/image.png"}},{"name":"Lorena Sanchez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3108007861/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3108009263/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3108010651/image.png"}},{"name":"Susana Ramirez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3108012116/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3108013421/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3108014568/image.png"}}]},"group_mm4jdfp5":{"title":"2026/07/20","items":[{"name":"Alvaro  Morea Martinez","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Cristian Avilan","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3113956735/Captura%20de%20pantalla%202026-07-24%20082630.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3113958087/Captura%20de%20pantalla%202026-07-24%20082717.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3113959484/Captura%20de%20pantalla%202026-07-24%20082747.png"}},{"name":"Cristian Galindo","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Daniel Lopez","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Erick Gutiérrez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3113949780/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3113950964/image.png","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3113952286/image.png"}},{"name":"Jairo Jimenez","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3113955197/MY%20HOURS%2024%20DE%20JULIO.png"}},{"name":"Jorge Garcia","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3113960985/image.png","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3113963199/image.png"}},{"name":"Jose David Restrepo","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Ligia Torres","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3114003011/image.png","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3114005706/image.png"}},{"name":"Lorena Arcila","cv":{"status_1_mkn1az5h":"OK","files_mkn19bev":"","status_1_mkn1ntp1":"OK","files_1_mkn1q1sz":"","color_mknvzcn3":"OK","file_mknvemd2":"https://ibm.monday.com/protected_static/13536981/resources/3113964898/image.png"}},{"name":"Lorena Sanchez","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"","color_mknvzcn3":"","file_mknvemd2":""}},{"name":"Susana Ramirez","cv":{"status_1_mkn1az5h":"","files_mkn19bev":"https://ibm.monday.com/protected_static/13536981/resources/3113967152/image.png","status_1_mkn1ntp1":"","files_1_mkn1q1sz":"https://ibm.monday.com/protected_static/13536981/resources/3113968532/image.png","color_mknvzcn3":"","file_mknvemd2":""}}]},"group_mm4jw1ms":{"title":"2026/07/27","items":[]},"group_mm5epege":{"title":"2026/08/03","items":[]},"group_mm5ef7bn":{"title":"2026/08/10","items":[]}};
+const MDTIME_COLS=[{"key":"status_1_mkn1az5h","label":"Time","type":"status"},{"key":"files_mkn19bev","label":"TIME/Pantalla","type":"file"},{"key":"status_1_mkn1ntp1","label":"HR Zone","type":"status"},{"key":"files_1_mkn1q1sz","label":"HRZ/Pantalla","type":"file"},{"key":"color_mknvzcn3","label":"My Hours","type":"status"},{"key":"file_mknvemd2","label":"MyHours/Pant.","type":"file"}];
+const MDTIME_CUR="group_mm4jdfp5";
+const OFF_DATA={"topics":{"title":"Solicitudes","items":[{"name":"Ligia Torres","cv":{"people_mkn8wds0":"Ligia.Torres@ibm.com","date4":"2026-07-02","status_mkn825jf":"Aprobado","status_1_mkn5yhzg":"Chequeo Medico","cronograma_mkn6bx9b":"2026-07-23 - 2026-07-23","n_meros_mkn6cwvj":"1","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}},{"name":"Susana Ramirez","cv":{"people_mkn8wds0":"","date4":"","status_mkn825jf":"En espera","status_1_mkn5yhzg":"Medio día votaciones","cronograma_mkn6bx9b":"2026-07-24 - 2026-07-24","n_meros_mkn6cwvj":"1","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}},{"name":"Lorena Sanchez","cv":{"people_mkn8wds0":"Lorena.sanchez@ibm.com","date4":"2026-07-22","status_mkn825jf":"Aprobado","status_1_mkn5yhzg":"Vacaciones","cronograma_mkn6bx9b":"2026-11-11 - 2026-11-20","n_meros_mkn6cwvj":"8","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}},{"name":"Erick Gutierrez","cv":{"people_mkn8wds0":"erick.gutierrez@ibm.com","date4":"2026-07-22","status_mkn825jf":"Solicitado","status_1_mkn5yhzg":"Vacaciones","cronograma_mkn6bx9b":"2026-08-10 - 2026-08-10","n_meros_mkn6cwvj":"1","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}}]},"new_group_mkn8gp5j":{"title":"Aprobadas","items":[{"name":"Lorena Arcila","cv":{"people_mkn8wds0":"Stephanie.Lorena.Arcila@ibm.com","date4":"2026-07-16","status_mkn825jf":"Aprobado","status_1_mkn5yhzg":"Festivo Col","cronograma_mkn6bx9b":"2026-08-07 - 2026-08-07","n_meros_mkn6cwvj":"1","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}},{"name":"Erick Gutierrez","cv":{"people_mkn8wds0":"erick.gutierrez@ibm.com","date4":"2026-06-10","status_mkn825jf":"Aprobado","status_1_mkn5yhzg":"Dia de cumpleaños","cronograma_mkn6bx9b":"2026-09-17 - 2026-09-17","n_meros_mkn6cwvj":"1","file_mm1ht7j7":"","people_mkn5pkbz":"","text_mkn8yf9q":""}}]}};
+
+// ── helpers ─────────────────────────────────────────────────────────────
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function kpi(cls,num,lbl){return'<div class="kpi '+cls+'"><div class="kpi-num">'+num+'</div><div class="kpi-lbl">'+lbl+'</div></div>'}
+function b(cls,txt){return'<span class="b '+cls+'">'+esc(txt)+'</span>'}
+
+// ── slide navigation ─────────────────────────────────────────────────────
+let current=0;
+const TOTAL=4;
+function goTo(n){
+  const prev=document.getElementById('slide-'+current);
+  prev.classList.remove('active');
+  prev.classList.add('out');
+  setTimeout(()=>prev.classList.remove('out'),400);
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  current=((n%TOTAL)+TOTAL)%TOTAL;
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('nav-'+current).classList.add('active');
+}
+document.getElementById('btn-prev').addEventListener('click',()=>goTo(current-1));
+document.getElementById('btn-next').addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);
+});
+
+// ── populate alerts panel (slide 1) ────────────────────────────────────
+(function(){
+  const timeAlerts=[
+    {name:'Alvaro Morea Martinez',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla · My Hours · MyHours/Pant.'},
+    {name:'Cristian Galindo',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla · My Hours · MyHours/Pant.'},
+    {name:'Daniel Lopez',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla · My Hours · MyHours/Pant.'},
+    {name:'Lorena Sanchez',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla · My Hours · MyHours/Pant.'},
+    {name:'Jose David Restrepo',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla · My Hours · MyHours/Pant.'},
+    {name:'Lorena Arcila',detail:'Falta: Time · TIME/Pantalla · HR Zone · HRZ/Pantalla'},
+    {name:'Susana Ramirez',detail:'Falta: Time · HR Zone · My Hours'},
+    {name:'Jairo Jimenez',detail:'Falta: TIME/Pantalla · HRZ/Pantalla'},
+    {name:'Jorge Garcia',detail:'Falta: HR Zone · HRZ/Pantalla'},
+    {name:'Ligia Torres',detail:'Falta: HRZ/Pantalla'},
+  ];
+  const offAlerts=[
+    {name:'Ligia Torres',detail:'Sin archivo de soporte'},
+    {name:'Susana Ramirez',detail:'Sin archivo de soporte'},
+    {name:'Lorena Sanchez',detail:'Sin archivo de soporte'},
+    {name:'Erick Gutierrez',detail:'Sin archivo de soporte'},
+  ];
+  let h='';
+  timeAlerts.forEach(a=>{h+=`<div class="alert-card"><div class="ac-board">MD-Time · HR Zone</div><div class="ac-name">${esc(a.name)}</div><div class="ac-detail">${esc(a.detail)}</div></div>`;});
+  document.getElementById('alert-grid-time').innerHTML=h;
+  h='';
+  offAlerts.forEach(a=>{h+=`<div class="alert-card cal"><div class="ac-board">Request OFF · Solicitudes</div><div class="ac-name">${esc(a.name)}</div><div class="ac-detail">${esc(a.detail)}</div></div>`;});
+  document.getElementById('alert-grid-off').innerHTML=h;
+})();
+
+// ── MD-Time render ───────────────────────────────────────────────────────
+function renderMDTime(groupId){
+  const week=MDTIME_DATA[groupId];if(!week)return;
+  document.getElementById('mdtime-cur-badge').style.display=groupId===MDTIME_CUR?'':'none';
+  document.getElementById('mdtime-table-sub').textContent='Semana '+week.title;
+  const rows=[...week.items].sort((a,b)=>a.name.localeCompare(b.name));
+  let done=0,partial=0,none=0;const pending=[];let tbody='';
+  rows.forEach(row=>{
+    let filled=0,missing=[];
+    MDTIME_COLS.forEach(col=>{const v=row.cv[col.key];if(v&&v.trim())filled++;else missing.push(col.label);});
+    if(filled===MDTIME_COLS.length)done++;else if(filled===0)none++;else partial++;
+    if(missing.length)pending.push({name:row.name,missing});
+    tbody+='<tr><td class="cell-name">'+esc(row.name)+'</td>';
+    MDTIME_COLS.forEach(col=>{const v=row.cv[col.key];const has=v&&v.trim();
+      tbody+='<td>'+(col.type==='status'?(has?b('b-ok',v):b('b-pending','Falta')):(has?b('b-file','Archivo'):b('b-no-file','Falta')))+'</td>';
+    });
+    tbody+='</tr>';
+  });
+  document.getElementById('mdtime-tbody').innerHTML=tbody;
+  document.getElementById('mdtime-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',done,'Completos')+kpi('kpi-warn',partial,'Parciales')+kpi('kpi-red',none,'Sin datos');
+  const ab=document.getElementById('mdtime-alerts');
+  if(!pending.length){ab.style.display='none';return;}
+  ab.style.display='';
+  document.getElementById('mdtime-alert-title').textContent='⚠ '+pending.length+' persona(s) con documentación pendiente';
+  let al='';pending.sort((a,b)=>b.missing.length-a.missing.length).forEach(p=>{
+    al+='<li><div class="dot-sm"></div><div><div class="aname">'+esc(p.name)+'</div><div class="adetail">Falta: '+p.missing.map(esc).join(' · ')+'</div></div></li>';
+  });
+  document.getElementById('mdtime-alert-list').innerHTML=al;
+}
+
+// ── Request OFF render ───────────────────────────────────────────────────
+function renderRequestOff(groupId){
+  const grp=OFF_DATA[groupId];if(!grp)return;
+  document.getElementById('off-table-sub').textContent=grp.title+' — '+grp.items.length+' registros';
+  const rows=[...grp.items].sort((a,b)=>{const da=a.cv['date4']||'',db=b.cv['date4']||'';return db.localeCompare(da);});
+  let aprobadas=0,pendientes=0,sinSoporte=0;const alerts=[];let tbody='';
+  rows.forEach(row=>{
+    const estado=row.cv['status_mkn825jf']||'';
+    const soporte=row.cv['file_mm1ht7j7']||'';
+    if(estado.toLowerCase().includes('aprobad'))aprobadas++;else pendientes++;
+    if(!soporte){sinSoporte++;alerts.push({name:row.name});}
+    const sol=row.cv['people_mkn8wds0']||'';
+    const motivo=row.cv['status_1_mkn5yhzg']||'';
+    const fechas=row.cv['cronograma_mkn6bx9b']||'';
+    const dias=row.cv['n_meros_mkn6cwvj']||'';
+    const est=row.cv['status_mkn825jf']||'';
+    const estCls=est.toLowerCase().includes('aprobad')?'b-ok':est.toLowerCase().includes('rechazo')?'b-pending':'b-date';
+    const obs=row.cv['text_mkn8yf9q']||'';
+    tbody+=`<tr>
+      <td class="cell-name">${esc(row.name)}</td>
+      <td>${b('b-people',sol?sol.split('@')[0]:'—')}</td>
+      <td>${motivo?b('b-date',motivo):'<span class="cell-muted">—</span>'}</td>
+      <td>${fechas?b('b-date',fechas):'<span class="cell-muted">—</span>'}</td>
+      <td>${dias?b('b-num',dias+' d'):'<span class="cell-muted">—</span>'}</td>
+      <td>${est?b(estCls,est):'<span class="cell-muted">—</span>'}</td>
+      <td>${soporte?b('b-file','Archivo'):b('b-no-file','Falta')}</td>
+      <td>${obs?'<span style="font-size:11px;color:#8d8d8d">'+esc(obs.substring(0,50))+(obs.length>50?'…':'')+'</span>':'<span class="cell-muted">—</span>'}</td>
+    </tr>`;
+  });
+  document.getElementById('off-tbody').innerHTML=tbody;
+  document.getElementById('off-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',aprobadas,'Aprobadas')+kpi('kpi-warn',pendientes,'Pendientes')+kpi('kpi-red',sinSoporte,'Sin soporte');
+  const ab=document.getElementById('off-alerts');
+  if(!alerts.length){ab.style.display='none';return;}
+  ab.style.display='';
+  document.getElementById('off-alert-title').textContent='⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
+  let al='';alerts.forEach(a=>{al+='<li><div class="dot-sm"></div><div><div class="aname">'+esc(a.name)+'</div><div class="adetail">Sin archivo de soporte</div></div></li>';});
+  document.getElementById('off-alert-list').innerHTML=al;
+}
+
+renderMDTime(MDTIME_CUR);
+renderRequestOff('topics');
+</script>
+</body>
+</html>
