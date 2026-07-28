@@ -54,7 +54,7 @@ function getCurrentWeekGroup(groups) {
   return best;
 }
 
-// ── Fetch MD-Time (last 8 weeks) ───────────────────────────────────────────
+// ── Fetch MD-Time (ALL weeks) ──────────────────────────────────────────────
 async function fetchMDTime() {
   const COL_IDS = ["status_1_mkn1az5h","files_mkn19bev","status_1_mkn1ntp1","files_1_mkn1q1sz","color_mknvzcn3","file_mknvemd2"];
   const COL_DEFS = [
@@ -68,7 +68,8 @@ async function fetchMDTime() {
 
   const d0 = await mondayQuery(`{ boards(ids:[8443645710]) { groups { id title } } }`);
   const allGroups = d0.boards[0].groups;
-  const recentGroups = allGroups.slice(-8);
+  // Descargar TODOS los grupos (no solo los últimos 8)
+  const recentGroups = allGroups;
   const colStr = COL_IDS.map(c => `"${c}"`).join(",");
   const weeksData = {};
 
@@ -108,7 +109,7 @@ async function fetchMDTime() {
   };
 }
 
-// ── Fetch Request OFF (Solicitudes + Aprobadas) ────────────────────────────
+// ── Fetch Request OFF (ALL groups) ────────────────────────────────────────
 async function fetchRequestOff() {
   const COL_IDS = ["people_mkn8wds0","date4","status_mkn825jf","status_1_mkn5yhzg","cronograma_mkn6bx9b","n_meros_mkn6cwvj","file_mm1ht7j7","people_mkn5pkbz","text_mkn8yf9q"];
   const COL_DEFS = [
@@ -121,10 +122,9 @@ async function fetchRequestOff() {
     { key: "text_mkn8yf9q",      label: "Observaciones",type: "text"     },
   ];
 
-  const TARGET_GROUPS = [
-    { id: "topics",              label: "Solicitudes" },
-    { id: "new_group_mkn8gp5j", label: "Aprobadas"   },
-  ];
+  // Descargar TODOS los grupos del tablero automáticamente
+  const d0 = await mondayQuery(`{ boards(ids:[8488385355]) { groups { id title } } }`);
+  const TARGET_GROUPS = d0.boards[0].groups.map(g => ({ id: g.id, label: g.title }));
 
   const colStr = COL_IDS.map(c => `"${c}"`).join(",");
   const groupsData = {};
@@ -204,6 +204,124 @@ function buildHtml(mdTime, requestOff, updatedAt) {
   }).join("\n");
 
   const curWeekTitle = curWeek ? esc(curWeek.title) : "";
+
+  // ── Alert cards HTML ──
+  const mdAlertCards = mdAlerts.length
+    ? mdAlerts.sort((a,b) => b.missing.length - a.missing.length).map(a =>
+        '<div class="alert-card">' +
+        '<div class="ac-board">MD-Time \xb7 HR Zone</div>' +
+        '<div class="ac-name">' + esc(a.name) + '</div>' +
+        '<div class="ac-detail">Falta: ' + a.missing.map(esc).join(' \xb7 ') + '</div></div>'
+      ).join("")
+    : '<div style="color:var(--muted);font-size:12px">Sin pendientes \u2713</div>';
+
+  const offAlertCards = offAlerts.length
+    ? offAlerts.map(a =>
+        '<div class="alert-card cal">' +
+        '<div class="ac-board">Request OFF \xb7 Solicitudes</div>' +
+        '<div class="ac-name">' + esc(a.name) + '</div>' +
+        '<div class="ac-detail">Sin archivo de soporte</div></div>'
+      ).join("")
+    : '<div style="color:var(--muted);font-size:12px">Sin pendientes \u2713</div>';
+
+  // ── Cover chips HTML ──
+  const coverChips =
+    (totalAlerts > 0  ? '<span class="chip chip-red">\u26a0 ' + totalAlerts + ' pendientes</span>' : '') +
+    (mdAlerts.length  ? '<span class="chip chip-red">\u23f1 ' + mdAlerts.length + ' en MD-Time</span>' : '') +
+    (offAlerts.length ? '<span class="chip chip-red">\ud83d\uddd3 ' + offAlerts.length + ' en Request OFF</span>' : '');
+
+  // ── Nav badges ──
+  const mdBadge  = mdAlerts.length  ? '<span class="nav-badge">' + mdAlerts.length  + '</span>' : '';
+  const offBadge = offAlerts.length ? '<span class="nav-badge">' + offAlerts.length + '</span>' : '';
+
+  // ── Client-side JS (written as plain string to avoid template-literal conflicts) ──
+  const clientJS = [
+    'const MDTIME_DATA=' + JSON.stringify(mdTime.weeksData) + ';',
+    'const MDTIME_COLS=' + JSON.stringify(mdTime.colDefs) + ';',
+    'const MDTIME_CUR='  + JSON.stringify(mdTime.currentGroupId) + ';',
+    'const OFF_DATA='    + JSON.stringify(requestOff.groupsData) + ';',
+    '',
+    'function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}',
+    'function kpi(c,n,l){return \'<div class="kpi \'+c+\'"><div class="kpi-num">\'+n+\'</div><div class="kpi-lbl">\'+l+\'</div></div>\'}',
+    'function b(c,t){return \'<span class="b \'+c+\'">\'+esc(t)+\'</span>\'}',
+    '',
+    'let current=0;const TOTAL=4;',
+    'function goTo(n){',
+    '  const prev=document.getElementById("slide-"+current);',
+    '  prev.classList.remove("active");prev.classList.add("out");',
+    '  setTimeout(()=>prev.classList.remove("out"),350);',
+    '  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));',
+    '  current=((n%TOTAL)+TOTAL)%TOTAL;',
+    '  document.getElementById("slide-"+current).classList.add("active");',
+    '  document.getElementById("nav-"+current).classList.add("active");',
+    '}',
+    'document.getElementById("btn-prev").addEventListener("click",()=>goTo(current-1));',
+    'document.getElementById("btn-next").addEventListener("click",()=>goTo(current+1));',
+    'document.addEventListener("keydown",e=>{',
+    '  if(e.key==="ArrowRight"||e.key==="ArrowDown")goTo(current+1);',
+    '  if(e.key==="ArrowLeft"||e.key==="ArrowUp")goTo(current-1);',
+    '});',
+    '',
+    'function renderMDTime(gid){',
+    '  const wk=MDTIME_DATA[gid];if(!wk)return;',
+    '  document.getElementById("mdtime-cur-badge").style.display=gid===MDTIME_CUR?"":"none";',
+    '  document.getElementById("mdtime-table-sub").textContent="Semana "+wk.title;',
+    '  const rows=[...wk.items].sort((a,b)=>a.name.localeCompare(b.name));',
+    '  let done=0,partial=0,none=0,pending=[],tbody="";',
+    '  rows.forEach(r=>{',
+    '    let f=0,m=[];',
+    '    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key];v&&v.trim()?f++:m.push(c.label);});',
+    '    f===MDTIME_COLS.length?done++:f===0?none++:partial++;',
+    '    if(m.length)pending.push({name:r.name,missing:m});',
+    '    tbody+=\'<tr><td class="cell-name">\'+esc(r.name)+\'</td>\';',
+    '    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key],has=v&&v.trim();',
+    '      tbody+=\'<td>\'+(c.type==="status"?(has?b("b-ok",v):b("b-pending","Falta")):(has?b("b-file","Archivo"):b("b-no-file","Falta")))+\'</td>\';',
+    '    });',
+    '    tbody+="</tr>";',
+    '  });',
+    '  document.getElementById("mdtime-tbody").innerHTML=tbody;',
+    '  document.getElementById("mdtime-cards").innerHTML=kpi("kpi-blue",rows.length,"Total")+kpi("kpi-ok",done,"Completos")+kpi("kpi-warn",partial,"Parciales")+kpi("kpi-red",none,"Sin datos");',
+    '  const ab=document.getElementById("mdtime-alerts");',
+    '  if(!pending.length){ab.style.display="none";return;}',
+    '  ab.style.display="";',
+    '  document.getElementById("mdtime-alert-title").textContent="\\u26a0 "+pending.length+" persona(s) con documentaci\\u00f3n pendiente";',
+    '  document.getElementById("mdtime-alert-list").innerHTML=pending.sort((a,b)=>b.missing.length-a.missing.length).map(p=>\'<li><div class="dot-sm"></div><div><div class="aname">\'+esc(p.name)+\'</div><div class="adetail">Falta: \'+p.missing.map(esc).join(" \\u00b7 ")+\'</div></div></li>\').join("");',
+    '}',
+    '',
+    'function renderRequestOff(gid){',
+    '  const grp=OFF_DATA[gid];if(!grp)return;',
+    '  document.getElementById("off-table-sub").textContent=grp.title+" \\u2014 "+grp.items.length+" registros";',
+    '  const rows=[...grp.items].sort((a,b)=>(b.cv["date4"]||"").localeCompare(a.cv["date4"]||""));',
+    '  let aprobadas=0,pendientes=0,sinSoporte=0,alerts=[],tbody="";',
+    '  rows.forEach(r=>{',
+    '    const est=r.cv["status_mkn825jf"]||"",sop=r.cv["file_mm1ht7j7"]||"";',
+    '    est.toLowerCase().includes("aprobad")?aprobadas++:pendientes++;',
+    '    if(!sop){sinSoporte++;alerts.push({name:r.name});}',
+    '    const sol=r.cv["people_mkn8wds0"]||"",mot=r.cv["status_1_mkn5yhzg"]||"",fec=r.cv["cronograma_mkn6bx9b"]||"",dias=r.cv["n_meros_mkn6cwvj"]||"",obs=r.cv["text_mkn8yf9q"]||"";',
+    '    const eCls=est.toLowerCase().includes("aprobad")?"b-ok":est.toLowerCase().includes("rechazo")?"b-pending":"b-date";',
+    '    tbody+=\'<tr>\'+',
+    '      \'<td class="cell-name">\'+esc(r.name)+\'</td>\'+',
+    '      \'<td>\'+b("b-people",sol?sol.split("@")[0]:"\\u2014")+\'</td>\'+',
+    '      \'<td>\'+(mot?b("b-date",mot):\'<span class="cell-muted">\\u2014</span>\')+\'</td>\'+',
+    '      \'<td>\'+(fec?b("b-date",fec):\'<span class="cell-muted">\\u2014</span>\')+\'</td>\'+',
+    '      \'<td>\'+(dias?b("b-num",dias+" d"):\'<span class="cell-muted">\\u2014</span>\')+\'</td>\'+',
+    '      \'<td>\'+(est?b(eCls,est):\'<span class="cell-muted">\\u2014</span>\')+\'</td>\'+',
+    '      \'<td>\'+(sop?b("b-file","Archivo"):b("b-no-file","Falta"))+\'</td>\'+',
+    '      \'<td>\'+(obs?\'<span style="font-size:11px">\'+esc(obs.substring(0,50))+(obs.length>50?"\\u2026":"")+\'</span>\':\'<span class="cell-muted">\\u2014</span>\')+\'</td>\'+',
+    '    \'</tr>\';',
+    '  });',
+    '  document.getElementById("off-tbody").innerHTML=tbody;',
+    '  document.getElementById("off-cards").innerHTML=kpi("kpi-blue",rows.length,"Total")+kpi("kpi-ok",aprobadas,"Aprobadas")+kpi("kpi-warn",pendientes,"Pendientes")+kpi("kpi-red",sinSoporte,"Sin soporte");',
+    '  const ab=document.getElementById("off-alerts");',
+    '  if(!alerts.length){ab.style.display="none";return;}',
+    '  ab.style.display="";',
+    '  document.getElementById("off-alert-title").textContent="\\u26a0 "+alerts.length+" solicitud(es) sin soporte adjunto";',
+    '  document.getElementById("off-alert-list").innerHTML=alerts.map(a=>\'<li><div class="dot-sm"></div><div><div class="aname">\'+esc(a.name)+\'</div><div class="adetail">Sin archivo de soporte</div></div></li>\').join("");',
+    '}',
+    '',
+    'renderMDTime(MDTIME_CUR);',
+    'renderRequestOff("topics");',
+  ].join("\n");
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -421,11 +539,9 @@ tbody tr:hover td{background:#f9f9f9}
       </svg>
     </div>
     <div class="cover-title">Workspace <em>MD</em><br>Monday Dashboard</div>
-    <div class="cover-sub">${curWeekTitle ? 'Semana ' + curWeekTitle + ' &nbsp;·&nbsp; ' : ''}Estado de documentación y solicitudes</div>
+    <div class="cover-sub">${curWeekTitle ? 'Semana ' + curWeekTitle + ' &nbsp;\xb7&nbsp; ' : ''}Estado de documentaci\xf3n y solicitudes</div>
     <div class="cover-chips">
-      ${totalAlerts > 0 ? \`<span class="chip chip-red">⚠ \${totalAlerts} pendientes</span>\` : ''}
-      ${mdAlerts.length > 0 ? \`<span class="chip chip-red">⏱ \${mdAlerts.length} en MD-Time</span>\` : ''}
-      ${offAlerts.length > 0 ? \`<span class="chip chip-red">🗓 \${offAlerts.length} en Request OFF</span>\` : ''}
+      ${coverChips}
     </div>
     <div class="cover-hint"><span>←</span> Navega con las flechas o el menú inferior <span>→</span></div>
   </div>
@@ -441,23 +557,13 @@ tbody tr:hover td{background:#f9f9f9}
         </div>
         <span class="s-badge s-badge-red" style="margin-left:auto">${totalAlerts} pendientes</span>
       </div>
-      <div class="sec-div">⏱ MD-Time · Semana ${curWeekTitle} — ${mdAlerts.length} pendientes</div>
+      <div class="sec-div">\u23f1 MD-Time \xb7 Semana ${curWeekTitle} \u2014 ${mdAlerts.length} pendientes</div>
       <div class="alert-grid">
-        ${mdAlerts.sort((a,b) => b.missing.length - a.missing.length).map(a => `
-        <div class="alert-card">
-          <div class="ac-board">MD-Time · HR Zone</div>
-          <div class="ac-name">${esc(a.name)}</div>
-          <div class="ac-detail">Falta: ${a.missing.map(esc).join(" · ")}</div>
-        </div>`).join("") || '<div style="color:var(--muted);font-size:12px">Sin pendientes ✓</div>'}
+        ${mdAlertCards}
       </div>
-      <div class="sec-div">🗓 Request OFF · Sin soporte — ${offAlerts.length} pendientes</div>
+      <div class="sec-div">\ud83d\uddd3 Request OFF \xb7 Sin soporte \u2014 ${offAlerts.length} pendientes</div>
       <div class="alert-grid" style="flex:0 0 auto">
-        ${offAlerts.map(a => `
-        <div class="alert-card cal">
-          <div class="ac-board">Request OFF · Solicitudes</div>
-          <div class="ac-name">${esc(a.name)}</div>
-          <div class="ac-detail">Sin archivo de soporte</div>
-        </div>`).join("") || '<div style="color:var(--muted);font-size:12px">Sin pendientes ✓</div>'}
+        ${offAlertCards}
       </div>
     </div>
   </div>
@@ -563,101 +669,17 @@ tbody tr:hover td{background:#f9f9f9}
   </div>
   <div class="nav-btn" id="nav-2" onclick="goTo(2)">
     <span class="nav-dot nd-blue"></span> MD-Time
-    ${mdAlerts.length > 0 ? \`<span class="nav-badge">\${mdAlerts.length}</span>\` : ''}
+    ${mdBadge}
   </div>
   <div class="nav-btn" id="nav-3" onclick="goTo(3)">
     <span class="nav-dot nd-purple"></span> Request OFF
-    ${offAlerts.length > 0 ? \`<span class="nav-badge">\${offAlerts.length}</span>\` : ''}
+    ${offBadge}
   </div>
 </nav>
 
 <script>
-const MDTIME_DATA = ${JSON.stringify(mdTime.weeksData)};
-const MDTIME_COLS = ${JSON.stringify(mdTime.colDefs)};
-const MDTIME_CUR  = ${JSON.stringify(mdTime.currentGroupId)};
-const OFF_DATA    = ${JSON.stringify(requestOff.groupsData)};
-
-function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-function kpi(cls,num,lbl){return\`<div class="kpi \${cls}"><div class="kpi-num">\${num}</div><div class="kpi-lbl">\${lbl}</div></div>\`}
-function b(cls,txt){return\`<span class="b \${cls}">\${esc(txt)}</span>\`}
-
-let current=0;const TOTAL=4;
-function goTo(n){
-  const prev=document.getElementById('slide-'+current);
-  prev.classList.remove('active');prev.classList.add('out');
-  setTimeout(()=>prev.classList.remove('out'),350);
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  current=((n%TOTAL)+TOTAL)%TOTAL;
-  document.getElementById('slide-'+current).classList.add('active');
-  document.getElementById('nav-'+current).classList.add('active');
-}
-document.getElementById('btn-prev').addEventListener('click',()=>goTo(current-1));
-document.getElementById('btn-next').addEventListener('click',()=>goTo(current+1));
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);
-  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);
-});
-
-function renderMDTime(gid){
-  const wk=MDTIME_DATA[gid];if(!wk)return;
-  document.getElementById('mdtime-cur-badge').style.display=gid===MDTIME_CUR?'':'none';
-  document.getElementById('mdtime-table-sub').textContent='Semana '+wk.title;
-  const rows=[...wk.items].sort((a,b)=>a.name.localeCompare(b.name));
-  let done=0,partial=0,none=0,pending=[],tbody='';
-  rows.forEach(r=>{
-    let f=0,m=[];
-    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key];v&&v.trim()?f++:m.push(c.label);});
-    f===MDTIME_COLS.length?done++:f===0?none++:partial++;
-    if(m.length)pending.push({name:r.name,missing:m});
-    tbody+=\`<tr><td class="cell-name">\${esc(r.name)}</td>\`;
-    MDTIME_COLS.forEach(c=>{const v=r.cv[c.key],has=v&&v.trim();
-      tbody+=\`<td>\${c.type==='status'?(has?b('b-ok',v):b('b-pending','Falta')):(has?b('b-file','Archivo'):b('b-no-file','Falta'))}</td>\`;
-    });
-    tbody+='</tr>';
-  });
-  document.getElementById('mdtime-tbody').innerHTML=tbody;
-  document.getElementById('mdtime-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',done,'Completos')+kpi('kpi-warn',partial,'Parciales')+kpi('kpi-red',none,'Sin datos');
-  const ab=document.getElementById('mdtime-alerts');
-  if(!pending.length){ab.style.display='none';return;}
-  ab.style.display='';
-  document.getElementById('mdtime-alert-title').textContent='⚠ '+pending.length+' persona(s) con documentación pendiente';
-  document.getElementById('mdtime-alert-list').innerHTML=pending.sort((a,b)=>b.missing.length-a.missing.length).map(p=>\`<li><div class="dot-sm"></div><div><div class="aname">\${esc(p.name)}</div><div class="adetail">Falta: \${p.missing.map(esc).join(' · ')}</div></div></li>\`).join('');
-}
-
-function renderRequestOff(gid){
-  const grp=OFF_DATA[gid];if(!grp)return;
-  document.getElementById('off-table-sub').textContent=grp.title+' — '+grp.items.length+' registros';
-  const rows=[...grp.items].sort((a,b)=>(b.cv['date4']||'').localeCompare(a.cv['date4']||''));
-  let aprobadas=0,pendientes=0,sinSoporte=0,alerts=[],tbody='';
-  rows.forEach(r=>{
-    const est=r.cv['status_mkn825jf']||'',sop=r.cv['file_mm1ht7j7']||'';
-    est.toLowerCase().includes('aprobad')?aprobadas++:pendientes++;
-    if(!sop){sinSoporte++;alerts.push({name:r.name});}
-    const sol=r.cv['people_mkn8wds0']||'',mot=r.cv['status_1_mkn5yhzg']||'',fec=r.cv['cronograma_mkn6bx9b']||'',dias=r.cv['n_meros_mkn6cwvj']||'',obs=r.cv['text_mkn8yf9q']||'';
-    const eCls=est.toLowerCase().includes('aprobad')?'b-ok':est.toLowerCase().includes('rechazo')?'b-pending':'b-date';
-    tbody+=\`<tr>
-      <td class="cell-name">\${esc(r.name)}</td>
-      <td>\${b('b-people',sol?sol.split('@')[0]:'—')}</td>
-      <td>\${mot?b('b-date',mot):'<span class="cell-muted">—</span>'}</td>
-      <td>\${fec?b('b-date',fec):'<span class="cell-muted">—</span>'}</td>
-      <td>\${dias?b('b-num',dias+' d'):'<span class="cell-muted">—</span>'}</td>
-      <td>\${est?b(eCls,est):'<span class="cell-muted">—</span>'}</td>
-      <td>\${sop?b('b-file','Archivo'):b('b-no-file','Falta')}</td>
-      <td>\${obs?'<span style="font-size:11px">'+esc(obs.substring(0,50))+(obs.length>50?'…':'')+'</span>':'<span class="cell-muted">—</span>'}</td>
-    </tr>\`;
-  });
-  document.getElementById('off-tbody').innerHTML=tbody;
-  document.getElementById('off-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',aprobadas,'Aprobadas')+kpi('kpi-warn',pendientes,'Pendientes')+kpi('kpi-red',sinSoporte,'Sin soporte');
-  const ab=document.getElementById('off-alerts');
-  if(!alerts.length){ab.style.display='none';return;}
-  ab.style.display='';
-  document.getElementById('off-alert-title').textContent='⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
-  document.getElementById('off-alert-list').innerHTML=alerts.map(a=>\`<li><div class="dot-sm"></div><div><div class="aname">\${esc(a.name)}</div><div class="adetail">Sin archivo de soporte</div></div></li>\`).join('');
-}
-
-renderMDTime(MDTIME_CUR);
-renderRequestOff('topics');
-<\/script>
+${clientJS}
+</script>
 </body>
 </html>`;
 }
