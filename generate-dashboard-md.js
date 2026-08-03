@@ -319,8 +319,47 @@ function buildHtml(mdTime, requestOff, updatedAt) {
     '  document.getElementById("off-alert-list").innerHTML=alerts.map(a=>\'<li><div class="dot-sm"></div><div><div class="aname">\'+esc(a.name)+\'</div><div class="adetail">Sin archivo de soporte</div></div></li>\').join("");',
     '}',
     '',
+    'function changeWeek(gid){',
+    '  document.getElementById("cover-week-select").value=gid;',
+    '  document.getElementById("alerts-week-select").value=gid;',
+    '  const wk=MDTIME_DATA[gid];',
+    '  const mdAlerts=[];',
+    '  if(wk){',
+    '    [...wk.items].forEach(r=>{',
+    '      const missing=[];',
+    '      MDTIME_COLS.forEach(c=>{const v=r.cv[c.key];if(!(v&&v.trim()))missing.push(c.label);});',
+    '      if(missing.length)mdAlerts.push({name:r.name,missing});',
+    '    });',
+    '    mdAlerts.sort((a,b_)=>b_.missing.length-a.missing.length);',
+    '  }',
+    '  const offAlertsData=[];',
+    '  const solData=OFF_DATA["topics"];',
+    '  if(solData){solData.items.forEach(r=>{if(!(r.cv["file_mm1ht7j7"]&&r.cv["file_mm1ht7j7"].trim()))offAlertsData.push({name:r.name});});}',
+    '  const weekTitle=wk?wk.title:gid;',
+    '  const isCur=gid===MDTIME_CUR;',
+    '  const total=mdAlerts.length+offAlertsData.length;',
+    '  document.getElementById("cover-sub-week").innerHTML="Semana "+esc(weekTitle)+" \\u00a0\\u00b7\\u00a0 Estado de documentaci\\u00f3n y solicitudes";',
+    '  document.getElementById("cover-cur-badge").style.display=isCur?"":"none";',
+    '  const chips=',
+    '    (total>0?\'<span class="chip chip-red">\\u26a0 \'+total+\' pendientes</span>\':"")+',
+    '    (mdAlerts.length?\'<span class="chip chip-red">\\u23f1 \'+mdAlerts.length+\' en MD-Time</span>\':"")+',
+    '    (offAlertsData.length?\'<span class="chip chip-red">\\ud83d\\uddd3 \'+offAlertsData.length+\' en Request OFF</span>\':"")',
+    '    ||\'<span class="chip chip-blue">\\u2713 Sin pendientes</span>\';',
+    '  document.getElementById("cover-chips").innerHTML=chips;',
+    '  document.getElementById("alerts-total-badge").textContent=total+" pendientes";',
+    '  document.getElementById("alerts-sec-time").textContent="\\u23f1 MD-Time \\u00b7 Semana "+weekTitle+" \\u2014 "+mdAlerts.length+" pendientes";',
+    '  document.getElementById("alerts-sec-off").textContent="\\ud83d\\uddd3 Request OFF \\u00b7 Sin soporte \\u2014 "+offAlertsData.length+" pendientes";',
+    '  document.getElementById("alert-grid-time").innerHTML=mdAlerts.length',
+    '    ?mdAlerts.map(a=>\'<div class="alert-card"><div class="ac-board">MD-Time \\u00b7 HR Zone</div><div class="ac-name">\'+esc(a.name)+\'</div><div class="ac-detail">Falta: \'+a.missing.map(esc).join(" \\u00b7 ")+\'</div></div>\').join("")',
+    '    :\'<div style="color:var(--muted);font-size:12px">\\u2713 Sin pendientes para esta semana</div>\';',
+    '  document.getElementById("alert-grid-off").innerHTML=offAlertsData.length',
+    '    ?offAlertsData.map(a=>\'<div class="alert-card cal"><div class="ac-board">Request OFF \\u00b7 Solicitudes</div><div class="ac-name">\'+esc(a.name)+\'</div><div class="ac-detail">Sin archivo de soporte</div></div>\').join("")',
+    '    :\'<div style="color:var(--muted);font-size:12px">\\u2713 Sin pendientes</div>\';',
+    '}',
+    '',
     'renderMDTime(MDTIME_CUR);',
     'renderRequestOff("topics");',
+    'changeWeek(MDTIME_CUR);',
   ].join("\n");
 
   return `<!DOCTYPE html>
@@ -418,6 +457,10 @@ tbody tr:hover td{background:#f9f9f9}
 .sel-row select{background:#fff;border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;outline:none}
 .sel-row select:focus{border-color:var(--blue)}
 .badge-cur{background:var(--blue-light);color:var(--blue-dark);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
+.cover-week-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.cover-week-row label{font-size:12px;font-weight:500;color:var(--muted)}
+.cover-week-row select{background:#fff;border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;outline:none}
+.cover-week-row select:focus{border-color:var(--blue)}
 .arrow-btn{position:fixed;top:50%;width:38px;height:38px;border-radius:50%;background:#fff;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transform:translateY(-50%);z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .arrow-btn:hover{border-color:var(--blue);color:var(--blue)}
 .arrow-left{left:8px}.arrow-right{right:8px}
@@ -539,10 +582,15 @@ tbody tr:hover td{background:#f9f9f9}
       </svg>
     </div>
     <div class="cover-title">Workspace <em>MD</em><br>Monday Dashboard</div>
-    <div class="cover-sub">${curWeekTitle ? 'Semana ' + curWeekTitle + ' &nbsp;\xb7&nbsp; ' : ''}Estado de documentaci\xf3n y solicitudes</div>
-    <div class="cover-chips">
-      ${coverChips}
+    <div class="cover-sub" id="cover-sub-week">${curWeekTitle ? 'Semana ' + curWeekTitle + ' &nbsp;\xb7&nbsp; ' : ''}Estado de documentaci\xf3n y solicitudes</div>
+    <div class="cover-week-row">
+      <label>Semana:</label>
+      <select id="cover-week-select" onchange="changeWeek(this.value)">
+        ${weekOpts}
+      </select>
+      <span class="badge-cur" id="cover-cur-badge">Semana actual</span>
     </div>
+    <div class="cover-chips" id="cover-chips">${coverChips}</div>
     <div class="cover-hint"><span>←</span> Navega con las flechas o el menú inferior <span>→</span></div>
   </div>
 
@@ -555,14 +603,22 @@ tbody tr:hover td{background:#f9f9f9}
           <div class="slide-eyebrow">Resumen global</div>
           <div class="slide-title">Panel de Alertas</div>
         </div>
-        <span class="s-badge s-badge-red" style="margin-left:auto">${totalAlerts} pendientes</span>
+        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+          <div class="sel-row">
+            <label>Semana:</label>
+            <select id="alerts-week-select" onchange="changeWeek(this.value)">
+              ${weekOpts}
+            </select>
+          </div>
+          <span class="s-badge s-badge-red" id="alerts-total-badge">${totalAlerts} pendientes</span>
+        </div>
       </div>
-      <div class="sec-div">\u23f1 MD-Time \xb7 Semana ${curWeekTitle} \u2014 ${mdAlerts.length} pendientes</div>
-      <div class="alert-grid">
+      <div class="sec-div" id="alerts-sec-time">\u23f1 MD-Time \xb7 Semana ${curWeekTitle} \u2014 ${mdAlerts.length} pendientes</div>
+      <div class="alert-grid" id="alert-grid-time">
         ${mdAlertCards}
       </div>
-      <div class="sec-div">\ud83d\uddd3 Request OFF \xb7 Sin soporte \u2014 ${offAlerts.length} pendientes</div>
-      <div class="alert-grid" style="flex:0 0 auto">
+      <div class="sec-div" id="alerts-sec-off">\ud83d\uddd3 Request OFF \xb7 Sin soporte \u2014 ${offAlerts.length} pendientes</div>
+      <div class="alert-grid" id="alert-grid-off" style="flex:0 0 auto">
         ${offAlertCards}
       </div>
     </div>
