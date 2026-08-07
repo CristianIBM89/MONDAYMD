@@ -259,11 +259,50 @@ tbody tr:hover td{background:#f9f9f9}
   border-radius:10px;background:#fff1f1;color:var(--danger);
 }
 
+/* ── Request OFF Calendar ── */
+.off-cal{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.off-cal th{
+  background:var(--surface);padding:5px 4px;
+  text-align:center;font-weight:700;font-size:10px;
+  text-transform:uppercase;letter-spacing:.05em;color:#525252;
+  border:1px solid var(--border);white-space:nowrap;
+  position:sticky;top:0;z-index:2;
+}
+.off-cal th.today-hdr{background:#eff4ff;color:var(--blue)}
+.off-cal td{
+  padding:0;border:1px solid var(--border);
+  vertical-align:top;min-width:28px;height:52px;
+  position:relative;
+}
+.off-cal td.today-col{background:#eff4ff}
+.off-cal td.weekend{background:#fafafa}
+.off-cal .day-num{
+  font-size:9px;color:var(--muted);
+  padding:2px 3px;line-height:1;display:block;
+}
+.off-cal .name-row{
+  font-size:10px;font-weight:600;color:#fff;
+  padding:2px 4px;margin:1px 0;
+  border-radius:3px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  line-height:1.3;
+}
+.off-cal .name-start{border-radius:3px 0 0 3px;padding-left:5px}
+.off-cal .name-mid{border-radius:0;padding-left:2px;padding-right:2px}
+.off-cal .name-end{border-radius:0 3px 3px 0}
+.off-cal .name-solo{border-radius:3px}
+.off-cal tr.person-row td{height:22px;padding:0}
+.off-cal-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;align-items:center;padding:8px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.off-cal-legend-item{display:flex;align-items:center;gap:5px}
+.off-cal-legend-dot{width:10px;height:10px;border-radius:2px}
+
 @media(max-width:600px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
   .slide-inner{padding:16px 14px 12px}
   .cover-title{font-size:26px}
   .arrow-btn{display:none}
+  .off-cal th,.off-cal .day-num{font-size:8px}
+  .off-cal .name-row{font-size:9px}
 }
 </style>
 </head>
@@ -510,7 +549,19 @@ tbody tr:hover td{background:#f9f9f9}
           <div class="slide-eyebrow">Tablero · ibm.monday.com</div>
           <div class="slide-title">Request OFF</div>
         </div>
-        <div style="margin-left:auto">
+        <div style="margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="sel-row">
+            <label>Vista:</label>
+            <select id="off-view-mode" onchange="renderRequestOff(document.getElementById('off-select').value)">
+              <option value="month" selected>Mes</option>
+              <option value="week">Semana</option>
+            </select>
+          </div>
+          <div class="sel-row">
+            <label>Período:</label>
+            <select id="off-period-select" onchange="renderRequestOff(document.getElementById('off-select').value)">
+            </select>
+          </div>
           <div class="sel-row">
             <label>Grupo:</label>
             <select id="off-select" onchange="renderRequestOff(this.value)">
@@ -525,20 +576,14 @@ tbody tr:hover td{background:#f9f9f9}
         <div class="alert-inline-title" id="off-alert-title"></div>
         <ul class="alist" id="off-alert-list"></ul>
       </div>
-      <div class="tbl-wrap">
+      <!-- Calendar view -->
+      <div class="tbl-wrap" id="off-cal-wrap">
         <div class="tbl-bar">
-          <span class="ttl">Detalle de solicitudes</span>
+          <span class="ttl" id="off-cal-title">Calendario</span>
           <span class="sub" id="off-table-sub"></span>
         </div>
-        <div class="tbl-scroll">
-          <table>
-            <thead><tr>
-              <th>Nombre</th><th>Solicitante</th><th>Motivo</th>
-              <th>Fechas</th><th>Días</th><th>Estado</th>
-              <th>Soporte</th><th>Observaciones</th>
-            </tr></thead>
-            <tbody id="off-tbody"></tbody>
-          </table>
+        <div class="tbl-scroll" id="off-cal-scroll">
+          <table id="off-cal-table"></table>
         </div>
       </div>
     </div>
@@ -673,36 +718,266 @@ function renderMDTime(gid){
   document.getElementById('mdtime-alert-list').innerHTML=pending.sort((a,b)=>b.missing.length-a.missing.length).map(p=>`<li><div class="dot-sm"></div><div><div class="aname">${esc(p.name)}</div><div class="adetail">Falta: ${p.missing.map(esc).join(' · ')}</div></div></li>`).join('');
 }
 
+// ── Request OFF helpers ───────────────────────────────────────────────
+const OFF_COLORS=['#8a3ffc','#0f62fe','#009d9a','#198038','#b28600','#a2191f','#6929c4','#005d5d'];
+function offColor(idx){return OFF_COLORS[idx%OFF_COLORS.length]}
+
+function parseOffDate(s){
+  // accepts "YYYY-MM-DD"
+  if(!s||!s.trim())return null;
+  const p=s.trim().split('-');
+  if(p.length!==3)return null;
+  return new Date(+p[0],+p[1]-1,+p[2]);
+}
+
+function isoDate(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function buildPeriodOptions(mode,allItems){
+  // collect all dates from cronograma field
+  const periods=new Set();
+  allItems.forEach(r=>{
+    const cr=r.cv['cronograma_mkn6bx9b']||'';
+    const parts=cr.split(' - ');
+    const d0=parseOffDate(parts[0]);
+    if(!d0)return;
+    if(mode==='month'){
+      periods.add(d0.getFullYear()+'-'+String(d0.getMonth()+1).padStart(2,'0'));
+    } else {
+      // ISO week: Monday of the week
+      const day=d0.getDay();
+      const mon=new Date(d0);mon.setDate(d0.getDate()-(day===0?6:day-1));
+      periods.add(isoDate(mon));
+    }
+  });
+  // also include current month/week
+  const now=new Date();
+  if(mode==='month'){
+    periods.add(now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'));
+  } else {
+    const day=now.getDay();
+    const mon=new Date(now);mon.setDate(now.getDate()-(day===0?6:day-1));
+    periods.add(isoDate(mon));
+  }
+  return [...periods].sort().reverse();
+}
+
+const MONTH_NAMES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAY_NAMES=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+function renderOffCalendar(rows,periodVal,mode){
+  let days=[];
+  if(mode==='month'){
+    const [yr,mo]=periodVal.split('-').map(Number);
+    const first=new Date(yr,mo-1,1);
+    const last=new Date(yr,mo,0);
+    for(let d=new Date(first);d<=last;d.setDate(d.getDate()+1)) days.push(new Date(d));
+  } else {
+    // week: periodVal is Monday ISO
+    const mon=parseOffDate(periodVal);
+    for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
+  }
+
+  const todayIso=isoDate(new Date());
+  const dayIsos=days.map(isoDate);
+
+  // build a map: dayIso -> [{name, color, pos:'start'|'mid'|'end'|'solo', motivo}]
+  const dayMap={};
+  dayIsos.forEach(d=>{dayMap[d]=[];});
+
+  rows.forEach((r,ri)=>{
+    const cr=r.cv['cronograma_mkn6bx9b']||'';
+    const parts=cr.split(' - ');
+    const d0=parseOffDate(parts[0]);
+    const d1=parseOffDate(parts[1])||d0;
+    if(!d0)return;
+    const color=offColor(ri);
+    const mot=r.cv['status_1_mkn5yhzg']||'';
+    // iterate days in range that are also in our period
+    for(let d=new Date(d0);d<=d1;d.setDate(d.getDate()+1)){
+      const iso=isoDate(d);
+      if(!dayMap[iso])continue;
+      const isStart=iso===isoDate(d0);
+      const isEnd=iso===isoDate(d1);
+      let pos=isStart&&isEnd?'solo':isStart?'start':isEnd?'end':'mid';
+      dayMap[iso].push({name:r.name,color,pos,motivo:mot});
+    }
+  });
+
+  // Build calendar table — one header row + one row per "person slot"
+  // We do a simpler horizontal layout: each day is a column, each person occupies a row lane
+  // Determine max concurrent people per day for row count
+  let maxLanes=1;
+  dayIsos.forEach(d=>{if(dayMap[d].length>maxLanes)maxLanes=dayMap[d].length;});
+
+  // Build thead
+  let thead='<thead><tr><th style="min-width:16px"></th>';
+  days.forEach(d=>{
+    const iso=isoDate(d);
+    const dow=d.getDay(); // 0=Sun
+    const isWE=dow===0||dow===6;
+    const isTod=iso===todayIso;
+    const cls=(isTod?'today-hdr':'')+' '+(isWE?'weekend':'');
+    const dn=mode==='month'?d.getDate():DAY_NAMES[dow===0?6:dow-1]+' '+d.getDate();
+    thead+=`<th class="${cls.trim()}" title="${iso}">${dn}</th>`;
+  });
+  thead+='</tr></thead>';
+
+  // For each lane row we need to place people
+  // We assign each request to a lane (first available lane that has no overlap on any of its days)
+  const lanes=[];  // lanes[i] = array of {d0iso, d1iso, name, color, pos_map}
+  rows.forEach((r,ri)=>{
+    const cr=r.cv['cronograma_mkn6bx9b']||'';
+    const parts=cr.split(' - ');
+    const d0=parseOffDate(parts[0]);
+    const d1=parseOffDate(parts[1])||d0;
+    if(!d0)return;
+    const color=offColor(ri);
+    const mot=r.cv['status_1_mkn5yhzg']||'';
+    // find a free lane
+    let li=0;
+    while(li<lanes.length){
+      const lane=lanes[li];
+      const conflict=lane.some(seg=>{
+        const sD0=parseOffDate(seg.d0);const sD1=parseOffDate(seg.d1);
+        return d0<=sD1 && d1>=sD0;
+      });
+      if(!conflict)break;
+      li++;
+    }
+    if(!lanes[li])lanes[li]=[];
+    lanes[li].push({d0:isoDate(d0),d1:isoDate(d1),name:r.name,color,motivo:mot});
+  });
+
+  // Build tbody: one row per lane
+  let tbody='<tbody>';
+  if(lanes.length===0){
+    tbody+=`<tr><td colspan="${days.length+1}" style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Sin solicitudes en este período</td></tr>`;
+  } else {
+    lanes.forEach(lane=>{
+      tbody+='<tr class="person-row">';
+      tbody+='<td style="border:none;width:12px"></td>';
+      days.forEach(d=>{
+        const iso=isoDate(d);
+        const dow=d.getDay();
+        const isWE=dow===0||dow===6;
+        const isTod=iso===todayIso;
+        const tdCls=(isTod?'today-col':'')+' '+(isWE?'weekend':'');
+        // find segment in this lane that covers this day
+        const seg=lane.find(s=>s.d0<=iso&&iso<=s.d1);
+        if(!seg){
+          tbody+=`<td class="${tdCls.trim()}"></td>`;
+          return;
+        }
+        const isStart=iso===seg.d0;
+        const isEnd=iso===seg.d1;
+        let pos=isStart&&isEnd?'solo':isStart?'start':isEnd?'end':'mid';
+        const rCls='name-row name-'+pos;
+        // show name only on start
+        const label=isStart?seg.name.split(' ')[0]+(seg.name.split(' ')[1]?' '+seg.name.split(' ')[1]:''):'';
+        tbody+=`<td class="${tdCls.trim()}" style="padding:0"><div class="${rCls}" style="background:${seg.color};margin:1px" title="${esc(seg.name)} · ${esc(seg.motivo)}">${esc(label)}</div></td>`;
+      });
+      tbody+='</tr>';
+    });
+  }
+  tbody+='</tbody>';
+
+  document.getElementById('off-cal-table').className='off-cal';
+  document.getElementById('off-cal-table').innerHTML=thead+tbody;
+}
+
 // ── Request OFF ──────────────────────────────────────────────────────
+function populatePeriodSelect(mode,allItems){
+  const sel=document.getElementById('off-period-select');
+  const periods=buildPeriodOptions(mode,allItems);
+  // determine current period
+  const now=new Date();
+  let curPeriod;
+  if(mode==='month'){
+    curPeriod=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  } else {
+    const day=now.getDay();
+    const mon=new Date(now);mon.setDate(now.getDate()-(day===0?6:day-1));
+    curPeriod=isoDate(mon);
+  }
+  // ensure current period is in list
+  if(!periods.includes(curPeriod))periods.unshift(curPeriod);
+  sel.innerHTML=periods.map(p=>{
+    if(mode==='month'){
+      const [yr,mo]=p.split('-').map(Number);
+      const label=MONTH_NAMES[mo-1]+' '+yr;
+      return`<option value="${p}"${p===curPeriod?' selected':''}>${label}</option>`;
+    } else {
+      const mon=parseOffDate(p);
+      const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+      const label=mon.getDate()+'/'+String(mon.getMonth()+1).padStart(2,'0')+' – '+sun.getDate()+'/'+String(sun.getMonth()+1).padStart(2,'0')+'/'+sun.getFullYear();
+      return`<option value="${p}"${p===curPeriod?' selected':''}>${label}</option>`;
+    }
+  }).join('');
+}
+
 function renderRequestOff(gid){
   const grp=OFF_DATA[gid];if(!grp)return;
-  document.getElementById('off-table-sub').textContent=grp.title+' — '+grp.items.length+' registros';
-  const rows=[...grp.items].sort((a,b)=>(b.cv['date4']||'').localeCompare(a.cv['date4']||''));
-  let aprobadas=0,pendientes=0,sinSoporte=0,alerts=[],tbody='';
+  const mode=document.getElementById('off-view-mode').value;
+
+  // Repopulate period selector when group or mode changes
+  populatePeriodSelect(mode,grp.items);
+
+  const periodVal=document.getElementById('off-period-select').value;
+  const rows=[...grp.items];
+
+  // KPI cards
+  let aprobadas=0,pendientes=0,sinSoporte=0,alerts=[];
   rows.forEach(r=>{
     const est=r.cv['status_mkn825jf']||'',sop=r.cv['file_mm1ht7j7']||'';
     est.toLowerCase().includes('aprobad')?aprobadas++:pendientes++;
     if(!sop){sinSoporte++;alerts.push({name:r.name});}
-    const sol=r.cv['people_mkn8wds0']||'',mot=r.cv['status_1_mkn5yhzg']||'',fec=r.cv['cronograma_mkn6bx9b']||'',dias=r.cv['n_meros_mkn6cwvj']||'',obs=r.cv['text_mkn8yf9q']||'';
-    const eCls=est.toLowerCase().includes('aprobad')?'b-ok':est.toLowerCase().includes('rechazo')?'b-pending':'b-date';
-    tbody+=`<tr>
-      <td class="cell-name">${esc(r.name)}</td>
-      <td>${b('b-people',sol?sol.split('@')[0]:'—')}</td>
-      <td>${mot?b('b-date',mot):'<span class="cell-muted">—</span>'}</td>
-      <td>${fec?b('b-date',fec):'<span class="cell-muted">—</span>'}</td>
-      <td>${dias?b('b-num',dias+' d'):'<span class="cell-muted">—</span>'}</td>
-      <td>${est?b(eCls,est):'<span class="cell-muted">—</span>'}</td>
-      <td>${sop?b('b-file','Archivo'):b('b-no-file','Falta')}</td>
-      <td>${obs?`<span style="font-size:11px">${esc(obs.substring(0,50))}${obs.length>50?'…':''}</span>`:'<span class="cell-muted">—</span>'}</td>
-    </tr>`;
   });
-  document.getElementById('off-tbody').innerHTML=tbody;
   document.getElementById('off-cards').innerHTML=kpi('kpi-blue',rows.length,'Total')+kpi('kpi-ok',aprobadas,'Aprobadas')+kpi('kpi-warn',pendientes,'Pendientes')+kpi('kpi-red',sinSoporte,'Sin soporte');
+
+  // Alerts
   const ab=document.getElementById('off-alerts');
-  if(!alerts.length){ab.style.display='none';return;}
-  ab.style.display='';
-  document.getElementById('off-alert-title').textContent='⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
-  document.getElementById('off-alert-list').innerHTML=alerts.map(a=>`<li><div class="dot-sm"></div><div><div class="aname">${esc(a.name)}</div><div class="adetail">Sin archivo de soporte</div></div></li>`).join('');
+  if(!alerts.length){ab.style.display='none';}
+  else{
+    ab.style.display='';
+    document.getElementById('off-alert-title').textContent='⚠ '+alerts.length+' solicitud(es) sin soporte adjunto';
+    document.getElementById('off-alert-list').innerHTML=alerts.map(a=>`<li><div class="dot-sm"></div><div><div class="aname">${esc(a.name)}</div><div class="adetail">Sin archivo de soporte</div></div></li>`).join('');
+  }
+
+  // Calendar title
+  let calTitle='';
+  if(mode==='month'&&periodVal){
+    const [yr,mo]=periodVal.split('-').map(Number);
+    calTitle=MONTH_NAMES[mo-1]+' '+yr;
+  } else if(periodVal){
+    const mon=parseOffDate(periodVal);
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    calTitle='Semana '+mon.getDate()+'/'+String(mon.getMonth()+1).padStart(2,'0')+' – '+sun.getDate()+'/'+String(sun.getMonth()+1).padStart(2,'0')+'/'+sun.getFullYear();
+  }
+  document.getElementById('off-cal-title').textContent='Calendario · '+calTitle;
+  document.getElementById('off-table-sub').textContent=grp.title+' — '+rows.length+' solicitudes';
+
+  // Filter rows that have dates in this period
+  const relevantRows=rows.filter(r=>{
+    const cr=r.cv['cronograma_mkn6bx9b']||'';
+    const parts=cr.split(' - ');
+    const d0=parseOffDate(parts[0]);
+    const d1=parseOffDate(parts[1])||d0;
+    if(!d0)return false;
+    if(mode==='month'){
+      const [yr,mo]=periodVal.split('-').map(Number);
+      const mStart=new Date(yr,mo-1,1);
+      const mEnd=new Date(yr,mo,0);
+      return d0<=mEnd && d1>=mStart;
+    } else {
+      const mon=parseOffDate(periodVal);
+      const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+      return d0<=sun && d1>=mon;
+    }
+  });
+
+  renderOffCalendar(relevantRows,periodVal,mode);
 }
 
 renderMDTime(MDTIME_CUR);
