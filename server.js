@@ -413,7 +413,7 @@ footer{text-align:center;font-size:11px;color:#9ca3af;padding:10px;border-top:1p
       </div>
 
       <!-- ── Barra de acciones: solo visible en grupo Solicitudes ── -->
-      <div class="action-bar" id="off-action-bar">
+      <div class="action-bar" id="off-action-bar" style="display:flex">
         <button class="btn-solicitar" onclick="openSolModal()">
           ✏️ Solicitar Ausencia
         </button>
@@ -554,6 +554,7 @@ function show(panel) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('panel-'+panel).classList.add('active');
   document.getElementById('nav-'+panel).classList.add('active');
+  if(panel==='requestoff') syncActionBar();
 }
 
 function forceRefresh() {
