@@ -724,10 +724,27 @@ const server = http.createServer(async (req, res) => {
     req.on("data", chunk => { body += chunk; });
     req.on("end", async () => {
       try {
-        const activeToken = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || MONDAY_TOKEN || "").trim();
+        // Buscar el token en cualquier variable de entorno que contenga MONDAY o TOKEN
+        let activeToken = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || MONDAY_TOKEN || "").trim();
         if (!activeToken) {
+          const keys = Object.keys(process.env).filter(k => k.toUpperCase().includes("MONDAY") || k.toUpperCase().includes("TOKEN"));
+          for (const k of keys) {
+            if (process.env[k] && process.env[k].startsWith("eyJ")) {
+              activeToken = process.env[k].trim();
+              console.log(`[Solicitud] Token encontrado dinámicamente en variable process.env.${k}`);
+              break;
+            }
+          }
+        }
+
+        if (!activeToken) {
+          const availableEnvKeys = Object.keys(process.env).sort().join(", ");
+          console.error(`[Solicitud] MONDAY_TOKEN no encontrado. Variables disponibles en process.env: ${availableEnvKeys}`);
           res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ ok: false, error: "La variable MONDAY_TOKEN no está definida en Railway. Ve a Railway -> tu servicio -> Variables -> agrega MONDAY_TOKEN y presiona Save/Deploy." }));
+          res.end(JSON.stringify({
+            ok: false,
+            error: "La variable MONDAY_TOKEN no está activa en el contenedor de Railway. Por favor ve a Deployments en Railway y haz clic en 'Redeploy' para aplicar la variable."
+          }));
           return;
         }
         const d = JSON.parse(body);
