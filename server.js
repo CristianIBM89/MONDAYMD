@@ -42,12 +42,13 @@ let cache = { html: null, builtAt: 0 };
 
 // ── Monday API ─────────────────────────────────────────────────────────────
 function mondayQuery(query) {
+  const token = process.env.MONDAY_TOKEN || MONDAY_TOKEN;
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({ query });
     const req = https.request({
       hostname: "api.monday.com", path: "/v2", method: "POST",
       headers: {
-        "Authorization": MONDAY_TOKEN, "Content-Type": "application/json",
+        "Authorization": token, "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(body), "API-Version": "2024-01"
       }
     }, res => {
@@ -723,19 +724,21 @@ const server = http.createServer(async (req, res) => {
     req.on("data", chunk => { body += chunk; });
     req.on("end", async () => {
       try {
-        if (!MONDAY_TOKEN) {
+        const activeToken = process.env.MONDAY_TOKEN || MONDAY_TOKEN;
+        if (!activeToken) {
           res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ ok: false, error: "La variable de entorno MONDAY_TOKEN no está definida en el servidor en Railway. Por favor agrégala en la pestaña Environment Variables de tu proyecto en Railway." }));
+          res.end(JSON.stringify({ ok: false, error: "La variable de entorno MONDAY_TOKEN no está definida en el servidor en Railway. Por favor agrégala en la pestaña Environment Variables de tu proyecto en Railway y haz clic en Redeploy." }));
           return;
         }
         const d = JSON.parse(body);
         // Construir mutation de Monday para crear el ítem en grupo "topics"
         const columnValues = JSON.stringify({
-          people_mkn8wds0: { personsAndTeams: [] }, // people se gestiona desde Monday
+          people_mkn8wds0:   { personsAndTeams: [] }, // people se gestiona desde Monday
           date4:             { date: d.fecha || "" },
-          status_mkn825jf:   { label: d.aprobacion || "Solicitado" },
+          status_mkn825jf:   { label: "Solicitado" },
           status_1_mkn5yhzg: { label: d.motivo || "" },
           cronograma_mkn6bx9b: { from: d.desde || "", to: d.hasta || "" },
+          people_mkn5pkbz:   d.aprobacion || "nrincon@ibm.com",
           text_mkn8yf9q:     d.observaciones || ""
         }).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
