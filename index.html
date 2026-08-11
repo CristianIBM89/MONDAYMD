@@ -387,6 +387,14 @@ tbody tr:hover td{background:#f9f9f9}
   transition:background .15s;
 }
 .btn-monday-link:hover{background:#eff4ff}
+.btn-manager-link{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;
+  background:#defbe6;color:#0d6e30;border:1.5px solid #a7f0ba;
+  cursor:pointer;text-decoration:none;white-space:nowrap;
+  transition:background .15s,border-color .15s;
+}
+.btn-manager-link:hover{background:#c8f0d1;border-color:#6fdc8c}
 .success-box{
   background:#defbe6;border:1px solid #a7f0ba;border-radius:8px;
   padding:14px 16px;text-align:center;display:none;
@@ -668,12 +676,21 @@ tbody tr:hover td{background:#f9f9f9}
               <option value="new_group_mkn8gp5j">Aprobadas</option>
             </select>
           </div>
-          <button class="btn-solicitar" id="btn-nueva-solicitud" onclick="openSolicitudModal()">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v14M1 8h14" stroke="#6929c4" stroke-width="2" stroke-linecap="round"/></svg>
-            Nueva Solicitud
-          </button>
         </div>
       </div>
+
+      <!-- ── Barra de acciones (visible solo en grupo Solicitudes) ── -->
+      <div id="off-action-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0 2px 0;flex-shrink:0">
+        <button class="btn-solicitar" id="btn-nueva-solicitud" onclick="openSolicitudModal()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#6929c4" stroke-width="2" stroke-linecap="round"/></svg>
+          ✏️ Solicitar Ausencia
+        </button>
+        <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-manager-link" id="btn-manager-monday">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2L7 9M3 4H2a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-1" stroke="#0d6e30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          ✅ Aprobar en Monday <span style="font-size:10px;opacity:.75">(Solo Natalia Rincón)</span>
+        </a>
+      </div>
+
       <div class="kpi-row" id="off-cards"></div>
       <div id="off-alerts" class="alert-inline" style="display:none">
         <div class="alert-inline-title" id="off-alert-title"></div>
@@ -1281,12 +1298,12 @@ function submitSolicitud(){
   document.getElementById('modal-footer').style.display='none';
 }
 
-// Mostrar/ocultar botón "Nueva Solicitud" según grupo seleccionado
+// Mostrar/ocultar barra de acciones solo cuando grupo = Solicitudes
 var offSelectEl=document.getElementById('off-select');
 function syncBtnSolicitar(){
-  var btn=document.getElementById('btn-nueva-solicitud');
-  if(!btn)return;
-  btn.style.display=offSelectEl.value==='topics'?'':'none';
+  var bar=document.getElementById('off-action-bar');
+  if(!bar)return;
+  bar.style.display=offSelectEl.value==='topics'?'flex':'none';
 }
 offSelectEl.addEventListener('change',syncBtnSolicitar);
 syncBtnSolicitar();
