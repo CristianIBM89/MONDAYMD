@@ -296,7 +296,106 @@ tbody tr:hover td{background:#f9f9f9}
 .off-cal-legend-item{display:flex;align-items:center;gap:5px}
 .off-cal-legend-dot{width:10px;height:10px;border-radius:2px}
 
+/* ── Request OFF: botón solicitud ── */
+.btn-solicitar{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;
+  background:#f5f0ff;color:#6929c4;border:1.5px solid #d4bbff;
+  cursor:pointer;white-space:nowrap;
+  transition:background .15s,border-color .15s;
+}
+.btn-solicitar:hover{background:#ede5ff;border-color:#b28dff}
+.btn-solicitar svg{flex-shrink:0}
+
+/* ── Modal overlay ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+}
+.modal-overlay.hidden{display:none}
+.modal-box{
+  background:#fff;border-radius:12px;
+  width:100%;max-width:520px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;
+  max-height:90vh;overflow:hidden;
+}
+.modal-header{
+  padding:16px 20px 12px;
+  border-bottom:1.5px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;
+}
+.modal-header-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:#f5f0ff;border:1.5px solid #d4bbff;
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  flex-shrink:0;
+}
+.modal-header-text{flex:1}
+.modal-header-title{font-size:14px;font-weight:700;color:var(--text)}
+.modal-header-sub{font-size:11px;color:var(--muted)}
+.modal-close{
+  width:28px;height:28px;border-radius:50%;border:1px solid var(--border);
+  background:none;cursor:pointer;font-size:15px;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.modal-close:hover{background:var(--surface);color:var(--text)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#525252}
+.form-field label span.req{color:var(--danger)}
+.form-field input,.form-field select,.form-field textarea{
+  border:1px solid var(--border2);border-radius:6px;
+  padding:7px 10px;font-size:13px;color:var(--text);
+  background:#fff;outline:none;font-family:inherit;
+  transition:border-color .15s;
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:#6929c4}
+.form-field textarea{resize:vertical;min-height:64px}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-note{
+  background:#f5f0ff;border:1px solid #d4bbff;border-radius:6px;
+  padding:10px 12px;font-size:12px;color:#4a1d96;display:flex;gap:8px;align-items:flex-start;
+}
+.form-note-icon{flex-shrink:0;margin-top:1px}
+.form-error{color:var(--danger);font-size:11px;margin-top:2px;display:none}
+.modal-footer{
+  padding:12px 20px;border-top:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-shrink:0;
+}
+.btn-cancel{
+  padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600;
+  background:#fff;color:var(--muted);border:1px solid var(--border2);
+  cursor:pointer;
+}
+.btn-cancel:hover{background:var(--surface)}
+.btn-submit{
+  padding:6px 18px;border-radius:6px;font-size:12px;font-weight:600;
+  background:#6929c4;color:#fff;border:1.5px solid #6929c4;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+}
+.btn-submit:hover{background:#551eab}
+.btn-monday-link{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;
+  background:#fff;color:#0f62fe;border:1.5px solid var(--blue-light);
+  cursor:pointer;text-decoration:none;
+  transition:background .15s;
+}
+.btn-monday-link:hover{background:#eff4ff}
+.success-box{
+  background:#defbe6;border:1px solid #a7f0ba;border-radius:8px;
+  padding:14px 16px;text-align:center;display:none;
+}
+.success-box-title{font-size:14px;font-weight:700;color:#0d6e30;margin-bottom:4px}
+.success-box-sub{font-size:12px;color:#198038}
+
 @media(max-width:600px){
+  .form-row-2{grid-template-columns:1fr}
   .kpi-row{grid-template-columns:repeat(2,1fr)}
   .slide-inner{padding:16px 14px 12px}
   .cover-title{font-size:26px}
@@ -569,6 +668,10 @@ tbody tr:hover td{background:#f9f9f9}
               <option value="new_group_mkn8gp5j">Aprobadas</option>
             </select>
           </div>
+          <button class="btn-solicitar" id="btn-nueva-solicitud" onclick="openSolicitudModal()">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v14M1 8h14" stroke="#6929c4" stroke-width="2" stroke-linecap="round"/></svg>
+            Nueva Solicitud
+          </button>
         </div>
       </div>
       <div class="kpi-row" id="off-cards"></div>
@@ -590,6 +693,127 @@ tbody tr:hover td{background:#f9f9f9}
   </div>
 
 </div><!-- /deck -->
+
+<!-- ══ MODAL: NUEVA SOLICITUD ══ -->
+<div class="modal-overlay hidden" id="solicitud-modal" onclick="closeSolicitudModalOverlay(event)">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-header-icon">🗓</div>
+      <div class="modal-header-text">
+        <div class="modal-header-title" id="modal-title">Nueva Solicitud de Ausencia</div>
+        <div class="modal-header-sub">Grupo: Solicitudes · ibm.monday.com</div>
+      </div>
+      <button class="modal-close" onclick="closeSolicitudModal()" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body" id="modal-body-form">
+
+      <!-- Nota informativa -->
+      <div class="form-note">
+        <span class="form-note-icon">ℹ️</span>
+        <div>Completa todos los campos obligatorios <strong>(*)</strong>. La aprobación final la realizan únicamente <strong>Natalia Rincón</strong> y <strong>Cristian Avilán</strong> directamente en el tablero de Monday.</div>
+      </div>
+
+      <!-- Elemento / Nombre del ítem -->
+      <div class="form-field">
+        <label for="sol-elemento">Elemento (nombre del ítem) <span class="req">*</span></label>
+        <input type="text" id="sol-elemento" placeholder="Ej: Vacaciones julio – Nombre Apellido" maxlength="120">
+        <span class="form-error" id="err-elemento">Este campo es obligatorio.</span>
+      </div>
+
+      <!-- People -->
+      <div class="form-field">
+        <label for="sol-people">Persona (correo IBM) <span class="req">*</span></label>
+        <input type="email" id="sol-people" placeholder="nombre@ibm.com">
+        <span class="form-error" id="err-people">Ingresa un correo IBM válido.</span>
+      </div>
+
+      <!-- Fecha solicitud + Motivo -->
+      <div class="form-row-2">
+        <div class="form-field">
+          <label for="sol-fecha">Fecha de Solicitud <span class="req">*</span></label>
+          <input type="date" id="sol-fecha">
+          <span class="form-error" id="err-fecha">Selecciona una fecha.</span>
+        </div>
+        <div class="form-field">
+          <label for="sol-motivo">Motivo <span class="req">*</span></label>
+          <select id="sol-motivo">
+            <option value="">— Seleccionar —</option>
+            <option>Vacaciones</option>
+            <option>Chequeo Médico</option>
+            <option>Día de cumpleaños</option>
+            <option>Festivo Col</option>
+            <option>Medio día votaciones</option>
+            <option>Licencia</option>
+            <option>Otro</option>
+          </select>
+          <span class="form-error" id="err-motivo">Selecciona un motivo.</span>
+        </div>
+      </div>
+
+      <!-- Cronograma: desde - hasta -->
+      <div class="form-row-2">
+        <div class="form-field">
+          <label for="sol-desde">Cronograma: Desde <span class="req">*</span></label>
+          <input type="date" id="sol-desde">
+          <span class="form-error" id="err-cronograma">Completa las fechas del cronograma.</span>
+        </div>
+        <div class="form-field">
+          <label for="sol-hasta">Cronograma: Hasta <span class="req">*</span></label>
+          <input type="date" id="sol-hasta">
+        </div>
+      </div>
+
+      <!-- Aprobación -->
+      <div class="form-field">
+        <label for="sol-aprobacion">Aprobación <span class="req">*</span></label>
+        <select id="sol-aprobacion">
+          <option value="">— Seleccionar estado —</option>
+          <option value="Solicitado">Solicitado</option>
+          <option value="En espera">En espera</option>
+        </select>
+        <span class="form-error" id="err-aprobacion">Selecciona el estado inicial.</span>
+        <div style="margin-top:6px">
+          <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2L7 9M3 4H2a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-1" stroke="#0f62fe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Ir al tablero de aprobación en Monday
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Success box (oculto hasta envío) -->
+    <div class="modal-body success-box" id="modal-success-box">
+      <div class="success-box-title">✓ Solicitud registrada</div>
+      <div class="success-box-sub">Tu solicitud fue registrada. Recuerda que la aprobación final la hace <strong>Natalia Rincón</strong> o <strong>Cristian Avilán</strong> en el tablero de Monday.</div>
+      <div style="margin-top:12px">
+        <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2L7 9M3 4H2a1 1 0 00-1 1v9a1 1 0 001 1v-1" stroke="#0f62fe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Ver tablero de aprobación
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer" id="modal-footer">
+      <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link" style="font-size:11px">
+        🔗 Tablero Monday
+      </a>
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel" onclick="closeSolicitudModal()">Cancelar</button>
+        <button class="btn-submit" onclick="submitSolicitud()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Registrar Solicitud
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <div class="arrow-btn arrow-left" id="btn-prev">&#8592;</div>
 <div class="arrow-btn arrow-right" id="btn-next">&#8594;</div>
@@ -983,6 +1207,94 @@ function renderRequestOff(gid){
 renderMDTime(MDTIME_CUR);
 renderRequestOff('topics');
 changeWeek(MDTIME_CUR);
+
+// ── Modal Nueva Solicitud ─────────────────────────────────────────────
+function openSolicitudModal(){
+  // Reset form
+  ['sol-elemento','sol-people','sol-fecha','sol-motivo','sol-desde','sol-hasta','sol-aprobacion'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  // Set today as default for fecha solicitud
+  var today=new Date();
+  var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  var fechaEl=document.getElementById('sol-fecha');
+  if(fechaEl)fechaEl.value=todayStr;
+  // Hide all errors
+  document.querySelectorAll('.form-error').forEach(function(e){e.style.display='none';});
+  // Show form, hide success
+  document.getElementById('modal-body-form').style.display='';
+  document.getElementById('modal-success-box').style.display='none';
+  document.getElementById('modal-footer').style.display='';
+  // Show modal
+  document.getElementById('solicitud-modal').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+
+function closeSolicitudModal(){
+  document.getElementById('solicitud-modal').classList.add('hidden');
+  document.body.style.overflow='';
+}
+
+function closeSolicitudModalOverlay(e){
+  if(e.target===document.getElementById('solicitud-modal'))closeSolicitudModal();
+}
+
+function showFieldError(id,show){
+  var el=document.getElementById(id);
+  if(el)el.style.display=show?'block':'none';
+}
+
+function submitSolicitud(){
+  var valid=true;
+
+  var elemento=(document.getElementById('sol-elemento').value||'').trim();
+  showFieldError('err-elemento',!elemento);
+  if(!elemento)valid=false;
+
+  var people=(document.getElementById('sol-people').value||'').trim();
+  var emailOk=people&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(people);
+  showFieldError('err-people',!emailOk);
+  if(!emailOk)valid=false;
+
+  var fecha=(document.getElementById('sol-fecha').value||'').trim();
+  showFieldError('err-fecha',!fecha);
+  if(!fecha)valid=false;
+
+  var motivo=(document.getElementById('sol-motivo').value||'').trim();
+  showFieldError('err-motivo',!motivo);
+  if(!motivo)valid=false;
+
+  var desde=(document.getElementById('sol-desde').value||'').trim();
+  var hasta=(document.getElementById('sol-hasta').value||'').trim();
+  showFieldError('err-cronograma',!desde||!hasta);
+  if(!desde||!hasta)valid=false;
+
+  var aprobacion=(document.getElementById('sol-aprobacion').value||'').trim();
+  showFieldError('err-aprobacion',!aprobacion);
+  if(!aprobacion)valid=false;
+
+  if(!valid)return;
+
+  // Show success screen
+  document.getElementById('modal-body-form').style.display='none';
+  document.getElementById('modal-success-box').style.display='';
+  document.getElementById('modal-footer').style.display='none';
+}
+
+// Mostrar/ocultar botón "Nueva Solicitud" según grupo seleccionado
+var offSelectEl=document.getElementById('off-select');
+function syncBtnSolicitar(){
+  var btn=document.getElementById('btn-nueva-solicitud');
+  if(!btn)return;
+  btn.style.display=offSelectEl.value==='topics'?'':'none';
+}
+offSelectEl.addEventListener('change',syncBtnSolicitar);
+syncBtnSolicitar();
+
+// Cerrar modal con Escape
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&!document.getElementById('solicitud-modal').classList.contains('hidden'))closeSolicitudModal();
+});
 </script>
 </body>
 </html>
