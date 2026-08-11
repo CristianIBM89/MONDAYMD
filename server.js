@@ -11,10 +11,7 @@ const PORT   = process.env.PORT || 3000;
 // Token de Monday.com — configurar en .env (local) o en Railway Environment
 const MONDAY_TOKEN = process.env.MONDAY_TOKEN;
 if (!MONDAY_TOKEN) {
-  console.error("ERROR: Variable de entorno MONDAY_TOKEN no definida.");
-  console.error("  Local   : crea .env con MONDAY_TOKEN=tu_token");
-  console.error("  Railway : agrega MONDAY_TOKEN en Variables");
-  process.exit(1);
+  console.error("WARN: Variable de entorno MONDAY_TOKEN no definida. El dashboard mostrará error al cargar datos.");
 }
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 
