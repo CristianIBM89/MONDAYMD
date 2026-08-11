@@ -173,6 +173,43 @@ function buildHtml(mdTime, requestOff, updatedAt, nextRefresh) {
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1f2328;background:#f0f2f5;display:flex;flex-direction:column;min-height:100vh}
+/* ── Botones acción Request OFF ── */
+.action-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.btn-solicitar{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:6px;font-size:13px;font-weight:600;background:#f5f0ff;color:#6929c4;border:1.5px solid #d4bbff;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s}
+.btn-solicitar:hover{background:#ede5ff;border-color:#b28dff}
+.btn-manager{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:6px;font-size:13px;font-weight:600;background:#defbe6;color:#0d6e30;border:1.5px solid #a7f0ba;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s}
+.btn-manager:hover{background:#c8f0d1;border-color:#6fdc8c}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.hidden{display:none}
+.modal-box{background:#fff;border-radius:10px;width:100%;max-width:500px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal-head{padding:14px 18px 12px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.modal-head-icon{font-size:20px}
+.modal-head-titles{flex:1}
+.modal-head-title{font-size:14px;font-weight:700}
+.modal-head-sub{font-size:11px;color:#57606a}
+.modal-x{background:none;border:1px solid #e5e7eb;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:14px;color:#57606a;display:flex;align-items:center;justify-content:center}
+.modal-x:hover{background:#f7f8fa}
+.modal-body{padding:16px 18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:13px}
+.form-note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:10px 12px;font-size:12px;color:#1d4ed8}
+.form-field{display:flex;flex-direction:column;gap:3px}
+.form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#374151}
+.req{color:#dc2626}
+.form-field input,.form-field select,.form-field textarea{border:1px solid #d1d5db;border-radius:5px;padding:7px 10px;font-size:13px;color:#1f2328;background:#fff;outline:none;font-family:inherit}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:#6929c4;box-shadow:0 0 0 2px #ede5ff}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-err{color:#dc2626;font-size:11px;margin-top:1px;display:none}
+.monday-link-small{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#3b82d4;text-decoration:none;margin-top:5px}
+.monday-link-small:hover{text-decoration:underline}
+.modal-foot{padding:12px 18px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0}
+.btn-cancel{padding:6px 14px;border-radius:5px;font-size:12px;font-weight:600;background:#fff;color:#57606a;border:1px solid #d1d5db;cursor:pointer}
+.btn-cancel:hover{background:#f7f8fa}
+.btn-submit{padding:6px 16px;border-radius:5px;font-size:12px;font-weight:600;background:#6929c4;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;gap:5px}
+.btn-submit:hover{background:#551eab}
+.success-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:18px;text-align:center;display:none}
+.success-card .sc-title{font-size:15px;font-weight:700;color:#15803d;margin-bottom:5px}
+.success-card .sc-sub{font-size:12px;color:#166534}
+@media(max-width:500px){.form-row2{grid-template-columns:1fr}}
 .topbar{background:#1f2328;color:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
 .topbar-left .title{font-size:16px;font-weight:700}
 .topbar-left .meta{font-size:11px;color:#9ca3af;margin-top:1px}
@@ -373,10 +410,21 @@ footer{text-align:center;font-size:11px;color:#9ca3af;padding:10px;border-top:1p
       </div>
       <div class="selector-row">
         <label>Grupo:</label>
-        <select id="off-select" onchange="renderRequestOff(this.value)">
+        <select id="off-select" onchange="renderRequestOff(this.value);syncActionBar()">
           ${groupOpts}
         </select>
       </div>
+
+      <!-- ── Barra de acciones: solo visible en grupo Solicitudes ── -->
+      <div class="action-bar" id="off-action-bar">
+        <button class="btn-solicitar" onclick="openSolModal()">
+          ✏️ Solicitar Ausencia
+        </button>
+        <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="btn-manager">
+          ✅ Aprobar en Monday &nbsp;<small style="font-weight:400;opacity:.7">(Solo Natalia Rincón)</small>
+        </a>
+      </div>
+
       <div id="off-alerts" class="alert-box" style="display:none">
         <div class="alert-box-title" id="off-alert-title"></div>
         <ul class="alist" id="off-alert-list"></ul>
@@ -400,6 +448,96 @@ footer{text-align:center;font-size:11px;color:#9ca3af;padding:10px;border-top:1p
     </div>
 
   </main>
+</div>
+
+<!-- ══ MODAL NUEVA SOLICITUD ══ -->
+<div class="modal-overlay hidden" id="sol-modal" onclick="closeSolModalOverlay(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-head-icon">🗓</span>
+      <div class="modal-head-titles">
+        <div class="modal-head-title">Nueva Solicitud de Ausencia</div>
+        <div class="modal-head-sub">Grupo: Solicitudes · ibm.monday.com</div>
+      </div>
+      <button class="modal-x" onclick="closeSolModal()">✕</button>
+    </div>
+
+    <div class="modal-body" id="sol-form">
+      <div class="form-note">
+        ℹ️ Completa todos los campos (<strong>*</strong>). La aprobación final la realizan únicamente <strong>Natalia Rincón</strong> y <strong>Cristian Avilán</strong> en el tablero de Monday.
+      </div>
+      <div class="form-field">
+        <label>Elemento (nombre del ítem) <span class="req">*</span></label>
+        <input type="text" id="sol-elemento" placeholder="Ej: Vacaciones agosto – Nombre Apellido" maxlength="120">
+        <span class="field-err" id="err-elemento">Este campo es obligatorio.</span>
+      </div>
+      <div class="form-field">
+        <label>Persona (correo IBM) <span class="req">*</span></label>
+        <input type="email" id="sol-people" placeholder="nombre@ibm.com">
+        <span class="field-err" id="err-people">Ingresa un correo IBM válido.</span>
+      </div>
+      <div class="form-row2">
+        <div class="form-field">
+          <label>Fecha de Solicitud <span class="req">*</span></label>
+          <input type="date" id="sol-fecha">
+          <span class="field-err" id="err-fecha">Selecciona una fecha.</span>
+        </div>
+        <div class="form-field">
+          <label>Motivo <span class="req">*</span></label>
+          <select id="sol-motivo">
+            <option value="">— Seleccionar —</option>
+            <option>Vacaciones</option>
+            <option>Chequeo Médico</option>
+            <option>Día de cumpleaños</option>
+            <option>Festivo Col</option>
+            <option>Medio día votaciones</option>
+            <option>Licencia</option>
+            <option>Otro</option>
+          </select>
+          <span class="field-err" id="err-motivo">Selecciona un motivo.</span>
+        </div>
+      </div>
+      <div class="form-row2">
+        <div class="form-field">
+          <label>Cronograma Desde <span class="req">*</span></label>
+          <input type="date" id="sol-desde">
+          <span class="field-err" id="err-cronograma">Completa las fechas.</span>
+        </div>
+        <div class="form-field">
+          <label>Cronograma Hasta <span class="req">*</span></label>
+          <input type="date" id="sol-hasta">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Aprobación — estado inicial <span class="req">*</span></label>
+        <select id="sol-aprobacion">
+          <option value="">— Seleccionar —</option>
+          <option value="Solicitado">Solicitado</option>
+          <option value="En espera">En espera</option>
+        </select>
+        <span class="field-err" id="err-aprobacion">Selecciona el estado.</span>
+        <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="monday-link-small">
+          🔗 Ir al tablero de aprobación en Monday ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="success-card" id="sol-success">
+      <div class="sc-title">✅ Solicitud registrada</div>
+      <div class="sc-sub">Recuerda que la aprobación final la realiza <strong>Natalia Rincón</strong> o <strong>Cristian Avilán</strong> directamente en Monday.</div>
+      <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="monday-link-small" style="justify-content:center;margin-top:10px">
+        🔗 Ver tablero de aprobación ↗
+      </a>
+    </div>
+
+    <div class="modal-foot" id="sol-foot">
+      <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="monday-link-small">🔗 Tablero Monday</a>
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel" onclick="closeSolModal()">Cancelar</button>
+        <button class="btn-submit" onclick="submitSol()">✔ Registrar Solicitud</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer>Made with IBM Bob · Workspace MD · ibm.monday.com</footer>
@@ -499,6 +637,61 @@ function renderRequestOff(groupId) {
 
 renderMDTime(MDTIME_CUR);
 renderRequestOff('topics');
+
+// ── Barra de acciones: solo en grupo Solicitudes ──────────────────────
+function syncActionBar(){
+  var bar=document.getElementById('off-action-bar');
+  if(!bar)return;
+  bar.style.display=document.getElementById('off-select').value==='topics'?'flex':'none';
+}
+syncActionBar();
+
+// ── Modal Nueva Solicitud ─────────────────────────────────────────────
+function openSolModal(){
+  var ids=['sol-elemento','sol-people','sol-fecha','sol-motivo','sol-desde','sol-hasta','sol-aprobacion'];
+  ids.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var today=new Date();
+  var ts=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  var fe=document.getElementById('sol-fecha');if(fe)fe.value=ts;
+  document.querySelectorAll('.field-err').forEach(function(e){e.style.display='none';});
+  document.getElementById('sol-form').style.display='';
+  document.getElementById('sol-success').style.display='none';
+  document.getElementById('sol-foot').style.display='';
+  document.getElementById('sol-modal').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+function closeSolModal(){
+  document.getElementById('sol-modal').classList.add('hidden');
+  document.body.style.overflow='';
+}
+function closeSolModalOverlay(e){
+  if(e.target===document.getElementById('sol-modal'))closeSolModal();
+}
+function ferr(id,show){var el=document.getElementById(id);if(el)el.style.display=show?'block':'none';}
+function submitSol(){
+  var ok=true;
+  var el=(document.getElementById('sol-elemento').value||'').trim();
+  ferr('err-elemento',!el);if(!el)ok=false;
+  var pe=(document.getElementById('sol-people').value||'').trim();
+  var eok=pe&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pe);
+  ferr('err-people',!eok);if(!eok)ok=false;
+  var fe=(document.getElementById('sol-fecha').value||'').trim();
+  ferr('err-fecha',!fe);if(!fe)ok=false;
+  var mo=(document.getElementById('sol-motivo').value||'').trim();
+  ferr('err-motivo',!mo);if(!mo)ok=false;
+  var ds=(document.getElementById('sol-desde').value||'').trim();
+  var ha=(document.getElementById('sol-hasta').value||'').trim();
+  ferr('err-cronograma',!ds||!ha);if(!ds||!ha)ok=false;
+  var ap=(document.getElementById('sol-aprobacion').value||'').trim();
+  ferr('err-aprobacion',!ap);if(!ap)ok=false;
+  if(!ok)return;
+  document.getElementById('sol-form').style.display='none';
+  document.getElementById('sol-success').style.display='';
+  document.getElementById('sol-foot').style.display='none';
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&!document.getElementById('sol-modal').classList.contains('hidden'))closeSolModal();
+});
 <\/script>
 </body>
 </html>`;
