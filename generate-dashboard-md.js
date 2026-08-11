@@ -8,7 +8,24 @@ const fs     = require("fs");
 const path   = require("path");
 const { execSync } = require("child_process");
 
-try { require("dotenv").config({ path: path.join(__dirname, ".env") }); } catch (_) {}
+// Parsear .env manualmente para no depender de la librería 'dotenv'
+const envPath = path.join(__dirname, ".env");
+if (fs.existsSync(envPath)) {
+  const envText = fs.readFileSync(envPath, "utf8");
+  envText.split("\n").forEach(line => {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+    if (match) {
+      const key = match[1];
+      let value = match[2] || "";
+      value = value.trim();
+      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      process.env[key] = value.trim();
+    }
+  });
+}
+
 const MONDAY_TOKEN = process.env.MONDAY_TOKEN;
 const OUTPUT_FILE  = path.join(__dirname, "dashboard-md-workspace.html");
 const INDEX_FILE   = path.join(__dirname, "index.html");
@@ -173,7 +190,7 @@ async function main() {
     html = buildHtml(mdTime, requestOff, updatedAt);
     fs.writeFileSync(INDEX_FILE, html, "utf8");
   } else {
-    console.log("ℹ️  MONDAY_TOKEN no configurado localmente. Usando index.html existente.");
+    console.log("⚠️ MONDAY_TOKEN no encontrado en .env o variables de entorno. Usando index.html existente.");
     html = fs.readFileSync(INDEX_FILE, "utf8");
   }
 
@@ -181,25 +198,19 @@ async function main() {
   console.log(`\n✅ Guardado en index.html y ${OUTPUT_FILE}`);
 
   // ── Publicar en GitHub Pages (gh-pages) ──────────────────────────────
-  console.log("\n🌐 Publicando en GitHub Pages (gh-pages)...");
-  const tmpDir = path.join(__dirname, ".gh-pages-tmp");
-  try {
-    const remote    = "https://github.com/CristianIBM89/MONDAYMD.git";
-    const commitMsg = `Dashboard update: ${updatedAt}`;
-
-    if (fs.existsSync(tmpDir)) {
-      execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" });
+  if (process.env.SKIP_GH_PUSH === "1") {
+    console.log("\n⏭️ Push a GitHub Pages omitido.");
+  } else {
+    console.log("\n🌐 Publicando en GitHub Pages (gh-pages)...");
+    try {
+      execSync(`git add index.html dashboard-md-workspace.html generate-dashboard-md.js`, { stdio: "pipe" });
+      execSync(`git commit -m "Dashboard update: ${updatedAt}" --allow-empty`, { stdio: "pipe" });
+      execSync(`git push origin main`, { stdio: "pipe" });
+      execSync(`git push origin main:gh-pages --force`, { stdio: "pipe" });
+      console.log("✅ Publicado exitosamente en: https://cristianibm89.github.io/MONDAYMD/");
+    } catch(e) {
+      console.warn("⚠️ Error al publicar en gh-pages:", e.message.split("\n")[0]);
     }
-    execSync(`git worktree add "${tmpDir}" gh-pages`, { cwd: __dirname, stdio: "pipe" });
-    fs.copyFileSync(INDEX_FILE, path.join(tmpDir, "index.html"));
-    execSync(`git add index.html`,                         { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "${commitMsg}" --allow-empty`, { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git push ${remote} gh-pages`,                { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" });
-    console.log("✅ Publicado exitosamente en: https://cristianibm89.github.io/MONDAYMD/");
-  } catch(e) {
-    console.warn("⚠️  Error al publicar en gh-pages:", e.message.split("\n")[0]);
-    try { execSync(`git worktree remove "${tmpDir}" --force`, { cwd: __dirname, stdio: "pipe" }); } catch(_) {}
   }
 }
 
