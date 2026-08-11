@@ -180,18 +180,28 @@ async function main() {
   });
 
   if (MONDAY_TOKEN) {
-    console.log("📅 Cargando MD-Time · HR Zone desde Monday API...");
-    const mdTime = await fetchMDTime();
+    try {
+      console.log("📅 Cargando MD-Time · HR Zone desde Monday API...");
+      const mdTime = await fetchMDTime();
 
-    console.log("\n📋 Cargando Request OFF desde Monday API...");
-    const requestOff = await fetchRequestOff();
+      console.log("\n📋 Cargando Request OFF desde Monday API...");
+      const requestOff = await fetchRequestOff();
 
-    console.log("\n⚙️  Generando HTML actualizado...");
-    html = buildHtml(mdTime, requestOff, updatedAt);
-    fs.writeFileSync(INDEX_FILE, html, "utf8");
+      console.log("\n⚙️  Generando HTML actualizado...");
+      html = buildHtml(mdTime, requestOff, updatedAt);
+      fs.writeFileSync(INDEX_FILE, html, "utf8");
+    } catch(err) {
+      console.warn("⚠️ Error consultando Monday API:", err.message);
+      console.log("Actualizando la fecha en index.html con el contenido existente...");
+      html = fs.readFileSync(INDEX_FILE, "utf8");
+      html = html.replace(/<div class="topbar-date">[^<]*<\/div>/, `<div class="topbar-date">${updatedAt}</div>`);
+      fs.writeFileSync(INDEX_FILE, html, "utf8");
+    }
   } else {
-    console.log("⚠️ MONDAY_TOKEN no encontrado en .env o variables de entorno. Usando index.html existente.");
+    console.log("⚠️ MONDAY_TOKEN no encontrado. Actualizando fecha en index.html...");
     html = fs.readFileSync(INDEX_FILE, "utf8");
+    html = html.replace(/<div class="topbar-date">[^<]*<\/div>/, `<div class="topbar-date">${updatedAt}</div>`);
+    fs.writeFileSync(INDEX_FILE, html, "utf8");
   }
 
   fs.writeFileSync(OUTPUT_FILE, html, "utf8");
@@ -199,7 +209,7 @@ async function main() {
 
   // ── Publicar en GitHub Pages (gh-pages) ──────────────────────────────
   if (process.env.SKIP_GH_PUSH === "1") {
-    console.log("\n⏭️ Push a GitHub Pages omitido.");
+    console.log("\n⏭️ Push a GitHub Pages omitido (lo realiza GitHub Actions workflow).");
   } else {
     console.log("\n🌐 Publicando en GitHub Pages (gh-pages)...");
     try {

@@ -1,11 +1,11 @@
-﻿name: Actualizar Dashboard MD
+name: Actualizar Dashboard MD
 
 on:
-  # Martes y jueves a las 10:00pm UTC = 5:00pm Bogot├í (UTC-5)
+  # Martes y jueves a las 10:00pm UTC = 5:00pm Bogotá (UTC-5)
   schedule:
     - cron: "0 22 * * 2"   # martes
     - cron: "0 22 * * 4"   # jueves
-  # Bot├│n manual: GitHub ÔåÆ Actions ÔåÆ "Actualizar Dashboard MD" ÔåÆ Run workflow
+  # Botón manual: GitHub → Actions → "Actualizar Dashboard MD" → Run workflow
   workflow_dispatch:
 
 jobs:
@@ -23,20 +23,12 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Instalar dependencias
-        run: npm install
-
       - name: Generar dashboard HTML
         env:
           MONDAY_TOKEN: ${{ secrets.MONDAY_TOKEN }}
+          SKIP_GH_PUSH: "1"
         run: |
-          node -e "
-            const { execSync } = require('child_process');
-            // Deshabilitar el push interno del script (lo hace el siguiente paso)
-            process.env.SKIP_GH_PUSH = '1';
-          " || true
-          node generate-dashboard-md.js || true
-          # Si el script no gener├│ el archivo, falla el workflow
+          node generate-dashboard-md.js
           test -f dashboard-md-workspace.html
 
       - name: Copiar como index.html
@@ -49,5 +41,5 @@ jobs:
           publish_branch: gh-pages
           publish_dir: .
           include_files: index.html
-          commit_message: "Dashboard actualizado autom├íticamente"
+          commit_message: "Dashboard actualizado automáticamente"
           keep_files: false
