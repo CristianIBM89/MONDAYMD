@@ -9,7 +9,7 @@ const http   = require("http");
 const PORT   = process.env.PORT || 3000;
 
 // Token de Monday.com — configurar en .env (local) o en Railway Environment
-const MONDAY_TOKEN = process.env.MONDAY_TOKEN;
+const MONDAY_TOKEN = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || "").trim();
 if (!MONDAY_TOKEN) {
   console.error("WARN: Variable de entorno MONDAY_TOKEN no definida. El dashboard mostrará error al cargar datos.");
 }
@@ -42,7 +42,7 @@ let cache = { html: null, builtAt: 0 };
 
 // ── Monday API ─────────────────────────────────────────────────────────────
 function mondayQuery(query) {
-  const token = process.env.MONDAY_TOKEN || MONDAY_TOKEN;
+  const token = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || MONDAY_TOKEN || "").trim();
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({ query });
     const req = https.request({
@@ -724,10 +724,10 @@ const server = http.createServer(async (req, res) => {
     req.on("data", chunk => { body += chunk; });
     req.on("end", async () => {
       try {
-        const activeToken = process.env.MONDAY_TOKEN || MONDAY_TOKEN;
+        const activeToken = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || MONDAY_TOKEN || "").trim();
         if (!activeToken) {
           res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ ok: false, error: "La variable de entorno MONDAY_TOKEN no está definida en el servidor en Railway. Por favor agrégala en la pestaña Environment Variables de tu proyecto en Railway y haz clic en Redeploy." }));
+          res.end(JSON.stringify({ ok: false, error: "La variable MONDAY_TOKEN no está definida en Railway. Ve a Railway -> tu servicio -> Variables -> agrega MONDAY_TOKEN y presiona Save/Deploy." }));
           return;
         }
         const d = JSON.parse(body);
