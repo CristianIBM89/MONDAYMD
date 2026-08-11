@@ -710,6 +710,54 @@ async function buildCache() {
 
 // ── HTTP Server ────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
+
+  // ── CORS para GitHub Pages ──────────────────────────────────────────
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") { res.writeHead(204); res.end(); return; }
+
+  // ── POST /api/solicitud — crear ítem en Monday ──────────────────────
+  if (req.method === "POST" && req.url === "/api/solicitud") {
+    let body = "";
+    req.on("data", chunk => { body += chunk; });
+    req.on("end", async () => {
+      try {
+        const d = JSON.parse(body);
+        // Construir mutation de Monday para crear el ítem en grupo "topics"
+        const columnValues = JSON.stringify({
+          people_mkn8wds0: { personsAndTeams: [] }, // people se gestiona desde Monday
+          date4:             { date: d.fecha || "" },
+          status_mkn825jf:   { label: d.aprobacion || "Solicitado" },
+          status_1_mkn5yhzg: { label: d.motivo || "" },
+          cronograma_mkn6bx9b: { from: d.desde || "", to: d.hasta || "" },
+          text_mkn8yf9q:     d.observaciones || ""
+        }).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+        const mutation = `mutation {
+          create_item(
+            board_id: 8488385355,
+            group_id: "topics",
+            item_name: "${(d.elemento||"").replace(/"/g,'\\"')}",
+            column_values: "${columnValues}"
+          ) { id name }
+        }`;
+
+        const result = await mondayQuery(mutation);
+        const itemId = result.create_item ? result.create_item.id : null;
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, itemId }));
+        console.log(`[Solicitud] Creado ítem "${d.elemento}" id=${itemId}`);
+      } catch(err) {
+        console.error("[Solicitud] Error:", err.message);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // ── GET / — Dashboard ───────────────────────────────────────────────
   if (req.url !== "/" && req.url !== "/?refresh=1" && !req.url.startsWith("/?")) {
     res.writeHead(404); res.end("Not found"); return;
   }

@@ -685,7 +685,7 @@ tbody tr:hover td{background:#f9f9f9}
         <button class="btn-solicitar" id="btn-nueva-solicitud" onclick="openSolicitudModal()">
           ✏️ Solicitar Ausencia
         </button>
-        <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-manager-link" id="btn-manager-monday">
+        <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="btn-manager-link" id="btn-manager-monday">
           ✅ Aprobar en Monday &nbsp;<span style="font-size:10px;font-weight:400;opacity:.8">(Solo Natalia Rincón)</span>
         </a>
       </div>
@@ -793,7 +793,7 @@ tbody tr:hover td{background:#f9f9f9}
         </select>
         <span class="form-error" id="err-aprobacion">Selecciona el estado inicial.</span>
         <div style="margin-top:6px">
-          <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
+          <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2L7 9M3 4H2a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-1" stroke="#0f62fe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Ir al tablero de aprobación en Monday
           </a>
@@ -807,7 +807,7 @@ tbody tr:hover td{background:#f9f9f9}
       <div class="success-box-title">✓ Solicitud registrada</div>
       <div class="success-box-sub">Tu solicitud fue registrada. Recuerda que la aprobación final la hace <strong>Natalia Rincón</strong> o <strong>Cristian Avilán</strong> en el tablero de Monday.</div>
       <div style="margin-top:12px">
-        <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
+        <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="btn-monday-link">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2L7 9M3 4H2a1 1 0 00-1 1v9a1 1 0 001 1v-1" stroke="#0f62fe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Ver tablero de aprobación
         </a>
@@ -816,7 +816,7 @@ tbody tr:hover td{background:#f9f9f9}
 
     <!-- Footer -->
     <div class="modal-footer" id="modal-footer">
-      <a href="https://ibm.monday.com/boards/9095468424/views/202780769" target="_blank" rel="noopener" class="btn-monday-link" style="font-size:11px">
+      <a href="https://ibm.monday.com/boards/8488385355/views/202780769" target="_blank" rel="noopener" class="btn-monday-link" style="font-size:11px">
         🔗 Tablero Monday
       </a>
       <div style="display:flex;gap:8px">
@@ -1291,10 +1291,31 @@ function submitSolicitud(){
 
   if(!valid)return;
 
-  // Show success screen
-  document.getElementById('modal-body-form').style.display='none';
-  document.getElementById('modal-success-box').style.display='';
-  document.getElementById('modal-footer').style.display='none';
+  // Deshabilitar botón mientras se envía
+  var submitBtn=document.querySelector('#modal-footer .btn-submit');
+  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Enviando...';}
+
+  // POST al servidor Railway → crea ítem en Monday
+  fetch('https://mondaymd-production.up.railway.app/api/solicitud',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({elemento:elemento,people:people,fecha:fecha,motivo:motivo,desde:desde,hasta:hasta,aprobacion:aprobacion})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.ok){
+      document.getElementById('modal-body-form').style.display='none';
+      document.getElementById('modal-success-box').style.display='';
+      document.getElementById('modal-footer').style.display='none';
+    } else {
+      alert('Error al registrar en Monday: '+(data.error||'Error desconocido'));
+      if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Registrar Solicitud';}
+    }
+  })
+  .catch(function(){
+    alert('No se pudo conectar con el servidor. Intenta de nuevo.');
+    if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Registrar Solicitud';}
+  });
 }
 
 // Mostrar/ocultar barra de acciones solo cuando grupo = Solicitudes
