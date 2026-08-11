@@ -723,6 +723,11 @@ const server = http.createServer(async (req, res) => {
     req.on("data", chunk => { body += chunk; });
     req.on("end", async () => {
       try {
+        if (!MONDAY_TOKEN) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "La variable de entorno MONDAY_TOKEN no está definida en el servidor en Railway. Por favor agrégala en la pestaña Environment Variables de tu proyecto en Railway." }));
+          return;
+        }
         const d = JSON.parse(body);
         // Construir mutation de Monday para crear el ítem en grupo "topics"
         const columnValues = JSON.stringify({
