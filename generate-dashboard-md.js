@@ -213,7 +213,7 @@ async function main() {
   } else {
     console.log("\n🌐 Publicando en GitHub Pages (gh-pages)...");
     try {
-      execSync(`git add index.html dashboard-md-workspace.html generate-dashboard-md.js`, { stdio: "pipe" });
+      execSync(`git add index.html generate-dashboard-md.js server.js`, { stdio: "pipe" });
       execSync(`git commit -m "Dashboard update: ${updatedAt}" --allow-empty`, { stdio: "pipe" });
       execSync(`git push origin main`, { stdio: "pipe" });
       execSync(`git push origin main:gh-pages --force`, { stdio: "pipe" });
