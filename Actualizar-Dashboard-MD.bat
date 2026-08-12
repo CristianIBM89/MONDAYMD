@@ -9,5 +9,5 @@ node generate-dashboard-md.js >> dashboard-log.txt 2>&1
 
 echo [%date% %time%] Dashboard regenerado y publicado en GitHub Pages. >> dashboard-log.txt
 
-:: Abrir el dashboard en el navegador
-start "" "https://cristianibm89.github.io/MONDAYMD/"
+:: Abrir el dashboard en el navegador forzando refresco de cache
+start "" "https://cristianibm89.github.io/MONDAYMD/?updated=%time:~0,2%%time:~3,2%"
