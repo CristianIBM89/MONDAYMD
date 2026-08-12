@@ -1,13 +1,28 @@
 @echo off
-:: Regenera el dashboard MD y lo publica en GitHub Pages
+title Actualizar Dashboard MD Workspace - IBM
+color 0A
 cd /d "%~dp0"
 
-echo [%date% %time%] Iniciando regeneracion del dashboard... >> dashboard-log.txt
+echo ========================================================
+echo   ACTUALIZANDO DASHBOARD MD WORKSPACE (MONDAY.COM)
+echo ========================================================
+echo.
+echo  Fecha: %date% %time%
+echo  Obteniendo datos de Monday API y publicando en GitHub Pages...
+echo.
 
-:: Cargar el token desde .env y correr el generador
-node generate-dashboard-md.js >> dashboard-log.txt 2>&1
+node generate-dashboard-md.js
 
-echo [%date% %time%] Dashboard regenerado y publicado en GitHub Pages. >> dashboard-log.txt
+echo.
+echo ========================================================
+echo   ¡DASHBOARD ACTUALIZADO Y PUBLICADO EXITOSAMENTE!
+echo ========================================================
+echo.
+echo  Abriendo el dashboard en vivo en tu navegador...
+echo.
 
-:: Abrir el dashboard en el navegador forzando refresco de cache
-start "" "https://cristianibm89.github.io/MONDAYMD/?updated=%time:~0,2%%time:~3,2%"
+:: Generar un identificador unico para forzar la recarga sin cache
+set /a "rand=%RANDOM% * 1000 + %RANDOM%"
+start "" "https://cristianibm89.github.io/MONDAYMD/?v=%rand%"
+
+ping -n 4 127.0.0.1 >nul
