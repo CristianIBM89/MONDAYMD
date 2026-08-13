@@ -1170,13 +1170,12 @@ function submitSolicitud(){
 
   // Conexión directa con la API de Monday.com (sin necesidad de servidor Railway)
   var colVals = JSON.stringify({
-    people_mkn8wds0:   { personsAndTeams: [] },
-    text_mkn8yf9q:     people,
+    people_mkn8wds0:   { personsAndTeams: [{ email: people,     kind: "person" }] },
     date4:             { date: fecha },
     status_mkn825jf:   { label: "Solicitado" },
     status_1_mkn5yhzg: { label: motivo },
     cronograma_mkn6bx9b: { from: desde, to: hasta },
-    people_mkn5pkbz:   { personsAndTeams: [] }
+    people_mkn5pkbz:   { personsAndTeams: [{ email: aprobacion || "nrincon@ibm.com", kind: "person" }] }
   }).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
   var mutation = 'mutation {\n' +
