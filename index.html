@@ -1168,14 +1168,44 @@ function submitSolicitud(){
   var submitBtn=document.querySelector('#modal-footer .btn-submit');
   if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Enviando...';}
 
+  // Mapa email → ID de usuario Monday (obtenido de los items reales del tablero)
+  var PEOPLE_IDS = {
+    "alvaro.andres.morea@ibm.com":63052657,
+    "andrea.chaves@ibm.com":60354750,
+    "carlos.alberto.huerfano.velasquez@ibm.com":63092420,
+    "cristian.avilan@ibm.com":60354763,
+    "cristian.galindo@ibm.com":60391886,
+    "daniel.lopez.mozo@ibm.com":58989133,
+    "erick.gutierrez@ibm.com":60354766,
+    "felipe.valderrama@ibm.com":76123697,
+    "jairo.jimenez@ibm.com":60632358,
+    "jessicabenavides@ibm.com":60355372,
+    "jesus.tobon@ibm.com":60354760,
+    "jorge.garciab@ibm.com":103486218,
+    "jose.restrepo@ibm.com":76225532,
+    "juan.andrade@ibm.com":58218310,
+    "julieth.viviana.rodriguez@ibm.com":63094028,
+    "laura.sandoval.moreno@ibm.com":63092271,
+    "ligia.torres@ibm.com":62820660,
+    "liliann.clavijo@ibm.com":60076931,
+    "lorena.sanchez@ibm.com":54211985,
+    "milena.moya@ibm.com":58234023,
+    "nrincon@ibm.com":51116064,
+    "stephanie.lorena.arcila@ibm.com":63106780,
+    "susanaramirezh@ibm.com":62967048
+  };
+  var peopleId    = PEOPLE_IDS[people.toLowerCase()];
+  var aprobId     = PEOPLE_IDS[(aprobacion||"nrincon@ibm.com").toLowerCase()] || 51116064;
+  var peopleField = peopleId ? { personsAndTeams: [{ id: peopleId, kind: "person" }] } : { personsAndTeams: [] };
+
   // Conexión directa con la API de Monday.com (sin necesidad de servidor Railway)
   var colVals = JSON.stringify({
-    people_mkn8wds0:   { personsAndTeams: [{ email: people,     kind: "person" }] },
-    date4:             { date: fecha },
-    status_mkn825jf:   { label: "Solicitado" },
-    status_1_mkn5yhzg: { label: motivo },
+    people_mkn8wds0:     peopleField,
+    date4:               { date: fecha },
+    status_mkn825jf:     { label: "Solicitado" },
+    status_1_mkn5yhzg:   { label: motivo },
     cronograma_mkn6bx9b: { from: desde, to: hasta },
-    people_mkn5pkbz:   { personsAndTeams: [{ email: aprobacion || "nrincon@ibm.com", kind: "person" }] }
+    people_mkn5pkbz:     { personsAndTeams: [{ id: aprobId, kind: "person" }] }
   }).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
   var mutation = 'mutation {\n' +
