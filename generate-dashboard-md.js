@@ -167,6 +167,33 @@ function buildHtml(mdTime, requestOff, updatedAt) {
   template = template.replace(/const MDTIME_CUR=[\s\S]*?;/, `const MDTIME_CUR=${JSON.stringify(mdTime.currentGroupId)};`);
   template = template.replace(/const OFF_DATA=[\s\S]*?;/, `const OFF_DATA=${JSON.stringify(requestOff.groupsData)};`);
 
+  // ── Regenerate week <select> options from real Monday groups ──────────────
+  // Only dated groups (format YYYY/MM/DD), sorted newest first, up to last 8
+  const cur = mdTime.currentGroupId;
+  const datedGroups = mdTime.allGroups
+    .filter(g => /^\d{4}\/\d{2}\/\d{2}$/.test(g.title))
+    .map(g => { const [y,m,d] = g.title.split("/").map(Number); return { ...g, date: new Date(y,m-1,d) }; })
+    .sort((a, b) => b.date - a.date)
+    .slice(0, 8);
+
+  const weekOptions = datedGroups
+    .map(g => `<option value="${g.id}"${g.id === cur ? ' selected' : ''}>${g.title}</option>`)
+    .join("\n        ");
+
+  // Replace options inside each of the three week selects
+  template = template.replace(
+    /(<select id="cover-week-select"[^>]*>)[\s\S]*?(<\/select>)/,
+    `$1\n        ${weekOptions}\n      $2`
+  );
+  template = template.replace(
+    /(<select id="alerts-week-select"[^>]*>)[\s\S]*?(<\/select>)/,
+    `$1\n              ${weekOptions}\n            $2`
+  );
+  template = template.replace(
+    /(<select id="mdtime-select"[^>]*>)[\s\S]*?(<\/select>)/,
+    `$1\n              ${weekOptions}\n            $2`
+  );
+
   return template;
 }
 
