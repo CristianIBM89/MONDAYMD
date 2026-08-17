@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main   # siempre desde main para tener el generate actualizado
 
       - name: Node.js 20
         uses: actions/setup-node@v4
@@ -29,17 +31,15 @@ jobs:
           SKIP_GH_PUSH: "1"
         run: |
           node generate-dashboard-md.js
+          test -f index.html
           test -f dashboard-md-workspace.html
 
-      - name: Copiar como index.html
-        run: cp dashboard-md-workspace.html index.html
-
-      - name: Publicar en GitHub Pages
+      - name: Publicar index.html en GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: .
           include_files: index.html
-          commit_message: "Dashboard actualizado automáticamente"
+          commit_message: "Dashboard actualizado automáticamente — semanas regeneradas"
           keep_files: false
