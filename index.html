@@ -480,7 +480,7 @@ tbody tr:hover td{background:#f9f9f9}
     <div class="topbar-title">Dashboard · Workspace MD</div>
     <div class="topbar-sub">ibm.monday.com &nbsp;·&nbsp; 2 tableros monitoreados</div>
   </div>
-  <div class="topbar-date">17/08/2026, 4:49 p. m.</div>
+  <div class="topbar-date">17/08/2026, 5:03 p. m.</div>
 </header>
 
 <!-- ══ DECK ══ -->
@@ -848,15 +848,15 @@ tbody tr:hover td{background:#f9f9f9}
   </div>
   <div class="nav-btn nav-alert-btn" id="nav-1" onclick="goTo(1)">
     <span class="nav-dot nd-red"></span> Alertas
-    <span class="nav-badge">14</span>
+    <span class="nav-badge" id="nav-badge-alertas">15</span>
   </div>
   <div class="nav-btn" id="nav-2" onclick="goTo(2)">
     <span class="nav-dot nd-blue"></span> MD-Time
-    <span class="nav-badge">10</span>
+    <span class="nav-badge" id="nav-badge-mdtime">13</span>
   </div>
   <div class="nav-btn" id="nav-3" onclick="goTo(3)">
     <span class="nav-dot nd-purple"></span> Request OFF
-    <span class="nav-badge">4</span>
+    <span class="nav-badge" id="nav-badge-off">2</span>
   </div>
 </nav>
 
@@ -925,6 +925,11 @@ function changeWeek(gid){
     (mdAlerts.length?'<span class="chip chip-red">\u23f1 '+mdAlerts.length+' en MD-Time</span>':'')+
     (offAlertsData.length?'<span class="chip chip-red">\ud83d\uddd3 '+offAlertsData.length+' en Request OFF</span>':'');
   document.getElementById('cover-chips').innerHTML=chips||'<span class="chip chip-blue">\u2713 Sin pendientes</span>';
+
+  // Update nav badges
+  document.getElementById('nav-badge-alertas').textContent=total;
+  document.getElementById('nav-badge-mdtime').textContent=mdAlerts.length;
+  document.getElementById('nav-badge-off').textContent=offAlertsData.length;
 
   // Update Alertas slide
   document.getElementById('alerts-total-badge').textContent=total+' pendientes';

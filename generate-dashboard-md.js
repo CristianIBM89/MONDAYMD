@@ -194,6 +194,42 @@ function buildHtml(mdTime, requestOff, updatedAt) {
     `$1\n              ${weekOptions}\n            $2`
   );
 
+  // ── Compute and write initial nav badge values ────────────────────────────
+  // MD-Time pending: personas with at least one missing column in current week
+  const curWeek = mdTime.weeksData[cur];
+  const colKeys = mdTime.colDefs.map(c => c.key);
+  let mdTimePending = 0;
+  if (curWeek) {
+    curWeek.items.forEach(item => {
+      const missing = colKeys.filter(k => !(item.cv[k] && item.cv[k].trim()));
+      if (missing.length > 0) mdTimePending++;
+    });
+  }
+
+  // Request OFF pending: solicitudes sin archivo de soporte
+  const solGroup = requestOff.groupsData["topics"];
+  let offPending = 0;
+  if (solGroup) {
+    solGroup.items.forEach(r => {
+      if (!(r.cv["file_mm1ht7j7"] && r.cv["file_mm1ht7j7"].trim())) offPending++;
+    });
+  }
+
+  const totalPending = mdTimePending + offPending;
+
+  template = template.replace(
+    /(<span class="nav-badge" id="nav-badge-alertas">)[^<]*(<\/span>)/,
+    `$1${totalPending}$2`
+  );
+  template = template.replace(
+    /(<span class="nav-badge" id="nav-badge-mdtime">)[^<]*(<\/span>)/,
+    `$1${mdTimePending}$2`
+  );
+  template = template.replace(
+    /(<span class="nav-badge" id="nav-badge-off">)[^<]*(<\/span>)/,
+    `$1${offPending}$2`
+  );
+
   return template;
 }
 
