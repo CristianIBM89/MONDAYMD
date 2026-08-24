@@ -126,11 +126,13 @@ body{
 .alert-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
   gap:10px;overflow-y:auto;flex:1;padding-bottom:4px;
+  align-content:start;
 }
 .alert-card{
   background:#fff;border:1px solid var(--border);
   border-radius:8px;padding:12px 14px;
   border-left:3px solid var(--danger);
+  align-self:start;
 }
 .alert-card.cal{border-left-color:#8a3ffc}
 .ac-board{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
