@@ -1106,61 +1106,88 @@ renderRequestOff();
 changeWeek(MDTIME_CUR);
 
 // ── Carga en vivo de Request OFF desde Monday API ─────────────────────
+// Una sola query trae Solicitudes + Aprobadas + Rechazadas en paralelo.
+// Finalizadas (177 items) se omite intencionalmente para no ralentizar.
 (function loadOffLive(){
-  const OFF_COL_IDS=["people_mkn8wds0","date4","status_mkn825jf","status_1_mkn5yhzg","cronograma_mkn6bx9b","n_meros_mkn6cwvj","file_mm1ht7j7","people_mkn5pkbz","text_mkn8yf9q"];
-  const colStr=OFF_COL_IDS.map(c=>'"'+c+'"').join(',');
-  const query='{ boards(ids:[8488385355]) { groups { id title } } }';
+  const COL_IDS=["people_mkn8wds0","date4","status_mkn825jf","status_1_mkn5yhzg","cronograma_mkn6bx9b","n_meros_mkn6cwvj","file_mm1ht7j7","people_mkn5pkbz","text_mkn8yf9q"];
+  const colStr=COL_IDS.map(function(c){return'"'+c+'"';}).join(',');
   const TOKEN=atob('ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKMGFXUWlPalk0TlRrMU16TXdOaXdpWVdGcElqb3hNU3dpZFdsa0lqbzJNRE0xTkRjMk15d2lhV0ZrSWpvaU1qQXlOaTB3TnkweU0xUXhOem96TlRvd055NHdNREJhSWl3aWNHVnlJam9pYldVNmQzSnBkR1VpTENKaFkzUnBaQ0k2TVRNMU16WTVPREVzSW5KbmJpSTZJblZ6WlRFaWZRLkRucG9PV3g0VzkxQV9rTFVMZ1JGM05PYUtYVVluQkVIUEIydVNSNjZEQW8=');
-  const HEADERS={'Content-Type':'application/json','Authorization':TOKEN,'API-Version':'2024-01'};
 
-  function mdFetch(q){
-    return fetch('https://api.monday.com/v2',{method:'POST',headers:HEADERS,body:JSON.stringify({query:q})})
-      .then(function(r){return r.json();});
-  }
+  // Paso 1: obtener lista de grupos
+  fetch('https://api.monday.com/v2',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':TOKEN,'API-Version':'2024-01'},
+    body:JSON.stringify({query:'{ boards(ids:[8488385355]) { groups { id title } } }'})
+  })
+  .then(function(r){return r.json();})
+  .then(function(res){
+    var allGroups=res.data.boards[0].groups;
 
-  // Grupos a ignorar en la carga (Finalizadas, Rechazadas no afectan vista activa)
-  // Cargamos TODOS los grupos para que calendario y tabla funcionen igual
-  mdFetch(query).then(function(res){
-    var groups=res.data.boards[0].groups;
-    var promises=groups.map(function(g){
+    // Separar grupos activos (todo excepto Finalizadas — el grupo más grande)
+    // Se detecta por título que contenga "Finaliz" para no hardcodear el id
+    var active=allGroups.filter(function(g){
+      return !g.title.toLowerCase().includes('finaliz');
+    });
+    // Finalizadas se conserva del JSON embebido para el calendario histórico
+    var finaliz=allGroups.filter(function(g){
+      return g.title.toLowerCase().includes('finaliz');
+    });
+
+    // Paso 2: una sola llamada por grupo activo (3 llamadas en paralelo)
+    var promises=active.map(function(g){
       var q='{ boards(ids:[8488385355]) { groups(ids:["'+g.id+'"]) { title items_page(limit:200) { items { name column_values(ids:['+colStr+']) { id text } } } } } }';
-      return mdFetch(q).then(function(r){
+      return fetch('https://api.monday.com/v2',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':TOKEN,'API-Version':'2024-01'},
+        body:JSON.stringify({query:q})
+      })
+      .then(function(r){return r.json();})
+      .then(function(r){
         var grp=r.data.boards[0].groups[0];
-        var items=grp.items_page.items.map(function(item){
-          var cv={};
-          item.column_values.forEach(function(c){cv[c.id]=c.text||'';});
-          return {name:item.name,cv:cv};
-        });
-        return {id:g.id,title:g.title,items:items};
+        return {
+          id:g.id,
+          title:g.title,
+          items:grp.items_page.items.map(function(item){
+            var cv={};
+            item.column_values.forEach(function(c){cv[c.id]=c.text||'';});
+            return {name:item.name,cv:cv};
+          })
+        };
       });
     });
-    return Promise.all(promises);
-  }).then(function(results){
-    // Reconstruir OFF_DATA con datos frescos
-    var fresh={};
-    results.forEach(function(g){fresh[g.id]={title:g.title,items:g.items};});
-    OFF_DATA=fresh;
-    // Re-renderizar todo con datos actualizados
-    var sel=document.getElementById('off-select');
-    var curGid=sel?sel.value:'topics';
-    // Reconstruir opciones del selector si los grupos cambiaron
-    if(sel){
-      sel.innerHTML='';
-      results.forEach(function(g){
-        var opt=document.createElement('option');
-        opt.value=g.id;opt.textContent=g.title;
-        if(g.id===curGid)opt.selected=true;
-        sel.appendChild(opt);
+
+    return Promise.all(promises).then(function(results){
+      // Reconstruir OFF_DATA: grupos activos frescos + Finalizadas del embebido
+      var fresh={};
+      results.forEach(function(g){fresh[g.id]={title:g.title,items:g.items};});
+      // Preservar Finalizadas del JSON embebido (no se recarga para mantener velocidad)
+      finaliz.forEach(function(g){
+        if(OFF_DATA[g.id]) fresh[g.id]=OFF_DATA[g.id];
       });
-      // Si el grupo seleccionado ya no existe, usar el primero
-      if(!fresh[curGid]&&results.length)curGid=results[0].id;
-    }
-    renderOffTable(curGid);
-    renderRequestOff();
-    changeWeek(MDTIME_CUR);
-    console.log('[OFF] Datos actualizados en vivo desde Monday API');
-  }).catch(function(err){
-    console.warn('[OFF] No se pudo cargar en vivo, usando datos embebidos:',err.message||err);
+      OFF_DATA=fresh;
+
+      // Reconstruir selector con grupos activos
+      var sel=document.getElementById('off-select');
+      var prevGid=sel?sel.value:'topics';
+      if(sel){
+        sel.innerHTML='';
+        results.forEach(function(g){
+          var opt=document.createElement('option');
+          opt.value=g.id; opt.textContent=g.title;
+          if(g.id===prevGid) opt.selected=true;
+          sel.appendChild(opt);
+        });
+      }
+      var curGid=(sel&&fresh[sel.value])?sel.value:(results.length?results[0].id:'topics');
+
+      renderOffTable(curGid);
+      renderRequestOff();
+      changeWeek(MDTIME_CUR);
+      console.log('[OFF] Live: '+results.map(function(g){return g.title+'('+g.items.length+')'}).join(', '));
+    });
+  })
+  .catch(function(err){
+    console.warn('[OFF] Fallback a datos embebidos:',err.message||err);
   });
 })();
 
