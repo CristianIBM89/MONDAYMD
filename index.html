@@ -908,12 +908,13 @@ function changeWeek(gid){
     mdAlerts.sort((a,b_)=>b_.missing.length-a.missing.length);
   }
 
-  // OFF alerts are static (no week filter on Request OFF)
+  // OFF alerts: todos los grupos activos (Solicitudes + Aprobadas), excluye Finalizadas/Rechazadas
+  const OFF_ACTIVE_GROUPS=['topics','new_group_mkn8gp5j'];
   const offAlertsData=[];
-  const solData=OFF_DATA['topics'];
-  if(solData){
-    solData.items.forEach(r=>{if(!(r.cv['file_mm1ht7j7']&&r.cv['file_mm1ht7j7'].trim()))offAlertsData.push({name:r.name});});
-  }
+  OFF_ACTIVE_GROUPS.forEach(gkey=>{
+    const grp=OFF_DATA[gkey];
+    if(grp) grp.items.forEach(r=>{if(!(r.cv['file_mm1ht7j7']&&r.cv['file_mm1ht7j7'].trim()))offAlertsData.push({name:r.name,grupo:grp.title});});
+  });
 
   const weekTitle=wk?wk.title:gid;
   const isCur=gid===MDTIME_CUR;
@@ -941,7 +942,7 @@ function changeWeek(gid){
     ?mdAlerts.map(a=>'<div class="alert-card"><div class="ac-board">MD-Time \xb7 HR Zone</div><div class="ac-name">'+esc(a.name)+'</div><div class="ac-detail">Falta: '+a.missing.map(esc).join(' \xb7 ')+'</div></div>').join('')
     :'<div style="color:var(--muted);font-size:12px">\u2713 Sin pendientes para esta semana</div>';
   document.getElementById('alert-grid-off').innerHTML=offAlertsData.length
-    ?offAlertsData.map(a=>'<div class="alert-card cal"><div class="ac-board">Request OFF \xb7 Solicitudes</div><div class="ac-name">'+esc(a.name)+'</div><div class="ac-detail">Sin archivo de soporte</div></div>').join('')
+    ?offAlertsData.map(a=>'<div class="alert-card cal"><div class="ac-board">Request OFF \xb7 '+esc(a.grupo)+'</div><div class="ac-name">'+esc(a.name)+'</div><div class="ac-detail">Sin archivo de soporte</div></div>').join('')
     :'<div style="color:var(--muted);font-size:12px">\u2713 Sin pendientes</div>';
 }
 

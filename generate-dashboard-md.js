@@ -206,14 +206,15 @@ function buildHtml(mdTime, requestOff, updatedAt) {
     });
   }
 
-  // Request OFF pending: solicitudes sin archivo de soporte
-  const solGroup = requestOff.groupsData["topics"];
+  // Request OFF pending: grupos activos (Solicitudes + Aprobadas), excluye Finalizadas/Rechazadas
+  const OFF_ACTIVE_GROUPS = ["topics", "new_group_mkn8gp5j"];
   let offPending = 0;
-  if (solGroup) {
-    solGroup.items.forEach(r => {
+  OFF_ACTIVE_GROUPS.forEach(gkey => {
+    const grp = requestOff.groupsData[gkey];
+    if (grp) grp.items.forEach(r => {
       if (!(r.cv["file_mm1ht7j7"] && r.cv["file_mm1ht7j7"].trim())) offPending++;
     });
-  }
+  });
 
   const totalPending = mdTimePending + offPending;
 
