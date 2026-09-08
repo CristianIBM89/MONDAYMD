@@ -748,15 +748,47 @@ const server = http.createServer(async (req, res) => {
           return;
         }
         const d = JSON.parse(body);
+
+        // Mapa email → ID de usuario Monday (igual que index.html)
+        const PEOPLE_IDS = {
+          "alvaro.andres.morea@ibm.com":   63052657,
+          "andrea.chaves@ibm.com":         60354750,
+          "carlos.alberto.huerfano.velasquez@ibm.com": 63092420,
+          "cristian.avilan@ibm.com":       60354763,
+          "cristian.galindo@ibm.com":      60391886,
+          "daniel.lopez.mozo@ibm.com":     58989133,
+          "erick.gutierrez@ibm.com":       60354766,
+          "felipe.valderrama@ibm.com":     76123697,
+          "jairo.jimenez@ibm.com":         60632358,
+          "jessicabenavides@ibm.com":      60355372,
+          "jesus.tobon@ibm.com":           60354760,
+          "jorge.garciab@ibm.com":         103486218,
+          "jose.restrepo@ibm.com":         76225532,
+          "juan.andrade@ibm.com":          58218310,
+          "julieth.viviana.rodriguez@ibm.com": 63094028,
+          "laura.sandoval.moreno@ibm.com": 63092271,
+          "ligia.torres@ibm.com":          62820660,
+          "liliann.clavijo@ibm.com":       60076931,
+          "lorena.sanchez@ibm.com":        54211985,
+          "milena.moya@ibm.com":           58234023,
+          "nrincon@ibm.com":               51116064,
+          "stephanie.lorena.arcila@ibm.com": 63106780,
+          "susanaramirezh@ibm.com":        62967048
+        };
+        const peopleEmail  = (d.people || "").trim().toLowerCase();
+        const aprobEmail   = (d.aprobacion || "nrincon@ibm.com").trim().toLowerCase();
+        const peopleId     = PEOPLE_IDS[peopleEmail];
+        const aprobId      = PEOPLE_IDS[aprobEmail] || 51116064;
+        const peopleField  = peopleId ? { personsAndTeams: [{ id: peopleId, kind: "person" }] } : { personsAndTeams: [] };
+
         // Construir mutation de Monday para crear el ítem en grupo "topics"
         const columnValues = JSON.stringify({
-          people_mkn8wds0:   { personsAndTeams: [] }, // people se gestiona desde Monday
-          date4:             { date: d.fecha || "" },
-          status_mkn825jf:   { label: "Solicitado" },
-          status_1_mkn5yhzg: { label: d.motivo || "" },
+          people_mkn8wds0:     peopleField,
+          date4:               { date: d.fecha || "" },
+          status_mkn825jf:     { label: "Solicitado" },
+          status_1_mkn5yhzg:   { label: d.motivo || "" },
           cronograma_mkn6bx9b: { from: d.desde || "", to: d.hasta || "" },
-          people_mkn5pkbz:   d.aprobacion || "nrincon@ibm.com",
-          text_mkn8yf9q:     d.observaciones || ""
+          people_mkn5pkbz:     { personsAndTeams: [{ id: aprobId, kind: "person" }] }
         }).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
         const mutation = `mutation {

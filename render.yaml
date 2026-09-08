@@ -1,70 +1,12 @@
-# Render.com deployment configuration
-# Backend service — Node.js + Fastify
-# This file is used by render.com to build and deploy the backend
-
 services:
   - type: web
-    name: ath-backend
+    name: dashboard-md-workspace
     runtime: node
-    rootDir: agile-team-hub/backend
-    buildCommand: npm ci && npm run build
-    startCommand: node dist/server.js
     plan: free
-    healthCheckPath: /api/health
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: HOST
-        value: 0.0.0.0
-      - key: PORT
-        value: 3001
-      - key: WATSONX_MODEL_ID
-        value: meta-llama/llama-3-3-70b-instruct
-      - key: WATSONX_REGION
-        value: us-south
-      - key: WATSONX_API_VERSION
-        value: 2024-05-31
-      - key: WATSONX_TIMEOUT
-        value: 120000
-      - key: MONDAY_API_VERSION
-        value: 2024-10
-      - key: AUDIT_LOG_ENABLED
-        value: true
-      - key: JWT_EXPIRY
-        value: 8h
-      # Secrets — set manually in Render dashboard (never commit)
-      - key: WATSONX_API_KEY
-        sync: false
-      - key: WATSONX_PROJECT_ID
-        sync: false
-      - key: MONDAY_API_TOKEN
-        sync: false
-      - key: MONDAY_SESSIONS_BOARD_ID
-        sync: false
-      - key: MONDAY_BLOCKERS_BOARD_ID
-        sync: false
-      - key: MONDAY_ITERATIONS_BOARD_ID
-        sync: false
-      - key: MONDAY_SHOWCASE_BOARD_ID
-        sync: false
-      - key: MONDAY_RETRO_BOARD_ID
-        sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: CORS_ORIGIN
-        sync: false
-
-  - type: web
-    name: ath-frontend
-    runtime: static
-    rootDir: agile-team-hub/frontend
-    buildCommand: npm ci --legacy-peer-deps && npm run build
-    staticPublishPath: build
-    plan: free
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: REACT_APP_BACKEND_URL
-        sync: false
+      - key: MONDAY_TOKEN
+        sync: false   # se configura manualmente en el dashboard de Render
+    autoDeploy: true
