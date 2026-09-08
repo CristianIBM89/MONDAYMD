@@ -54,11 +54,12 @@ function App() {
           token = (await getTeamsAuthToken()) ?? '';
         }
 
-        // Dev fallback — only in development mode
+        // Fallback: development mode OR standalone web mode (REACT_APP_STANDALONE_MODE=true)
         // Generates a properly signed JWT using Web Crypto API
-        if (!token && process.env.NODE_ENV === 'development') {
-          email = email || 'dev@ibm.com';
-          name = name || 'Dev User';
+        const standaloneMode = process.env.REACT_APP_STANDALONE_MODE === 'true';
+        if (!token && (process.env.NODE_ENV === 'development' || standaloneMode)) {
+          email = email || 'usuario@ibm.com';
+          name = name || 'Usuario IBM';
           token = await generateDevToken(email, name);
         }
 
