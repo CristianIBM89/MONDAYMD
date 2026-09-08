@@ -1111,7 +1111,7 @@ changeWeek(MDTIME_CUR);
 (function loadOffLive(){
   const COL_IDS=["people_mkn8wds0","date4","status_mkn825jf","status_1_mkn5yhzg","cronograma_mkn6bx9b","n_meros_mkn6cwvj","file_mm1ht7j7","people_mkn5pkbz","text_mkn8yf9q"];
   const colStr=COL_IDS.map(function(c){return'"'+c+'"';}).join(',');
-  const TOKEN=atob('ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKMGFXUWlPalk0TlRrMU16TXdOaXdpWVdGcElqb3hNU3dpZFdsa0lqbzJNRE0xTkRjMk15d2lhV0ZrSWpvaU1qQXlOaTB3TnkweU0xUXhOem96TlRvd055NHdNREJhSWl3aWNHVnlJam9pYldVNmQzSnBkR1VpTENKaFkzUnBaQ0k2TVRNMU16WTVPREVzSW5KbmJpSTZJblZ6WlRFaWZRLkRucG9PV3g0VzkxQV9rTFVMZ1JGM05PYUtYVVluQkVIUEIydVNSNjZEQW8=');
+  const TOKEN=atob('ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKMGFXUWlPamN3TURZek5qWTROaXdpWVdGcElqb3hNU3dpZFdsa0lqbzJNRE0xTkRjMk15d2lhV0ZrSWpvaU1qQXlOaTB3T1Mwd05GUXlNam8xTVRveU55NHdNREJhSWl3aWNHVnlJam9pYldVNmQzSnBkR1VpTENKaFkzUnBaQ0k2TVRNMU16WTVPREVzSW5KbmJpSTZJblZ6WlRFaWZRLjZoSVZjNXNKRHpqZG43cFRzS2ZBRl96SnZSalZlVmVPaFZFUTFpVnowMFE=');
 
   // Paso 1: obtener lista de grupos
   fetch('https://api.monday.com/v2',{
@@ -1315,7 +1315,7 @@ function submitSolicitud(){
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': atob('ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKMGFXUWlPalk0TlRrMU16TXdOaXdpWVdGcElqb3hNU3dpZFdsa0lqbzJNRE0xTkRjMk15d2lhV0ZrSWpvaU1qQXlOaTB3TnkweU0xUXhOem96TlRvd055NHdNREJhSWl3aWNHVnlJam9pYldVNmQzSnBkR1VpTENKaFkzUnBaQ0k2TVRNMU16WTVPREVzSW5KbmJpSTZJblZ6WlRFaWZRLkRucG9PV3g0VzkxQV9rTFVMZ1JGM05PYUtYVVluQkVIUEIydVNSNjZEQW8='),
+      'Authorization': atob('ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKMGFXUWlPamN3TURZek5qWTROaXdpWVdGcElqb3hNU3dpZFdsa0lqbzJNRE0xTkRjMk15d2lhV0ZrSWpvaU1qQXlOaTB3T1Mwd05GUXlNam8xTVRveU55NHdNREJhSWl3aWNHVnlJam9pYldVNmQzSnBkR1VpTENKaFkzUnBaQ0k2TVRNMU16WTVPREVzSW5KbmJpSTZJblZ6WlRFaWZRLjZoSVZjNXNKRHpqZG43cFRzS2ZBRl96SnZSalZlVmVPaFZFUTFpVnowMFE='),
       'API-Version': '2024-01'
     },
     body: JSON.stringify({ query: mutation })
