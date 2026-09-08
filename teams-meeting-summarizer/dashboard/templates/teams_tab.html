@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Resumen IA</title>
+  <!-- SDK de Microsoft Teams -->
+  <script src="https://res.cdn.office.net/teams-js/2.22.0/js/MicrosoftTeams.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+      font-size:14px;line-height:1.6;color:#1a1f2e;
+      background:#f0f2f5;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:16px;
+    }
+    .card{
+      background:#fff;border-radius:12px;padding:24px 20px;
+      width:100%;max-width:320px;
+      box-shadow:0 2px 12px rgba(0,0,0,.1);
+      text-align:center;
+    }
+    .logo{
+      width:52px;height:52px;border-radius:12px;
+      background:#464EB8;display:flex;align-items:center;
+      justify-content:center;margin:0 auto 14px;
+    }
+    .logo svg{width:28px;height:28px}
+    h1{font-size:17px;font-weight:700;margin-bottom:6px}
+    .subtitle{font-size:12.5px;color:#6b7280;margin-bottom:20px;line-height:1.5}
+
+    /* Botón principal */
+    .btn-activate{
+      width:100%;padding:14px;border:none;border-radius:10px;
+      font-size:15px;font-weight:700;font-family:inherit;
+      cursor:pointer;transition:all .2s;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .btn-activate.off{background:#464EB8;color:#fff}
+    .btn-activate.off:hover{background:#3b43a0;transform:scale(1.02)}
+    .btn-activate.on{background:#dcfce7;color:#15803d;border:2px solid #86efac}
+    .btn-activate.on:hover{background:#bbf7d0}
+
+    /* Estado */
+    .status-box{
+      margin-top:16px;padding:12px 14px;border-radius:8px;
+      font-size:13px;line-height:1.5;display:none;
+    }
+    .status-box.active{display:block;background:#dcfce7;border:1px solid #86efac;color:#15803d}
+    .status-box.inactive{display:block;background:#f1f5f9;border:1px solid #e2e8f0;color:#64748b}
+    .status-box.error{display:block;background:#fee2e2;border:1px solid #fca5a5;color:#dc2626}
+
+    /* Info usuario */
+    .user-info{margin-top:12px;font-size:12px;color:#9ca3af}
+
+    /* Divisor */
+    .divider{height:1px;background:#f1f3f5;margin:18px 0}
+
+    /* Link dashboard */
+    .dashboard-link{
+      display:block;font-size:12.5px;color:#464EB8;
+      text-decoration:none;font-weight:500;
+    }
+    .dashboard-link:hover{text-decoration:underline}
+
+    .spinner{
+      width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
+      border-top-color:#fff;border-radius:50%;
+      animation:spin .6s linear infinite;display:inline-block;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none">
+      <path d="M6 14l6 6 10-12" stroke="#fff" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h1>Resumen IA</h1>
+  <p class="subtitle">Activa el resumen automático.<br>IBM watsonx.ai analizará la reunión al terminar.</p>
+
+  <button class="btn-activate off" id="btn-main" onclick="toggleSummary()">
+    🎙️ Activar Resumen
+  </button>
+
+  <div class="status-box" id="status-box"></div>
+  <div class="user-info" id="user-info"></div>
+
+  <div class="divider"></div>
+  <a class="dashboard-link" href="http://127.0.0.1:8000" target="_blank">
+    📊 Ver Dashboard de Reuniones →
+  </a>
+</div>
+
+<script>
+  let activated = false;
+  let meetingId  = null;
+  let userName   = "Usuario";
+  let userEmail  = "";
+  const API      = "http://127.0.0.1:8000";
+
+  // Inicializar SDK de Teams
+  microsoftTeams.app.initialize().then(() => {
+    microsoftTeams.app.getContext().then(ctx => {
+      meetingId  = ctx.meeting?.id || null;
+      userName   = ctx.user?.displayName || "Usuario";
+      userEmail  = ctx.user?.userPrincipalName || "";
+      document.getElementById("user-info").textContent = `👤 ${userName}`;
+
+      // Consultar estado actual de esta reunión
+      if (meetingId) checkCurrentStatus();
+    });
+  }).catch(() => {
+    // Fuera de Teams (dev local) — modo demostración
+    document.getElementById("user-info").textContent = "👤 Modo demo (sin Teams)";
+    meetingId = "demo-meeting-" + Date.now();
+  });
+
+  async function checkCurrentStatus() {
+    try {
+      const res = await fetch(`${API}/api/teams-tab/status?meeting_id=${encodeURIComponent(meetingId)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.summary_requested) setActivated(true, data.activated_by);
+    } catch (e) { /* sin conexión al servidor */ }
+  }
+
+  async function toggleSummary() {
+    const btn = document.getElementById("btn-main");
+    btn.innerHTML = `<span class="spinner"></span>`;
+    btn.disabled = true;
+
+    try {
+      if (!activated) {
+        // Activar resumen
+        const res = await fetch(`${API}/api/teams-tab/activate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            meeting_id:   meetingId,
+            user_name:    userName,
+            user_email:   userEmail,
+            meeting_name: document.title || "Reunión de Teams"
+          })
+        });
+        if (!res.ok) throw new Error("No se pudo conectar con el servidor");
+        setActivated(true, userName);
+      } else {
+        // Desactivar
+        await fetch(`${API}/api/teams-tab/deactivate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ meeting_id: meetingId })
+        });
+        setActivated(false);
+      }
+    } catch (err) {
+      showStatus("error", `❌ ${err.message}.<br>Verifica que el servidor esté corriendo en <b>127.0.0.1:8000</b>`);
+      btn.innerHTML = activated ? "🔕 Desactivar" : "🎙️ Activar Resumen";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function setActivated(state, by) {
+    activated = state;
+    const btn = document.getElementById("btn-main");
+    if (state) {
+      btn.className = "btn-activate on";
+      btn.innerHTML = "✅ Resumen Activado — clic para desactivar";
+      showStatus("active",
+        `✅ <b>Resumen activado</b>${by ? ` por <b>${by}</b>` : ""}.<br>
+         Al terminar la reunión, IBM watsonx.ai generará el resumen y lo enviará al dashboard.`
+      );
+    } else {
+      btn.className = "btn-activate off";
+      btn.innerHTML = "🎙️ Activar Resumen";
+      showStatus("inactive", "⏸️ Resumen desactivado. Pulsa el botón para activarlo.");
+    }
+  }
+
+  function showStatus(type, html) {
+    const box = document.getElementById("status-box");
+    box.className = `status-box ${type}`;
+    box.innerHTML = html;
+  }
+</script>
+</body>
+</html>

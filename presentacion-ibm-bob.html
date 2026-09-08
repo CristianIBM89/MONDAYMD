@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBM Bob — Presentación Introductoria</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f7f8fa;
+    --border: #e5e7eb;
+    --text: #1f2328;
+    --muted: #57606a;
+    --accent: #3b82d4;
+    --secondary: #7c5cd8;
+    --ibm-blue: #0f62fe;
+    --ibm-dark: #161616;
+    --ibm-gray: #393939;
+    --green: #24a148;
+    --amber: #f1c21b;
+    --red-soft: #da1e28;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: var(--ibm-dark);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 6px;
+    z-index: 100;
+    border-bottom: 2px solid var(--ibm-blue);
+  }
+  nav .brand { color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .4px; margin-right: auto; }
+  nav .brand span { color: var(--ibm-blue); }
+  nav a {
+    color: #c6c6c6;
+    text-decoration: none;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  nav a:hover { background: #393939; color: #fff; }
+
+  /* ── LAYOUT ── */
+  .slide {
+    min-height: 100vh;
+    padding: 80px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    scroll-margin-top: 48px;
+  }
+  .slide-inner {
+    width: 100%;
+    max-width: 820px;
+  }
+
+  /* ── HERO ── */
+  #s1 {
+    background: var(--ibm-dark);
+    color: #fff;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--ibm-blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+  }
+  .hero-title .blue { color: var(--ibm-blue); }
+  .hero-sub {
+    font-size: 18px;
+    color: #a8b3c0;
+    max-width: 580px;
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    background: #262626;
+    border: 1px solid #525252;
+    color: #e0e0e0;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .slide-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    color: var(--ibm-dark);
+  }
+  h2 .hl { color: var(--ibm-blue); }
+  .lead {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 640px;
+    margin-bottom: 36px;
+    line-height: 1.75;
+  }
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 20px;
+  }
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .card p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* icon bg colors */
+  .bg-blue   { background: #dbeafe; }
+  .bg-purple { background: #ede9fe; }
+  .bg-green  { background: #dcfce7; }
+  .bg-amber  { background: #fef3c7; }
+  .bg-red    { background: #fee2e2; }
+  .bg-teal   { background: #ccfbf1; }
+  .bg-pink   { background: #fce7f3; }
+  .bg-indigo { background: #e0e7ff; }
+
+  /* ── MODES ── */
+  .modes-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+  }
+  .mode-card {
+    border-radius: 10px;
+    padding: 24px 20px;
+    border: 2px solid transparent;
+  }
+  .mode-card.agent { background: #eff6ff; border-color: #3b82f6; }
+  .mode-card.plan  { background: #fdf4ff; border-color: #a855f7; }
+  .mode-card.ask   { background: #f0fdf4; border-color: #22c55e; }
+  .mode-card .mode-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .mode-card.agent .mode-tag { color: #1d4ed8; }
+  .mode-card.plan  .mode-tag { color: #7e22ce; }
+  .mode-card.ask   .mode-tag { color: #15803d; }
+  .mode-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .mode-card p  { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .mode-card ul { padding-left: 18px; }
+  .mode-card ul li { font-size: 13px; color: var(--text); margin-bottom: 3px; }
+
+  /* ── STEP FLOW ── */
+  .steps { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+  .step  {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .step-num {
+    min-width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--ibm-blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .step-body p  { font-size: 13px; color: var(--muted); }
+  .step-body code {
+    background: #e8eaf0;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "Consolas", "SF Mono", monospace;
+    font-size: 12px;
+    color: var(--ibm-dark);
+  }
+
+  /* ── DEMO CHAT ── */
+  .chat-window {
+    background: var(--ibm-dark);
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    border: 1px solid #393939;
+  }
+  .chat-topbar {
+    background: #262626;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #393939;
+  }
+  .chat-topbar .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .dot-red    { background: #da1e28; }
+  .dot-yellow { background: #f1c21b; }
+  .dot-green  { background: #24a148; }
+  .chat-topbar .title {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: #8d8d8d;
+    font-family: "Consolas", monospace;
+  }
+  .mode-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: .5px;
+  }
+  .mode-pill.agent { background: #1d4ed8; color: #fff; }
+  .mode-pill.ask   { background: #15803d; color: #fff; }
+  .mode-pill.plan  { background: #7e22ce; color: #fff; }
+  .chat-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .bubble-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .bubble-row.user { flex-direction: row-reverse; }
+  .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar.u { background: #0f62fe; color: #fff; }
+  .avatar.b { background: #7c5cd8; color: #fff; font-size: 11px; }
+  .bubble {
+    max-width: 75%;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .bubble.user { background: #0f62fe; color: #fff; border-bottom-right-radius: 2px; }
+  .bubble.bob  { background: #2d2d2d; color: #e0e0e0; border-bottom-left-radius: 2px; }
+  .bubble.bob strong { color: #78b4ff; }
+  .bubble.bob .action-chip {
+    display: inline-block;
+    background: #3d3d3d;
+    border: 1px solid #525252;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    color: #a8b3c0;
+    margin: 2px 2px 2px 0;
+    font-family: monospace;
+  }
+  .bubble code {
+    background: rgba(255,255,255,.12);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: monospace;
+    font-size: 12px;
+  }
+  .bubble.user code { background: rgba(255,255,255,.2); }
+  .typing {
+    display: flex; gap: 4px; align-items: center; padding: 4px 0;
+  }
+  .typing span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #8d8d8d;
+    display: inline-block;
+  }
+
+  /* ── CHART AREA ── */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 20px;
+  }
+  svg text { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+
+  /* ── COMPARISON TABLE ── */
+  .cmp-table { width: 100%; border-collapse: collapse; }
+  .cmp-table th, .cmp-table td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 13px;
+    text-align: left;
+  }
+  .cmp-table thead th {
+    background: var(--ibm-dark);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .cmp-table tbody tr:nth-child(even) { background: var(--surface); }
+  .cmp-table .yes { color: var(--green); font-weight: 700; }
+  .cmp-table .no  { color: #8d8d8d; }
+  .cmp-table .partial { color: var(--amber); font-size: 12px; }
+
+  /* ── QUOTE BOX ── */
+  .quote-box {
+    background: #eff6ff;
+    border-left: 4px solid var(--ibm-blue);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .quote-box p { font-size: 15px; color: var(--ibm-dark); font-style: italic; }
+  .quote-box small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+
+  /* ── HIGHLIGHT BAND ── */
+  .highlight-band {
+    background: var(--ibm-blue);
+    border-radius: 10px;
+    padding: 28px 30px;
+    color: #fff;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .highlight-band h3 { font-size: 20px; font-weight: 700; }
+  .highlight-band p  { font-size: 14px; color: rgba(255,255,255,.82); }
+
+  /* ── FOOTER ── */
+  .pres-footer {
+    text-align: center;
+    padding: 28px 0 20px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+  }
+
+  /* ── SLIDE BG VARIANTS ── */
+  .bg-dark  { background: var(--ibm-dark); color: #fff; }
+  .bg-light { background: var(--surface); }
+  .bg-blue-soft { background: #eff6ff; }
+
+  /* ── ZEBRA LIST ── */
+  .zebra { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+  .zebra-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .zebra-row:nth-child(odd) { background: #fff; }
+  .zebra-icon { font-size: 18px; min-width: 28px; text-align: center; }
+  .zebra-body strong { font-size: 14px; display: block; margin-bottom: 1px; }
+  .zebra-body span   { font-size: 12px; color: var(--muted); }
+
+  /* ── PILL LEGEND ── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ NAV ═══════════════════════════════════ -->
+<nav>
+  <div class="brand">IBM <span>Bob</span> — Presentación</div>
+  <a href="#s1">Inicio</a>
+  <a href="#s2">¿Qué es?</a>
+  <a href="#s3">Capacidades</a>
+  <a href="#s4">Modos</a>
+  <a href="#s5">Cómo Usarlo</a>
+  <a href="#s6">Demostración</a>
+  <a href="#s7">Impacto</a>
+  <a href="#s8">Comparativa</a>
+  <a href="#s9">Empezar</a>
+</nav>
+
+<!-- ═══════════════════════════════════ SLIDE 1 — HERO ═══════════════════════ -->
+<section class="slide" id="s1" style="background:var(--ibm-dark);color:#fff;">
+  <div class="slide-inner">
+    <div class="hero-badge">IBM Internal Tool</div>
+    <div class="hero-title">
+      Conoce <span class="blue">IBM Bob</span>,<br>
+      tu compañero de<br>desarrollo con IA
+    </div>
+    <p class="hero-sub">
+      IBM Bob es tu socio de IA para el ciclo completo de desarrollo de software —
+      desde la idea hasta producción. Escribe código, corrige bugs, revisa cambios
+      y responde preguntas sobre tu proyecto, todo desde una sola interfaz de chat.
+    </p>
+    <div class="hero-chips">
+      <div class="chip">🤖 Inteligencia Artificial</div>
+      <div class="chip">💬 Chat en lenguaje natural</div>
+      <div class="chip">📂 Lee y escribe archivos</div>
+      <div class="chip">⚡ Ejecuta comandos</div>
+      <div class="chip">🔒 Aprobado para código IBM</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 2 — ¿QUÉ ES? ═══════════════════ -->
+<section class="slide bg-light" id="s2">
+  <div class="slide-inner">
+    <div class="slide-label">Definición</div>
+    <h2>¿Qué es <span class="hl">IBM Bob</span>?</h2>
+    <p class="lead">
+      Bob es un asistente de IA integrado en tu editor de código (VS Code u otro IDE compatible).
+      No es solo un autocompletador — es un agente que entiende tu proyecto completo,
+      razona sobre él y actúa tomando decisiones para ayudarte a avanzar más rápido.
+    </p>
+
+    <div class="quote-box">
+      <p>"IBM Bob es un socio de IA para el ciclo de vida del desarrollo de software (SDLC)
+         que potencia tus flujos de trabajo existentes y te ayuda a entender, planear,
+         mejorar y trabajar con confianza en proyectos reales."</p>
+      <small>— Documentación oficial de IBM Bob</small>
+    </div>
+
+    <div class="zebra">
+      <div class="zebra-row">
+        <div class="zebra-icon">💬</div>
+        <div class="zebra-body">
+          <strong>Interfaz de Chat Natural</strong>
+          <span>Le hablas como a un colega — no necesitas comandos especiales ni sintaxis rara.</span>
+        </div>
+      </div>
+      <div class="zebra-row">
+        <div class="zebra-icon">🧠</div>
+        <div class="zebra-body">
+          <strong>Entiende tu Codebase Completo</strong>
+          <span>Lee archivos, directorios y dependencias para darte respuestas precisas y contextualizadas.</span>
+        </div>
+      </div>
+      <div class="zebra-row">
+        <div class="zebra-icon">✅</div>
+        <div class="zebra-body">
+          <strong>Tú Siempre Controlas</strong>
+          <span>Bob propone cambios, tú apruebas o rechazas cada acción antes de que se aplique.</span>
+        </div>
+      </div>
+      <div class="zebra-row">
+        <div class="zebra-icon">🔐</div>
+        <div class="zebra-body">
+          <strong>Seguro para Proyectos IBM</strong>
+          <span>Aprobado para todos los codebases de productos IBM. No recopila tu código ni prompts.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 3 — CAPACIDADES ════════════════ -->
+<section class="slide" id="s3" style="background:var(--bg);">
+  <div class="slide-inner">
+    <div class="slide-label">Funcionalidades</div>
+    <h2>Todo lo que <span class="hl">Bob puede hacer</span></h2>
+    <p class="lead">Un compañero que cubre el ciclo completo de desarrollo — no solo genera código.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-blue">💻</div>
+        <h3>Generar Código</h3>
+        <p>Convierte descripciones en lenguaje natural en código funcional en cualquier lenguaje.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-purple">🔧</div>
+        <h3>Refactorizar</h3>
+        <p>Limpia y moderniza código existente manteniendo la funcionalidad intacta.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-red">🐛</div>
+        <h3>Corregir Bugs</h3>
+        <p>Analiza errores, entiende el contexto y propone soluciones precisas.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-green">📄</div>
+        <h3>Escribir Docs</h3>
+        <p>Genera o actualiza documentación directamente a partir de tu código fuente.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-amber">❓</div>
+        <h3>Responder Preguntas</h3>
+        <p>Explica cómo funciona tu codebase, por qué algo hace lo que hace.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-teal">⚙️</div>
+        <h3>Ejecutar Comandos</h3>
+        <p>Instala dependencias, corre tests y builds directamente desde Bob.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-pink">🗂️</div>
+        <h3>Crear Proyectos</h3>
+        <p>Crea y organiza archivos, carpetas y proyectos completos desde cero.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-indigo">🔌</div>
+        <h3>Integrar Herramientas</h3>
+        <p>Se conecta con servicios externos vía MCP (Model Context Protocol).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 4 — MODOS ══════════════════════ -->
+<section class="slide bg-blue-soft" id="s4">
+  <div class="slide-inner">
+    <div class="slide-label">Modos de Trabajo</div>
+    <h2>Tres <span class="hl">Modos</span> para cada situación</h2>
+    <p class="lead">
+      Bob adapta su comportamiento según el modo que elijas. Selecciona el modo correcto
+      para obtener los mejores resultados.
+    </p>
+
+    <div class="modes-grid">
+      <div class="mode-card agent">
+        <div class="mode-tag">🤖 Modo Agent</div>
+        <h3>Escribir &amp; Modificar</h3>
+        <p>Para implementar features, corregir bugs y hacer cambios en tu código.</p>
+        <ul>
+          <li>Crea y edita archivos</li>
+          <li>Ejecuta comandos</li>
+          <li>Implementa funcionalidades completas</li>
+          <li>Modo por defecto para desarrollo</li>
+        </ul>
+      </div>
+      <div class="mode-card plan">
+        <div class="mode-tag">📋 Modo Plan</div>
+        <h3>Planear &amp; Diseñar</h3>
+        <p>Para arquitectura y diseño antes de escribir una sola línea de código.</p>
+        <ul>
+          <li>Crea especificaciones técnicas</li>
+          <li>Diseña arquitecturas</li>
+          <li>Estrategias de implementación</li>
+          <li>Ideal para features complejas</li>
+        </ul>
+      </div>
+      <div class="mode-card ask">
+        <div class="mode-tag">💬 Modo Ask</div>
+        <h3>Preguntar &amp; Explorar</h3>
+        <p>Para entender código y obtener explicaciones sin modificar nada.</p>
+        <ul>
+          <li>Responde preguntas del código</li>
+          <li>Solo lectura — no modifica</li>
+          <li>Explica cómo funciona algo</li>
+          <li>Ideal para onboarding</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-band" style="margin-top:24px;">
+      <h3>💡 Estrategia recomendada</h3>
+      <p>Empieza en <strong>Plan</strong> para diseñar la solución → pasa a <strong>Agent</strong> para implementarla → usa <strong>Ask</strong> cuando necesites entender algo sin hacer cambios. Bob también puede cambiar de modo solo cuando el trabajo así lo requiera.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 5 — CÓMO USAR ══════════════════ -->
+<section class="slide" id="s5" style="background:var(--bg);">
+  <div class="slide-inner">
+    <div class="slide-label">Guía de Inicio</div>
+    <h2>¿Cómo empiezo a <span class="hl">usar Bob</span>?</h2>
+    <p class="lead">Cuatro pasos sencillos para comenzar desde cero.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Solicita Acceso</h4>
+          <p>Visita <code>w3.ibm.com/w3publisher/bob</code> y completa el formulario de acceso.
+             Tu acceso debe ser aprobado — recibirás un correo de confirmación.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Instala la Extensión en tu IDE</h4>
+          <p>Abre VS Code, ve al Marketplace de extensiones y busca <code>IBM Bob</code>.
+             Instala y reinicia tu editor. El panel de Bob aparecerá en la barra lateral.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Abre tu Proyecto e Inicializa</h4>
+          <p>Abre la carpeta de tu proyecto en VS Code. En el chat de Bob, escribe
+             <code>/init</code> para que Bob analice el contexto de tu workspace y
+             cree la configuración inicial.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>¡Escríbele en Lenguaje Natural!</h4>
+          <p>Simplemente escribe lo que necesitas: <code>"Crea una función que calcule el promedio de una lista"</code>
+             o <code>"Explícame qué hace el archivo app.js"</code>. No hay comandos que memorizar.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; padding:18px 20px; background:var(--surface); border:1px solid var(--border); border-radius:8px;">
+      <p style="font-size:14px;"><strong>📌 Slash Commands útiles:</strong>&nbsp;&nbsp;
+        <code style="background:#e8eaf0;border-radius:4px;padding:2px 7px;">/init</code> — Inicializa el proyecto &nbsp;
+        <code style="background:#e8eaf0;border-radius:4px;padding:2px 7px;">/review</code> — Revisa el código antes de hacer commit &nbsp;
+        <code style="background:#e8eaf0;border-radius:4px;padding:2px 7px;">/</code> — Muestra todos los comandos disponibles
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 6 — DEMO ═══════════════════════ -->
+<section class="slide bg-light" id="s6">
+  <div class="slide-inner">
+    <div class="slide-label">Ejemplo en Vivo</div>
+    <h2>Bob en <span class="hl">acción</span> — Caso real</h2>
+    <p class="lead">
+      Mira cómo un desarrollador interactúa con Bob para crear una función, entender
+      código y detectar un bug — todo en lenguaje natural.
+    </p>
+
+    <div class="chat-window">
+      <div class="chat-topbar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <div class="title">IBM Bob — mi-proyecto/</div>
+        <span class="mode-pill agent">AGENT</span>
+      </div>
+      <div class="chat-body">
+
+        <!-- Turn 1: User asks for function -->
+        <div class="bubble-row user">
+          <div class="avatar u">YO</div>
+          <div class="bubble user">
+            Crea una función en Python que lea un archivo CSV y retorne el promedio
+            de una columna llamada "precio". Si el archivo no existe, que lance un error claro.
+          </div>
+        </div>
+        <div class="bubble-row">
+          <div class="avatar b">BOB</div>
+          <div class="bubble bob">
+            <strong>Entendido.</strong> Voy a crear la función en Python con manejo de errores.<br><br>
+            <span class="action-chip">📖 leyendo estructura del proyecto...</span>
+            <span class="action-chip">✏️ escribiendo utils/csv_reader.py</span><br><br>
+            Creé el archivo <code>utils/csv_reader.py</code>:<br><br>
+            <code>def get_average_price(filepath: str) → float:</code><br>
+            &nbsp;&nbsp;&nbsp;La función valida que el archivo exista, lee el CSV con
+            <code>pandas</code>, verifica que la columna "precio" exista y retorna el promedio.
+            Lanza <code>FileNotFoundError</code> o <code>KeyError</code> con mensajes descriptivos.
+          </div>
+        </div>
+
+        <!-- Turn 2: Ask mode — explanation -->
+        <div class="bubble-row user">
+          <div class="avatar u">YO</div>
+          <div class="bubble user">
+            Bien. Ahora explícame qué hace el archivo <code>main.py</code> sin modificar nada.
+          </div>
+        </div>
+        <div class="bubble-row">
+          <div class="avatar b">BOB</div>
+          <div class="bubble bob">
+            <span class="action-chip">🔀 cambiando a modo Ask</span>
+            <span class="action-chip">📖 leyendo main.py</span><br><br>
+            <strong>main.py</strong> hace tres cosas:<br>
+            1. Carga la configuración desde <code>config.yaml</code><br>
+            2. Llama a tu función <code>get_average_price()</code> con la ruta del CSV configurada<br>
+            3. Imprime el resultado formateado con 2 decimales.<br><br>
+            El flujo principal está protegido con <code>if __name__ == "__main__"</code>
+            para evitar ejecución accidental al importar el módulo.
+          </div>
+        </div>
+
+        <!-- Turn 3: Bug fix -->
+        <div class="bubble-row user">
+          <div class="avatar u">YO</div>
+          <div class="bubble user">
+            Al correr los tests me sale: <code>KeyError: 'Precio'</code>. ¿Por qué?
+          </div>
+        </div>
+        <div class="bubble-row">
+          <div class="avatar b">BOB</div>
+          <div class="bubble bob">
+            <span class="action-chip">📖 leyendo utils/csv_reader.py</span>
+            <span class="action-chip">📖 leyendo tests/test_csv.py</span><br><br>
+            <strong>Encontré el problema.</strong> Tu archivo CSV de test tiene la columna
+            como <code>"Precio"</code> (mayúscula) pero la función busca <code>"precio"</code> (minúscula).
+            Solución: normalizar el nombre de columna al leer.<br><br>
+            ¿Quieres que haga el fix agregando <code>.str.lower()</code> a los nombres
+            de columnas antes de buscar? Esto hará la función insensible a mayúsculas.
+          </div>
+        </div>
+        <div class="bubble-row user">
+          <div class="avatar u">YO</div>
+          <div class="bubble user">Sí, aplica el fix.</div>
+        </div>
+        <div class="bubble-row">
+          <div class="avatar b">BOB</div>
+          <div class="bubble bob">
+            <span class="action-chip">✏️ editando utils/csv_reader.py (línea 8)</span><br><br>
+            Listo. Cambié la línea de búsqueda para normalizar las columnas a minúsculas.
+            Los tests deberían pasar ahora. ¿Quieres que corra <code>pytest</code> para confirmarlo?
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 7 — IMPACTO / GRÁFICAS ════════ -->
+<section class="slide" id="s7" style="background:var(--bg);">
+  <div class="slide-inner">
+    <div class="slide-label">Impacto en el Equipo</div>
+    <h2>¿Cuánto tiempo <span class="hl">ahorra Bob</span>?</h2>
+    <p class="lead">
+      Datos representativos del impacto de asistentes de IA en equipos de desarrollo
+      de software — basados en benchmarks de la industria.
+    </p>
+
+    <!-- CHART 1: Bar — Time saved per task -->
+    <div class="chart-wrap">
+      <div class="chart-title">⏱ Reducción de tiempo por tipo de tarea (estimado %)</div>
+      <svg width="100%" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Y axis lines -->
+        <line x1="120" y1="20" x2="120" y2="210" stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="120" y1="210" x2="680" y2="210" stroke="#e5e7eb" stroke-width="1"/>
+        <!-- Y grid -->
+        <line x1="120" y1="60" x2="680" y2="60" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="120" y1="110" x2="680" y2="110" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="120" y1="160" x2="680" y2="160" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Y labels -->
+        <text x="108" y="214" text-anchor="end" font-size="11" fill="#8d8d8d">0%</text>
+        <text x="108" y="164" text-anchor="end" font-size="11" fill="#8d8d8d">25%</text>
+        <text x="108" y="114" text-anchor="end" font-size="11" fill="#8d8d8d">50%</text>
+        <text x="108" y="64" text-anchor="end" font-size="11" fill="#8d8d8d">75%</text>
+
+        <!-- Bars: values are % → 1% = 1.9px, max 200px for 100% at y=210 -->
+        <!-- Generar código 65% → 123px -->
+        <rect x="140" y="87" width="70" height="123" rx="4" fill="#0f62fe"/>
+        <text x="175" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#0f62fe">65%</text>
+        <text x="175" y="228" text-anchor="middle" font-size="11" fill="#57606a">Generar</text>
+        <text x="175" y="240" text-anchor="middle" font-size="11" fill="#57606a">código</text>
+
+        <!-- Corregir bugs 55% → 104px -->
+        <rect x="230" y="106" width="70" height="104" rx="4" fill="#7c5cd8"/>
+        <text x="265" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c5cd8">55%</text>
+        <text x="265" y="228" text-anchor="middle" font-size="11" fill="#57606a">Corregir</text>
+        <text x="265" y="240" text-anchor="middle" font-size="11" fill="#57606a">bugs</text>
+
+        <!-- Documentar 70% → 133px -->
+        <rect x="320" y="77" width="70" height="133" rx="4" fill="#0f62fe"/>
+        <text x="355" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="#0f62fe">70%</text>
+        <text x="355" y="228" text-anchor="middle" font-size="11" fill="#57606a">Documentar</text>
+        <text x="355" y="240" text-anchor="middle" font-size="11" fill="#57606a">código</text>
+
+        <!-- Refactorizar 50% → 95px -->
+        <rect x="410" y="115" width="70" height="95" rx="4" fill="#7c5cd8"/>
+        <text x="445" y="110" text-anchor="middle" font-size="12" font-weight="700" fill="#7c5cd8">50%</text>
+        <text x="445" y="228" text-anchor="middle" font-size="11" fill="#57606a">Refactorizar</text>
+
+        <!-- Code review 60% → 114px -->
+        <rect x="500" y="96" width="70" height="114" rx="4" fill="#0f62fe"/>
+        <text x="535" y="91" text-anchor="middle" font-size="12" font-weight="700" fill="#0f62fe">60%</text>
+        <text x="535" y="228" text-anchor="middle" font-size="11" fill="#57606a">Code</text>
+        <text x="535" y="240" text-anchor="middle" font-size="11" fill="#57606a">Review</text>
+
+        <!-- Onboarding 75% → 142px -->
+        <rect x="590" y="68" width="70" height="142" rx="4" fill="#24a148"/>
+        <text x="625" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#24a148">75%</text>
+        <text x="625" y="228" text-anchor="middle" font-size="11" fill="#57606a">Onboarding</text>
+      </svg>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#0f62fe"></div>Alta reducción</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7c5cd8"></div>Reducción moderada</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#24a148"></div>Mayor impacto</div>
+      </div>
+    </div>
+
+    <!-- CHART 2: Donut/Pie — Where developers spend time -->
+    <div class="chart-wrap">
+      <div class="chart-title">📊 ¿Dónde pasan el tiempo los desarrolladores hoy? (distribución típica)</div>
+      <svg width="100%" viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+        <!-- Donut chart centered at 180,120 r=90 inner r=52 -->
+        <!-- Segmentos: 
+          Escribir código nuevo: 30% → 108°
+          Leer/entender código: 25% → 90°
+          Debug/bug-fixing: 20% → 72°
+          Reuniones/docs: 15% → 54°
+          Setup/config: 10% → 36°
+        -->
+        <!-- Segment 1: 30% - azul, start=270°, end=378° (108°) -->
+        <!-- Using pre-calculated arc paths -->
+        <!-- Arc: start at top (270°=−90°), clockwise -->
+        <!-- Sector 1: 30% (108deg) #0f62fe start 270, end 18 -->
+        <path d="M180,120 L180,30 A90,90 0 0,1 265.6,174 Z" fill="#0f62fe"/>
+        <!-- Sector 2: 25% (90deg) #7c5cd8 start 18, end 108 -->
+        <path d="M180,120 L265.6,174 A90,90 0 0,1 120,209 Z" fill="#7c5cd8"/>
+        <!-- Sector 3: 20% (72deg) #da1e28 start 108, end 180 -->
+        <path d="M180,120 L120,209 A90,90 0 0,1 90,120 Z" fill="#f1c21b"/>
+        <!-- Sector 4: 15% (54deg) #24a148 start 180, end 234 -->
+        <path d="M180,120 L90,120 A90,90 0 0,1 127.5,42.8 Z" fill="#24a148"/>
+        <!-- Sector 5: 10% (36deg) start 234, end 270 -->
+        <path d="M180,120 L127.5,42.8 A90,90 0 0,1 180,30 Z" fill="#a8b3c0"/>
+
+        <!-- inner hole -->
+        <circle cx="180" cy="120" r="52" fill="#f7f8fa"/>
+        <text x="180" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2328">Tiempo</text>
+        <text x="180" y="132" text-anchor="middle" font-size="11" fill="#57606a">del equipo</text>
+
+        <!-- Legend -->
+        <rect x="320" y="35" width="12" height="12" rx="2" fill="#0f62fe"/>
+        <text x="338" y="46" font-size="13" fill="#1f2328">Escribir código nuevo — <tspan font-weight="700">30%</tspan></text>
+
+        <rect x="320" y="62" width="12" height="12" rx="2" fill="#7c5cd8"/>
+        <text x="338" y="73" font-size="13" fill="#1f2328">Leer y entender código — <tspan font-weight="700">25%</tspan></text>
+
+        <rect x="320" y="89" width="12" height="12" rx="2" fill="#f1c21b"/>
+        <text x="338" y="100" font-size="13" fill="#1f2328">Debug y corrección — <tspan font-weight="700">20%</tspan></text>
+
+        <rect x="320" y="116" width="12" height="12" rx="2" fill="#24a148"/>
+        <text x="338" y="127" font-size="13" fill="#1f2328">Reuniones y documentación — <tspan font-weight="700">15%</tspan></text>
+
+        <rect x="320" y="143" width="12" height="12" rx="2" fill="#a8b3c0"/>
+        <text x="338" y="154" font-size="13" fill="#1f2328">Setup y configuración — <tspan font-weight="700">10%</tspan></text>
+
+        <text x="320" y="195" font-size="12" fill="#57606a">Bob puede reducir el 70%+ de estas</text>
+        <text x="320" y="212" font-size="12" fill="#57606a">actividades en tiempo y esfuerzo.</text>
+      </svg>
+    </div>
+
+    <!-- CHART 3: Line — Curva de aprendizaje -->
+    <div class="chart-wrap">
+      <div class="chart-title">📈 Curva de productividad: Con Bob vs Sin Bob</div>
+      <svg width="100%" viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- Axes -->
+        <line x1="60" y1="180" x2="660" y2="180" stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="60" y1="20"  x2="60"  y2="180" stroke="#e5e7eb" stroke-width="1"/>
+        <!-- Grid -->
+        <line x1="60" y1="80"  x2="660" y2="80"  stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="60" y1="130" x2="660" y2="130" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Y labels -->
+        <text x="50" y="184" text-anchor="end" font-size="10" fill="#8d8d8d">Bajo</text>
+        <text x="50" y="134" text-anchor="end" font-size="10" fill="#8d8d8d">Medio</text>
+        <text x="50" y="84"  text-anchor="end" font-size="10" fill="#8d8d8d">Alto</text>
+        <!-- X labels -->
+        <text x="100"  y="196" text-anchor="middle" font-size="10" fill="#8d8d8d">Sem 1</text>
+        <text x="220"  y="196" text-anchor="middle" font-size="10" fill="#8d8d8d">Sem 2</text>
+        <text x="340"  y="196" text-anchor="middle" font-size="10" fill="#8d8d8d">Sem 4</text>
+        <text x="460"  y="196" text-anchor="middle" font-size="10" fill="#8d8d8d">Mes 2</text>
+        <text x="580"  y="196" text-anchor="middle" font-size="10" fill="#8d8d8d">Mes 3</text>
+
+        <!-- Line SIN Bob: slow linear growth -->
+        <polyline points="60,175 100,170 220,158 340,145 460,133 580,122 660,114"
+                  fill="none" stroke="#a8b3c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Line CON Bob: faster curve -->
+        <polyline points="60,175 100,162 220,135 340,95 460,65 580,42 660,33"
+                  fill="none" stroke="#0f62fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Fill under CON Bob line -->
+        <path d="M60,175 100,162 220,135 340,95 460,65 580,42 660,33 660,180 60,180 Z"
+              fill="#0f62fe" fill-opacity=".08"/>
+
+        <!-- Labels -->
+        <text x="670" y="36"  font-size="12" fill="#0f62fe" font-weight="700">Con Bob</text>
+        <text x="670" y="117" font-size="12" fill="#a8b3c0">Sin Bob</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 8 — COMPARATIVA ════════════════ -->
+<section class="slide bg-light" id="s8">
+  <div class="slide-inner">
+    <div class="slide-label">Comparativa</div>
+    <h2>Bob vs otras <span class="hl">herramientas de IA</span></h2>
+    <p class="lead">
+      ¿Por qué usar Bob en lugar de otras opciones? Aquí está la diferencia clave.
+    </p>
+
+    <div style="overflow-x:auto; width:100%;">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th>IBM Bob</th>
+            <th>Copilot (autocompletar)</th>
+            <th>ChatGPT / LLM Web</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Lee archivos de tu proyecto</td>
+            <td class="yes">✓ Completo</td>
+            <td class="partial">Solo archivo activo</td>
+            <td class="no">✗ No (sin plugins)</td>
+          </tr>
+          <tr>
+            <td>Escribe y edita archivos</td>
+            <td class="yes">✓ Múltiples archivos</td>
+            <td class="partial">Solo sugerencias inline</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Ejecuta comandos (tests, builds)</td>
+            <td class="yes">✓ Con aprobación</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Contexto de todo el codebase</td>
+            <td class="yes">✓ Workspace completo</td>
+            <td class="partial">Limitado</td>
+            <td class="no">✗ Solo lo que pegues</td>
+          </tr>
+          <tr>
+            <td>Modos especializados</td>
+            <td class="yes">✓ Agent / Plan / Ask</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Tú controlas cada acción</td>
+            <td class="yes">✓ Aprobación explícita</td>
+            <td class="partial">Sugerencias aceptables</td>
+            <td class="partial">Copias el texto tú mismo</td>
+          </tr>
+          <tr>
+            <td>Aprobado para código IBM</td>
+            <td class="yes">✓ Oficialmente</td>
+            <td class="partial">Con restricciones</td>
+            <td class="no">✗ Verificar primero</td>
+          </tr>
+          <tr>
+            <td>Integración con MCP / externos</td>
+            <td class="yes">✓ Native MCP support</td>
+            <td class="no">✗ No</td>
+            <td class="partial">Con plugins</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SLIDE 9 — EMPIEZA HOY ═══════════════ -->
+<section class="slide" id="s9" style="background:var(--ibm-dark);color:#fff;">
+  <div class="slide-inner">
+    <div class="slide-label" style="color:#78b4ff;">Próximos Pasos</div>
+    <h2 style="color:#fff;">Empieza a usar <span style="color:var(--ibm-blue);">Bob hoy</span></h2>
+    <p style="font-size:16px;color:#a8b3c0;margin-bottom:36px;max-width:600px;line-height:1.75;">
+      No necesitas ser experto en IA. Solo necesitas saber qué quieres lograr —
+      y escribírselo a Bob tal como se lo dirías a un compañero.
+    </p>
+
+    <div class="card-grid" style="margin-bottom:32px;">
+      <div class="card" style="background:#1c1c1c;border-color:#393939;">
+        <div class="card-icon" style="background:#1d4ed8;font-size:20px;">🌐</div>
+        <h3 style="color:#fff;">Solicita Acceso</h3>
+        <p style="color:#a8b3c0;">w3.ibm.com/w3publisher/bob<br>Completa el formulario y espera aprobación.</p>
+      </div>
+      <div class="card" style="background:#1c1c1c;border-color:#393939;">
+        <div class="card-icon" style="background:#7e22ce;font-size:20px;">🔌</div>
+        <h3 style="color:#fff;">Instala la Extensión</h3>
+        <p style="color:#a8b3c0;">Busca "IBM Bob" en el Marketplace de VS Code e instala con un clic.</p>
+      </div>
+      <div class="card" style="background:#1c1c1c;border-color:#393939;">
+        <div class="card-icon" style="background:#166534;font-size:20px;">🚀</div>
+        <h3 style="color:#fff;">Escribe /init</h3>
+        <p style="color:#a8b3c0;">Abre tu proyecto, escribe <code style="color:#78b4ff;">/init</code> en el chat y deja que Bob analice tu codebase.</p>
+      </div>
+    </div>
+
+    <div style="background:#0f62fe;border-radius:10px;padding:28px 30px;">
+      <h3 style="font-size:19px;margin-bottom:8px;">💡 Primer prompt que puedes probar</h3>
+      <p style="font-size:15px;color:rgba(255,255,255,.88);font-style:italic;background:rgba(0,0,0,.2);padding:12px 16px;border-radius:6px;margin-top:10px;">
+        "Analiza mi proyecto y dime: ¿qué hace?, ¿qué tecnologías usa? y ¿cuáles son los 3 archivos más importantes?"
+      </p>
+      <p style="font-size:13px;color:rgba(255,255,255,.65);margin-top:12px;">
+        Puedes preguntarle esto desde el primer día, en cualquier proyecto existente. Bob leerá tu código y te responderá en minutos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ════════════════════════════════════════ -->
+<footer class="pres-footer">
+  <div style="max-width:820px;margin:0 auto;padding:0 24px;">
+    IBM Bob — Presentación Introductoria &nbsp;|&nbsp; Uso interno IBM &nbsp;|&nbsp; Acceso vía w3.ibm.com/w3publisher/bob
+    <br style="margin-bottom:6px;">
+    Made with IBM Bob
+  </div>
+</footer>
+
+</body>
+</html>

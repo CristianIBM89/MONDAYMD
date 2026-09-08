@@ -13,6 +13,7 @@ import RetroForm from './pages/RetroForm';
 import SlackPreview from './pages/SlackPreview';
 import ManagerDashboard from './pages/ManagerDashboard';
 import SessionsHistory from './pages/SessionsHistory';
+import IterationManager from './pages/IterationManager';
 import './App.css';
 
 export interface AppUser {
@@ -119,6 +120,7 @@ function App() {
         <Route path="/slack/:summaryId" element={<SlackPreview {...sharedProps} />} />
         <Route path="/manager" element={<ManagerDashboard {...sharedProps} />} />
         <Route path="/sessions" element={<SessionsHistory {...sharedProps} />} />
+        <Route path="/iteration-manager" element={<IterationManager {...sharedProps} />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

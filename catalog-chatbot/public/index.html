@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog Chatbot</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero,
+    .chat-shell,
+    .card {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 14px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1,
+    .card h2,
+    .message h3 {
+      margin-top: 0;
+    }
+
+    .status-panel {
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      padding: 16px;
+      background: #f9fafb;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #ddefff;
+      color: #0f62fe;
+      margin-bottom: 10px;
+    }
+
+    .classification-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .chat-shell {
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #d0d7de;
+      background: #f9fafb;
+    }
+
+    .chat-body {
+      padding: 20px;
+      min-height: 420px;
+      max-height: 68vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #ffffff;
+    }
+
+    .message-row {
+      display: flex;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.bot {
+      justify-content: flex-start;
+    }
+
+    .message {
+      max-width: 78%;
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid #d0d7de;
+      background: #f9fafb;
+    }
+
+    .message.user {
+      background: #0f62fe;
+      color: #ffffff;
+      border-color: #0f62fe;
+    }
+
+    .message.user .muted {
+      color: #dbe7ff;
+    }
+
+    .message p,
+    .message ul,
+    .message pre {
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+
+    .composer {
+      padding: 20px;
+      border-top: 1px solid #d0d7de;
+      background: #f9fafb;
+    }
+
+    .composer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      font: inherit;
+      border-radius: 10px;
+    }
+
+    input,
+    textarea {
+      border: 1px solid #c7d2da;
+      padding: 10px 12px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      padding: 12px 16px;
+      background: #0f62fe;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      background: #8ab4ff;
+      cursor: wait;
+    }
+
+    .secondary-button {
+      background: #e5e7eb;
+      color: #111827;
+      margin-top: 10px;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .helper-card {
+      margin-top: 20px;
+      padding: 18px 20px;
+    }
+
+    .sidebar-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .evidence-panel {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .helper-card ul,
+    .message ul {
+      padding-left: 20px;
+    }
+
+    .section-block {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .record-box {
+      margin-top: 8px;
+      padding: 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      background: #ffffff;
+    }
+
+    .history-button {
+      width: 100%;
+      text-align: left;
+      background: #f7f8fa;
+      color: #1f2328;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .history-button:last-child {
+      margin-bottom: 0;
+    }
+
+    .copy-record-button {
+      margin-top: 10px;
+      background: #e8f0fe;
+      color: #1d4ed8;
+      border: 1px solid #c7d2fe;
+    }
+
+    .copy-json-button {
+      margin-top: 10px;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    .export-txt-button {
+      margin-top: 10px;
+      background: #ecfeef;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .export-csv-button {
+      margin-top: 10px;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .composer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .message {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div>
+        <h1>Catalog Chatbot</h1>
+        <p>Experiencia tipo chat para clasificar materiales con la Taxonomy Cemex.</p>
+        <p class="muted">Escribe la descripción del material y, si los tienes, agrega fabricante, P/N, interpretación previa, un archivo .txt o evidencia manual de una búsqueda oficial. El chatbot responde con categoría, atributos y guía de llenado.</p>
+      </div>
+      <div class="status-panel">
+        <div class="status-pill" id="api-status-pill">Verificando API...</div>
+        <div class="muted" id="api-status-text">Consultando disponibilidad del servicio local.</div>
+        <button class="secondary-button" id="health-button" type="button">Revisar estado</button>
+      </div>
+    </div>
+
+    <div class="workspace-grid">
+      <div class="chat-shell">
+        <div class="chat-header">
+          <h2>Conversación</h2>
+          <p class="muted">La respuesta del sistema aparece como si fuera un asistente de catalogación.</p>
+          <button class="secondary-button" id="clear-chat-button" type="button">Limpiar conversación</button>
+        </div>
+
+        <div class="chat-body" id="chat-body">
+          <div class="message-row bot">
+            <div class="message bot">
+              <strong>Asistente</strong>
+              <p>Hola. Describe el material que quieres clasificar y te devolveré la categoría sugerida, atributos técnicos y ejemplo de llenado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="composer">
+          <form id="classify-form">
+            <label for="description">Mensaje</label>
+            <textarea id="description" name="description" placeholder="Ejemplo: cemento blanco tipo portland"></textarea>
+
+            <div class="composer-grid">
+              <div>
+                <label for="manufacturer">Fabricante</label>
+                <input id="manufacturer" name="manufacturer" type="text" placeholder="Ejemplo: SKF">
+              </div>
+              <div>
+                <label for="partNumber">P/N detectado</label>
+                <input id="partNumber" name="partNumber" type="text" placeholder="Ejemplo: 6205-2RS">
+              </div>
+            </div>
+
+            <label for="userInterpretation">Interpretación previa</label>
+            <textarea id="userInterpretation" name="userInterpretation" placeholder="Ejemplo: creo que es un rodamiento"></textarea>
+
+            <label for="supportFile">Archivo .txt opcional</label>
+            <input id="supportFile" name="supportFile" type="file" accept=".txt">
+
+            <div class="evidence-panel">
+              <h3>Evidencia oficial</h3>
+              <p class="muted">Si ya buscaste el P/N en la web oficial del fabricante o en un datasheet oficial, pega aquí el resultado manualmente.</p>
+
+              <label for="officialMaterialType">Tipo de material desde búsqueda oficial</label>
+              <input id="officialMaterialType" name="officialMaterialType" type="text" placeholder="Ejemplo: Rodamiento de bolas">
+
+              <label for="officialEvidenceText">Texto o extracto de datasheet oficial</label>
+              <textarea id="officialEvidenceText" name="officialEvidenceText" placeholder="Pega aquí el resumen técnico encontrado en la web oficial o datasheet oficial"></textarea>
+
+              <label for="officialSourceUrl">URL oficial opcional</label>
+              <input id="officialSourceUrl" name="officialSourceUrl" type="text" placeholder="https://fabricante.com/datasheet.pdf">
+            </div>
+
+            <button id="submit-button" type="submit">Enviar al chatbot</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="sidebar-stack">
+        <div class="card helper-card">
+          <h2>Resumen del último resultado</h2>
+          <div id="last-result-summary" class="muted">Todavía no hay resultados en esta sesión.</div>
+        </div>
+
+        <div class="card helper-card">
+          <h2>Consejos de uso</h2>
+          <ul>
+            <li>Describe el material con la mayor precisión posible.</li>
+            <li>Si conoces la marca, agrégala en Fabricante.</li>
+            <li>En P/N captura solo el número de parte.</li>
+            <li>Si no tienes descripción, puedes consultar solo con P/N.</li>
+            <li>Si tienes un archivo técnico simple, adjunta un archivo .txt.</li>
+            <li>Si ya buscaste el P/N en la web oficial, pega el tipo de material y el extracto técnico manualmente.</li>
+            <li>Si ya tienes una hipótesis, colócala en Interpretación previa para contrastarla.</li>
+          </ul>
+        </div>
+
+        <div class="card helper-card">
+          <h2>Historial de clasificaciones</h2>
+          <div id="history-list" class="muted">Todavía no hay clasificaciones en esta sesión.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('classify-form');
+    const chatBody = document.getElementById('chat-body');
+    const submitButton = document.getElementById('submit-button');
+    const supportFile = document.getElementById('supportFile');
+    const officialMaterialType = document.getElementById('officialMaterialType');
+    const officialEvidenceText = document.getElementById('officialEvidenceText');
+    const officialSourceUrl = document.getElementById('officialSourceUrl');
+    const healthButton = document.getElementById('health-button');
+    const clearChatButton = document.getElementById('clear-chat-button');
+    const apiStatusPill = document.getElementById('api-status-pill');
+    const apiStatusText = document.getElementById('api-status-text');
+    const historyList = document.getElementById('history-list');
+    const lastResultSummary = document.getElementById('last-result-summary');
+    const HISTORY_STORAGE_KEY = 'catalogChatbotSessionHistory';
+    const CHAT_STORAGE_KEY = 'catalogChatbotConversation';
+    const FORM_STORAGE_KEY = 'catalogChatbotFormDraft';
+    const LAST_RESULT_STORAGE_KEY = 'catalogChatbotLastResultSummary';
+    const sessionHistory = [];
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function setApiStatus(ok, message) {
+      apiStatusPill.textContent = ok ? 'API disponible' : 'API no disponible';
+      apiStatusPill.style.background = ok ? '#defbe6' : '#fde8e8';
+      apiStatusPill.style.color = ok ? '#146c2e' : '#b42318';
+      apiStatusText.textContent = message;
+    }
+
+    async function checkHealth() {
+      try {
+        const response = await fetch('/health');
+        const data = await response.json();
+        setApiStatus(true, `Servicio activo. Categorías cargadas: ${data.categories}.`);
+      } catch (error) {
+        setApiStatus(false, 'No fue posible conectar con la API local. Verifica que npm start siga ejecutándose.');
+      }
+    }
+
+    function saveConversation() {
+      localStorage.setItem(CHAT_STORAGE_KEY, chatBody.innerHTML);
+    }
+
+    function appendMessage(role, html) {
+      const row = document.createElement('div');
+      row.className = `message-row ${role}`;
+      row.innerHTML = `<div class="message ${role}">${html}</div>`;
+      chatBody.appendChild(row);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      saveConversation();
+    }
+
+    function saveHistory() {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(sessionHistory));
+    }
+
+    function saveFormDraft() {
+      localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({
+        description: form.description.value,
+        manufacturer: form.manufacturer.value,
+        partNumber: form.partNumber.value,
+        userInterpretation: form.userInterpretation.value,
+        officialMaterialType: officialMaterialType.value,
+        officialEvidenceText: officialEvidenceText.value,
+        officialSourceUrl: officialSourceUrl.value,
+      }));
+    }
+
+    function buildHistoryEntry(data) {
+      if (!data || data.status !== 'classified') {
+        return null;
+      }
+
+      return {
+        label: `${data.category.code} | ${data.category.nameEs} | ${data.category.nameEn} | fuente: ${data.validation.source}`,
+        summary: {
+          code: data.category.code,
+          nameEs: data.category.nameEs,
+          nameEn: data.category.nameEn,
+          source: data.validation.source,
+          confidence: data.validation.confidence,
+          part: data.exampleRecord.PART,
+          manufacturer: data.exampleRecord.Fabricante,
+        },
+      };
+    }
+
+    function renderHistory() {
+      if (sessionHistory.length === 0) {
+        historyList.className = 'muted';
+        historyList.textContent = 'Todavía no hay clasificaciones en esta sesión.';
+        return;
+      }
+
+      historyList.className = '';
+      historyList.innerHTML = sessionHistory
+        .map((item, index) => `<button class="history-button" type="button" data-history-index="${index}">${escapeHtml(item.label)}</button>`)
+        .join('');
+    }
+
+    function loadHistory() {
+      try {
+        const savedHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
+
+        if (!Array.isArray(savedHistory)) {
+          return;
+        }
+
+        const normalizedHistory = savedHistory
+          .slice(0, 10)
+          .map((item) => {
+            if (typeof item === 'string') {
+              return {
+                label: item,
+                summary: null,
+              };
+            }
+
+            if (!item || typeof item !== 'object' || typeof item.label !== 'string') {
+              return null;
+            }
+
+            return {
+              label: item.label,
+              summary: item.summary && typeof item.summary === 'object' ? item.summary : null,
+            };
+          })
+          .filter(Boolean);
+
+        sessionHistory.splice(0, sessionHistory.length, ...normalizedHistory);
+        renderHistory();
+      } catch (error) {
+        localStorage.removeItem(HISTORY_STORAGE_KEY);
+      }
+    }
+
+    function addHistoryEntry(data) {
+      const historyEntry = buildHistoryEntry(data);
+
+      if (!historyEntry) {
+        return;
+      }
+
+      sessionHistory.unshift(historyEntry);
+      if (sessionHistory.length > 10) {
+        sessionHistory.pop();
+      }
+      saveHistory();
+      renderHistory();
+    }
+    
+    function renderLastResultSummary(summary) {
+      if (!summary) {
+        lastResultSummary.className = 'muted';
+        lastResultSummary.textContent = 'Todavía no hay resultados en esta sesión.';
+        return;
+      }
+    
+      lastResultSummary.className = '';
+      lastResultSummary.innerHTML = `
+        <p><strong>Código:</strong> ${escapeHtml(summary.code)}</p>
+        <p><strong>Español:</strong> ${escapeHtml(summary.nameEs)}</p>
+        <p><strong>Inglés:</strong> ${escapeHtml(summary.nameEn)}</p>
+        <p><strong>Fuente:</strong> ${escapeHtml(summary.source)}</p>
+        <p><strong>Confianza:</strong> ${escapeHtml(summary.confidence)}</p>
+        <p><strong>PART:</strong> ${escapeHtml(summary.part)}</p>
+        <p><strong>Fabricante:</strong> ${escapeHtml(summary.manufacturer)}</p>
+      `;
+    }
+    
+    function saveLastResultSummary(data) {
+      const historyEntry = buildHistoryEntry(data);
+
+      if (!historyEntry || !historyEntry.summary) {
+        return;
+      }
+
+      localStorage.setItem(LAST_RESULT_STORAGE_KEY, JSON.stringify(historyEntry.summary));
+      renderLastResultSummary(historyEntry.summary);
+    }
+    
+    function loadLastResultSummary() {
+      try {
+        const summary = JSON.parse(localStorage.getItem(LAST_RESULT_STORAGE_KEY) || 'null');
+        renderLastResultSummary(summary);
+      } catch (error) {
+        localStorage.removeItem(LAST_RESULT_STORAGE_KEY);
+        renderLastResultSummary(null);
+      }
+    }
+
+    function buildUserMessage(payload) {
+      const parts = ['<strong>Tú</strong>'];
+
+      if (payload.description) {
+        parts.push(`<p>${escapeHtml(payload.description)}</p>`);
+      }
+
+      if (payload.manufacturer || payload.partNumber || payload.userInterpretation || payload.fileName || payload.officialLookupEvidence) {
+        parts.push('<div class="section-block">');
+        if (payload.manufacturer) {
+          parts.push(`<div><strong>Fabricante:</strong> ${escapeHtml(payload.manufacturer)}</div>`);
+        }
+        if (payload.partNumber) {
+          parts.push(`<div><strong>P/N:</strong> ${escapeHtml(payload.partNumber)}</div>`);
+        }
+        if (payload.userInterpretation) {
+          parts.push(`<div><strong>Interpretación previa:</strong> ${escapeHtml(payload.userInterpretation)}</div>`);
+        }
+        if (payload.fileName) {
+          parts.push(`<div><strong>Archivo:</strong> ${escapeHtml(payload.fileName)}</div>`);
+        }
+        if (payload.officialLookupEvidence && payload.officialLookupEvidence.materialType) {
+          parts.push(`<div><strong>Tipo oficial:</strong> ${escapeHtml(payload.officialLookupEvidence.materialType)}</div>`);
+        }
+        if (payload.officialLookupEvidence && payload.officialLookupEvidence.sourceUrl) {
+          parts.push(`<div><strong>Fuente oficial:</strong> ${escapeHtml(payload.officialLookupEvidence.sourceUrl)}</div>`);
+        }
+        parts.push('</div>');
+      }
+
+      return parts.join('');
+    }
+
+    function buildBotMessage(data) {
+      if (data.status !== 'classified') {
+        const guidance = (data.guidance || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+        return `
+          <strong>Asistente</strong>
+          <p>${escapeHtml(data.message || 'No fue posible clasificar.')}</p>
+          ${guidance ? `<div class="section-block"><strong>Siguiente paso</strong><ul>${guidance}</ul></div>` : ''}
+        `;
+      }
+
+      const attributes = (data.technicalAttributes || [])
+        .map((item) => `<li>${escapeHtml(`${item.code} | ${item.nameEs} | ${item.nameEn} | obligatorio: ${item.mandatory ? 'sí' : 'no'}`)}</li>`)
+        .join('');
+      const fillGuide = (data.fillGuide || [])
+        .map((item) => `<li>${escapeHtml(item)}</li>`)
+        .join('');
+      const candidates = (data.candidateCategories || [])
+        .map((item) => `<li>${escapeHtml(`${item.code} | ${item.nameEs} | ${item.nameEn} | score: ${item.score}`)}</li>`)
+        .join('');
+      const officialEvidence = data.inputSummary && data.inputSummary.officialLookupEvidence;
+      const usesOnlyTentativeEvidence = !officialEvidence && data.validation && data.validation.source !== 'taxonomy+archivo';
+      const classificationPillHtml = officialEvidence
+        ? '<div class="classification-pill" style="background:#defbe6;color:#146c2e;">Sustentada con evidencia oficial</div>'
+        : usesOnlyTentativeEvidence
+          ? '<div class="classification-pill" style="background:#fff4ce;color:#8a6d1f;">Tentativa</div>'
+          : '<div class="classification-pill" style="background:#e8f0fe;color:#1d4ed8;">Sustentada con archivo</div>';
+      const validationWarningHtml = usesOnlyTentativeEvidence
+        ? `
+          <div class="section-block">
+            <strong>Advertencia</strong>
+            <p>Esta clasificación se apoyó en señales tentativas como P/N, texto libre o interpretación previa. Para fortalecerla, agrega evidencia oficial del fabricante o un datasheet oficial.</p>
+          </div>
+        `
+        : '';
+      const officialEvidenceHtml = officialEvidence
+        ? `
+          <div class="section-block">
+            <strong>Evidencia oficial usada</strong>
+            <p>
+              ${officialEvidence.materialType ? `<strong>Tipo:</strong> ${escapeHtml(officialEvidence.materialType)}<br>` : ''}
+              ${officialEvidence.manufacturer ? `<strong>Fabricante:</strong> ${escapeHtml(officialEvidence.manufacturer)}<br>` : ''}
+              ${officialEvidence.partNumber ? `<strong>P/N:</strong> ${escapeHtml(officialEvidence.partNumber)}<br>` : ''}
+              ${officialEvidence.sourceType ? `<strong>Origen:</strong> ${escapeHtml(officialEvidence.sourceType)}<br>` : ''}
+              ${officialEvidence.sourceUrl ? `<strong>URL:</strong> ${escapeHtml(officialEvidence.sourceUrl)}<br>` : ''}
+            </p>
+            ${officialEvidence.evidenceText ? `<pre>${escapeHtml(officialEvidence.evidenceText)}</pre>` : ''}
+          </div>
+        `
+        : '';
+
+      return `
+        <strong>Asistente</strong>
+        ${classificationPillHtml}
+        <p><strong>Código categoría:</strong> ${escapeHtml(data.category.code)}<br>
+        <strong>Nombre categoría Español:</strong> ${escapeHtml(data.category.nameEs)}<br>
+        <strong>Nombre categoría Ingles:</strong> ${escapeHtml(data.category.nameEn)}</p>
+        <div class="section-block">
+          <strong>Validación</strong>
+          <p>Fuente principal: ${escapeHtml(data.validation.source)}<br>Confianza: ${escapeHtml(data.validation.confidence)}</p>
+        </div>
+        ${validationWarningHtml}
+        ${officialEvidenceHtml}
+        <div class="section-block">
+          <strong>Atributos técnicos</strong>
+          <ul>${attributes || '<li>Sin datos.</li>'}</ul>
+        </div>
+        <div class="section-block">
+          <strong>Registro final sugerido</strong>
+          <div class="record-box">
+            <pre>${escapeHtml(`Codigo categoria: ${data.category.code}
+Nombre categoria Español: ${data.category.nameEs}
+Nombre categoria Ingles: ${data.category.nameEn}
+PART: ${data.exampleRecord.PART}
+Fabricante: ${data.exampleRecord.Fabricante}`)}</pre>
+            <button class="copy-record-button" type="button" data-record-copy="${escapeHtml(`Codigo categoria: ${data.category.code}
+Nombre categoria Español: ${data.category.nameEs}
+Nombre categoria Ingles: ${data.category.nameEn}
+PART: ${data.exampleRecord.PART}
+Fabricante: ${data.exampleRecord.Fabricante}`)}">Copiar registro final</button>
+          </div>
+        </div>
+        <div class="section-block">
+          <strong>Ejemplo de llenado</strong>
+          <pre>${escapeHtml(JSON.stringify(data.exampleRecord, null, 2))}</pre>
+          <button class="copy-json-button" type="button" data-json-copy="${escapeHtml(JSON.stringify(data.exampleRecord, null, 2))}">Copiar ejemplo JSON</button>
+        </div>
+        <div class="section-block">
+          <strong>Paso a paso</strong>
+          <ul>${fillGuide || '<li>Sin datos.</li>'}</ul>
+        </div>
+        <div class="section-block">
+          <strong>Categorías candidatas</strong>
+          <ul>${candidates || '<li>Sin datos.</li>'}</ul>
+        </div>
+        <div class="section-block">
+          <strong>Exportar resultado</strong>
+          <button class="export-txt-button" type="button" data-export-txt="${escapeHtml(`Codigo categoria: ${data.category.code}
+Nombre categoria Español: ${data.category.nameEs}
+Nombre categoria Ingles: ${data.category.nameEn}
+Fuente principal: ${data.validation.source}
+Confianza: ${data.validation.confidence}
+PART: ${data.exampleRecord.PART}
+Fabricante: ${data.exampleRecord.Fabricante}
+
+Atributos tecnicos:
+${(data.technicalAttributes || []).map((item) => `- ${item.code} | ${item.nameEs} | ${item.nameEn} | obligatorio: ${item.mandatory ? 'si' : 'no'}`).join('\n')}
+
+Paso a paso:
+${(data.fillGuide || []).map((item) => `- ${item}`).join('\n')}`)}">Exportar resultado a TXT</button>
+          <button class="export-csv-button" type="button" data-export-csv="${escapeHtml(`Codigo categoria,Nombre categoria Español,Nombre categoria Ingles,Fuente principal,Confianza,PART,Fabricante
+"${data.category.code}","${data.category.nameEs}","${data.category.nameEn}","${data.validation.source}","${data.validation.confidence}","${data.exampleRecord.PART}","${data.exampleRecord.Fabricante}"`)}">Exportar resultado a CSV</button>
+          <button class="export-csv-button" type="button" data-export-attributes-csv="${escapeHtml(`Codigo categoria,Nombre categoria Español,Nombre categoria Ingles,Codigo atributo,Nombre atributo Español,Nombre atributo Ingles,Obligatorio
+${(data.technicalAttributes || []).map((item) => `"${data.category.code}","${data.category.nameEs}","${data.category.nameEn}","${item.code}","${item.nameEs}","${item.nameEn}","${item.mandatory ? 'si' : 'no'}"`).join('\n')}`)}">Exportar atributos a CSV</button>
+        </div>
+      `;
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || '');
+          const parts = result.split(',');
+          resolve(parts.length > 1 ? parts[1] : '');
+        };
+        reader.onerror = () => reject(reader.error || new Error('No fue posible leer el archivo.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function copyRecordFromButton(button) {
+      const text = button.getAttribute('data-record-copy') || '';
+
+      if (!text) {
+        return;
+      }
+
+      await navigator.clipboard.writeText(text);
+      const originalText = button.textContent;
+      button.textContent = 'Registro copiado';
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 1500);
+    }
+
+    async function copyJsonFromButton(button) {
+      const text = button.getAttribute('data-json-copy') || '';
+
+      if (!text) {
+        return;
+      }
+
+      await navigator.clipboard.writeText(text);
+      const originalText = button.textContent;
+      button.textContent = 'JSON copiado';
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 1500);
+    }
+
+    function downloadBlob(text, fileName, mimeType) {
+      if (!text) {
+        return;
+      }
+
+      const blob = new Blob([text], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportTxtFromButton(button) {
+      downloadBlob(button.getAttribute('data-export-txt') || '', 'catalog_result.txt', 'text/plain;charset=utf-8');
+    }
+
+    function exportCsvFromButton(button) {
+      downloadBlob(button.getAttribute('data-export-csv') || '', 'catalog_result.csv', 'text/csv;charset=utf-8');
+    }
+
+    function exportAttributesCsvFromButton(button) {
+      downloadBlob(button.getAttribute('data-export-attributes-csv') || '', 'catalog_attributes.csv', 'text/csv;charset=utf-8');
+    }
+
+    chatBody.addEventListener('click', (event) => {
+      const target = event.target;
+
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      if (target.matches('[data-record-copy]')) {
+        copyRecordFromButton(target).catch(() => {
+          target.textContent = 'No se pudo copiar';
+        });
+      }
+
+      if (target.matches('[data-json-copy]')) {
+        copyJsonFromButton(target).catch(() => {
+          target.textContent = 'No se pudo copiar';
+        });
+      }
+
+      if (target.matches('[data-export-txt]')) {
+        exportTxtFromButton(target);
+      }
+
+      if (target.matches('[data-export-csv]')) {
+        exportCsvFromButton(target);
+      }
+
+      if (target.matches('[data-export-attributes-csv]')) {
+        exportAttributesCsvFromButton(target);
+      }
+    });
+
+    historyList.addEventListener('click', (event) => {
+      const target = event.target;
+
+      if (!(target instanceof HTMLElement) || !target.matches('[data-history-index]')) {
+        return;
+      }
+
+      const historyIndex = Number(target.getAttribute('data-history-index'));
+      const historyEntry = sessionHistory[historyIndex];
+
+      if (!historyEntry || !historyEntry.summary) {
+        return;
+      }
+
+      localStorage.setItem(LAST_RESULT_STORAGE_KEY, JSON.stringify(historyEntry.summary));
+      renderLastResultSummary(historyEntry.summary);
+    });
+
+    function loadConversation() {
+      const savedConversation = localStorage.getItem(CHAT_STORAGE_KEY);
+
+      if (savedConversation) {
+        chatBody.innerHTML = savedConversation;
+      }
+    }
+
+    function loadFormDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(FORM_STORAGE_KEY) || '{}');
+
+        if (!draft || typeof draft !== 'object') {
+          return;
+        }
+
+        form.description.value = typeof draft.description === 'string' ? draft.description : '';
+        form.manufacturer.value = typeof draft.manufacturer === 'string' ? draft.manufacturer : '';
+        form.partNumber.value = typeof draft.partNumber === 'string' ? draft.partNumber : '';
+        form.userInterpretation.value = typeof draft.userInterpretation === 'string' ? draft.userInterpretation : '';
+        officialMaterialType.value = typeof draft.officialMaterialType === 'string' ? draft.officialMaterialType : '';
+        officialEvidenceText.value = typeof draft.officialEvidenceText === 'string' ? draft.officialEvidenceText : '';
+        officialSourceUrl.value = typeof draft.officialSourceUrl === 'string' ? draft.officialSourceUrl : '';
+      } catch (error) {
+        localStorage.removeItem(FORM_STORAGE_KEY);
+      }
+    }
+
+    clearChatButton.addEventListener('click', () => {
+      chatBody.innerHTML = `
+        <div class="message-row bot">
+          <div class="message bot">
+            <strong>Asistente</strong>
+            <p>Hola. Describe el material que quieres clasificar y te devolveré la categoría sugerida, atributos técnicos y ejemplo de llenado.</p>
+          </div>
+        </div>
+      `;
+      form.reset();
+      sessionHistory.length = 0;
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+      localStorage.removeItem(FORM_STORAGE_KEY);
+      localStorage.removeItem(LAST_RESULT_STORAGE_KEY);
+      renderHistory();
+      renderLastResultSummary(null);
+    });
+
+    form.addEventListener('input', saveFormDraft);
+    healthButton.addEventListener('click', checkHealth);
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+
+      const selectedFile = supportFile.files[0];
+      const payload = {
+        description: form.description.value.trim(),
+        manufacturer: form.manufacturer.value.trim(),
+        partNumber: form.partNumber.value.trim(),
+        userInterpretation: form.userInterpretation.value.trim(),
+        fileName: selectedFile ? selectedFile.name : '',
+      };
+
+      const normalizedOfficialMaterialType = officialMaterialType.value.trim();
+      const normalizedOfficialEvidenceText = officialEvidenceText.value.trim();
+      const normalizedOfficialSourceUrl = officialSourceUrl.value.trim();
+
+      if (normalizedOfficialMaterialType || normalizedOfficialEvidenceText || normalizedOfficialSourceUrl) {
+        payload.officialLookupEvidence = {
+          partNumber: payload.partNumber,
+          manufacturer: payload.manufacturer,
+          materialType: normalizedOfficialMaterialType,
+          evidenceText: normalizedOfficialEvidenceText,
+          sourceType: 'manual_official_lookup',
+          sourceUrl: normalizedOfficialSourceUrl,
+        };
+      }
+
+      if (selectedFile) {
+        payload.file = {
+          name: selectedFile.name,
+          contentBase64: await readFileAsBase64(selectedFile),
+        };
+      }
+
+      appendMessage('user', buildUserMessage(payload));
+      appendMessage('bot', '<strong>Asistente</strong><p>Consultando clasificación...</p>');
+      const pendingMessage = chatBody.lastElementChild;
+
+      try {
+        const response = await fetch('/classify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        pendingMessage.innerHTML = `<div class="message bot">${buildBotMessage(data)}</div>`;
+        saveConversation();
+        addHistoryEntry(data);
+        saveLastResultSummary(data);
+        form.reset();
+        localStorage.removeItem(FORM_STORAGE_KEY);
+      } catch (error) {
+        pendingMessage.innerHTML = `<div class="message bot"><strong>Asistente</strong><p>Error al consultar la API.</p><pre>${escapeHtml(error.message)}</pre></div>`;
+      } finally {
+        submitButton.disabled = false;
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    });
+
+    loadHistory();
+    loadConversation();
+    loadFormDraft();
+    loadLastResultSummary();
+    checkHealth();
+  </script>
+</body>
+</html>

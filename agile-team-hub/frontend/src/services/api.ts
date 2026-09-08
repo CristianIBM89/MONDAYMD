@@ -38,6 +38,9 @@ export const api = {
   // Iterations
   getActiveIteration: () => request<{ iteration: unknown }>('GET', '/api/iterations/active'),
   getAllIterations: () => request<{ iterations: unknown[] }>('GET', '/api/iterations'),
+  createIteration: (payload: unknown) => request<{ success: boolean; id: string }>('POST', '/api/iterations', payload),
+  closeIteration: (id: string) => request<{ success: boolean }>('PATCH', `/api/iterations/${id}/close`),
+  updateIteration: (id: string, payload: unknown) => request<{ success: boolean }>('PATCH', `/api/iterations/${id}/update`, payload),
 
   // Summary
   processSummary: (payload: unknown) => request<{ summaryId: string; watsonxResult?: unknown; mode?: string; icaPrompt?: string; error?: string }>('POST', '/api/summary/process', payload),

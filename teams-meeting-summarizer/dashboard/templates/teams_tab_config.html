@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Configuración — Resumen IA</title>
+  <script src="https://res.cdn.office.net/teams-js/2.22.0/js/MicrosoftTeams.min.js"></script>
+  <style>
+    body{font-family:-apple-system,"Segoe UI",sans-serif;padding:24px;color:#1a1f2e}
+    h2{font-size:16px;margin-bottom:8px}
+    p{font-size:13px;color:#6b7280;margin-bottom:20px}
+    .btn{padding:10px 20px;background:#464EB8;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer}
+    .btn:hover{background:#3b43a0}
+  </style>
+</head>
+<body>
+  <h2>⚙️ Configurar Resumen IA</h2>
+  <p>Esta app agrega un panel lateral a tus reuniones de Teams para activar la generación automática de resúmenes con IBM watsonx.ai.</p>
+  <p>No requiere configuración adicional. Haz clic en <b>Guardar</b> para añadir el panel a esta reunión.</p>
+  <button class="btn" onclick="saveConfig()">Guardar</button>
+  <script>
+    microsoftTeams.app.initialize().then(() => {
+      microsoftTeams.pages.config.registerOnSaveHandler(saveEvent => {
+        microsoftTeams.pages.config.setConfig({
+          contentUrl: "http://127.0.0.1:8000/teams-tab/panel",
+          entityId:   "meeting-summarizer-panel",
+          suggestedDisplayName: "Resumen IA"
+        });
+        saveEvent.notifySuccess();
+      });
+    });
+    function saveConfig() {
+      microsoftTeams.pages.config.setValidityState(true);
+    }
+  </script>
+</body>
+</html>

@@ -1,5 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { getActiveIteration, getAllIterations, attachFileToBlocker } from '../services/monday';
+import {
+  getActiveIteration,
+  getAllIterations,
+  attachFileToBlocker,
+  createIterationInMonday,
+  closeIterationInMonday,
+  updateIterationInMonday,
+} from '../services/monday';
 import { z } from 'zod';
 import { auditLog } from '../services/auditLog';
 import { MultipartFile } from '@fastify/multipart';
@@ -19,6 +26,44 @@ export async function iterationRoutes(app: FastifyInstance): Promise<void> {
   app.get('/', async (_req: FastifyRequest, reply: FastifyReply) => {
     const iterations = await getAllIterations();
     reply.send({ iterations });
+  });
+
+  // POST /api/iterations — crear nueva iteración
+  app.post('/', async (req: FastifyRequest, reply: FastifyReply) => {
+    const schema = z.object({
+      nombre:        z.string().min(1),
+      gerenteNombre: z.string().min(1),
+      gerenteEmail:  z.string().email(),
+      fechaInicio:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      fechaFin:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    });
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) { reply.status(400).send({ error: 'Datos inválidos', issues: parsed.error.issues }); return; }
+
+    const result = await createIterationInMonday({ ...parsed.data, userEmail: req.user!.email });
+    await auditLog({ user: req.user!.email, action: 'CREATE_ITERATION', detail: `id=${result.id}`, result: 'success' });
+    reply.status(201).send({ success: true, id: result.id });
+  });
+
+  // PATCH /api/iterations/:id/close — cerrar iteración activa
+  app.patch('/:id/close', async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    await closeIterationInMonday(req.params.id, req.user!.email);
+    reply.send({ success: true });
+  });
+
+  // PATCH /api/iterations/:id/update — editar gerente / fechas
+  app.patch('/:id/update', async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const schema = z.object({
+      gerenteNombre: z.string().optional(),
+      gerenteEmail:  z.string().email().optional(),
+      fechaInicio:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      fechaFin:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    });
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) { reply.status(400).send({ error: 'Datos inválidos', issues: parsed.error.issues }); return; }
+
+    await updateIterationInMonday(req.params.id, parsed.data, req.user!.email);
+    reply.send({ success: true });
   });
 
   // POST /api/iterations/:id/marbles — attach canicas evidence

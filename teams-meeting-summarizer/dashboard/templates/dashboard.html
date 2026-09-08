@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Teams Meeting Summarizer</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <rect width="26" height="26" rx="6" fill="#464EB8"/>
+      <path d="M8 13l4 4 6-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Meeting<strong>AI</strong></span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-view="dashboard">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3h7v7H2V3zm9 0h7v4h-7V3zM2 12h7v5H2v-5zm9 2h7v3h-7v-3z"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item" data-view="upload">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+      Subir Reunión
+    </a>
+    <a href="#" class="nav-item" data-view="meetings">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9zm4 4H7a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V8a2 2 0 00-2-2z"/></svg>
+      Reuniones
+    </a>
+    <a href="#" class="nav-item" data-view="action-items">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+      Action Items
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <span class="badge-status" id="api-status"><span class="dot dot-ok"></span>&nbsp;App activa</span>
+  </div>
+</aside>
+
+<main class="main-content">
+  <header class="topbar">
+    <h1 class="page-title" id="page-title">Dashboard</h1>
+    <div class="topbar-actions">
+      <a href="/api/meetings/export/all-action-items" class="btn btn-secondary btn-sm">⬇ Exportar CSV</a>
+      <button class="btn btn-secondary btn-sm" id="btn-refresh">↺ Actualizar</button>
+    </div>
+  </header>
+
+  <!-- ── DASHBOARD ── -->
+  <section id="view-dashboard" class="view active">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Total reuniones</div><div class="kpi-value" id="kpi-total">—</div></div>
+      <div class="kpi-card kpi-success"><div class="kpi-label">Resumidas</div><div class="kpi-value" id="kpi-summarized">—</div></div>
+      <div class="kpi-card kpi-accent"><div class="kpi-label">En Monday.com</div><div class="kpi-value" id="kpi-monday">—</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Bloqueantes abiertos</div><div class="kpi-value" id="kpi-blockers">—</div></div>
+    </div>
+    <div class="section-title">Últimas reuniones</div>
+    <div id="recent-meetings-list" class="meetings-list"></div>
+  </section>
+
+  <!-- ── SUBIR ── -->
+  <section id="view-upload" class="view">
+    <div class="upload-card">
+      <div class="upload-icon">📄</div>
+      <h2>Subir transcripción de Teams</h2>
+      <p class="upload-hint">Exporta el <code>.vtt</code> desde Teams:<br><strong>Reunión → Más opciones (···) → Transcripción → Descargar</strong></p>
+      <form id="upload-form" enctype="multipart/form-data">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" name="file" accept=".vtt,.txt,.srt" hidden/>
+          <div id="drop-label">
+            <svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#f0f2f5"/><path d="M20 12v12M14 18l6-6 6 6" stroke="#464EB8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 28h16" stroke="#464EB8" stroke-width="2" stroke-linecap="round"/></svg>
+            <div style="margin-top:10px;font-weight:600">Arrastra el archivo aquí</div>
+            <div style="color:var(--muted);font-size:13px;margin-top:3px">o haz clic · .vtt · .txt · .srt</div>
+          </div>
+          <div id="drop-filename" class="hidden" style="font-weight:600;color:var(--accent)"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nombre de la reunión *</label>
+            <input type="text" name="subject" class="form-input" placeholder="Ej: Reunión semanal de equipo" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Organizador</label>
+            <input type="text" name="organizer" class="form-input" placeholder="Nombre"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha y hora</label>
+            <input type="datetime-local" name="meeting_date" class="form-input"/>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="btn-upload">🤖 Generar Resumen con IBM watsonx.ai</button>
+        <div id="upload-progress" class="hidden">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-label" id="progress-label">Procesando con IBM watsonx.ai…</div>
+        </div>
+      </form>
+    </div>
+    <div class="instructions-card">
+      <h3>¿Cómo exportar la transcripción de Teams?</h3>
+      <div class="steps-list">
+        <div class="inst-step"><span class="step-n">1</span><div>Durante la reunión activa el panel de <strong>Transcripción</strong></div></div>
+        <div class="inst-step"><span class="step-n">2</span><div>Haz clic en <strong>(···)</strong> junto a la transcripción → <strong>"Descargar (.vtt)"</strong></div></div>
+        <div class="inst-step"><span class="step-n">3</span><div>Sube el archivo y <strong>IBM watsonx.ai</strong> generará el resumen automáticamente</div></div>
+        <div class="inst-step"><span class="step-n">4</span><div>Revisa bloqueantes y próximos pasos — <strong>edítalos</strong> antes de enviar a Monday.com</div></div>
+      </div>
+      <div class="info-box">💡 Usa tu cuenta corporativa IBM en <a href="https://cloud.ibm.com" target="_blank">cloud.ibm.com</a> para obtener la API key. Plan Lite = <strong>gratis</strong>.</div>
+    </div>
+  </section>
+
+  <!-- ── REUNIONES ── -->
+  <section id="view-meetings" class="view">
+    <div class="filter-bar">
+      <select id="filter-status" class="filter-select">
+        <option value="">Todos los estados</option>
+        <option value="summarized">Resumidas</option>
+        <option value="synced_monday">En Monday.com</option>
+        <option value="processing">Procesando</option>
+        <option value="error">Error</option>
+      </select>
+      <input type="text" id="filter-search" class="filter-input" placeholder="Buscar por nombre…"/>
+    </div>
+    <div id="meetings-list" class="meetings-list"></div>
+  </section>
+
+  <!-- ── ACTION ITEMS ── -->
+  <section id="view-action-items" class="view">
+    <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Todos los Action Items</span>
+      <a href="/api/meetings/export/all-action-items" class="btn btn-secondary btn-sm">⬇ Descargar CSV</a>
+    </div>
+    <div id="action-items-list"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL PRINCIPAL: Detalle de reunión
+  ════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <div><h2 id="modal-title"></h2><div id="modal-meta" style="font-size:12px;color:var(--muted);margin-top:2px"></div></div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <!-- Pestañas dentro del modal -->
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="resumen">📋 Resumen</button>
+        <button class="tab-btn" data-tab="blockers">🚧 Bloqueantes <span id="tab-blockers-count" class="tab-badge"></span></button>
+        <button class="tab-btn" data-tab="next-steps">🎯 Próximos Pasos <span id="tab-nextsteps-count" class="tab-badge"></span></button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-btn-cancel">Cerrar</button>
+        <a id="modal-btn-csv"  class="btn btn-secondary hidden" href="#">⬇ CSV</a>
+        <a id="modal-btn-json" class="btn btn-secondary hidden" href="#">⬇ JSON</a>
+        <button class="btn btn-accent hidden" id="modal-btn-reprocess">↺ Re-procesar</button>
+        <button class="btn btn-monday hidden" id="modal-btn-monday">📊 Enviar a Monday.com</button>
+        <button class="btn btn-danger hidden" id="modal-btn-delete">🗑 Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL BLOQUEANTES (ventana emergente post-resumen)
+  ════════════════════════════════════════════════════ -->
+  <div id="blockers-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2>🚧 Bloqueantes</h2>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="blockers-meeting-name"></div>
+        </div>
+        <button class="modal-close" id="blockers-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="blockers-list" style="margin-bottom:14px"></div>
+        <!-- Formulario agregar/editar -->
+        <div class="inline-form" id="blocker-form-container">
+          <div class="form-row">
+            <input type="text" id="blocker-desc" class="form-input" placeholder="Descripción del bloqueante…" style="flex:1"/>
+            <input type="text" id="blocker-owner" class="form-input" placeholder="Responsable" style="width:150px"/>
+            <select id="blocker-status" class="filter-select" style="width:130px">
+              <option value="open">🔴 Abierto</option>
+              <option value="in_progress">🟡 En progreso</option>
+              <option value="resolved">🟢 Resuelto</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="blocker-save-btn">＋ Agregar</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="blockers-done">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL PRÓXIMOS PASOS
+  ════════════════════════════════════════════════════ -->
+  <div id="nextsteps-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2>🎯 Próximos Pasos</h2>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="nextsteps-meeting-name"></div>
+        </div>
+        <button class="modal-close" id="nextsteps-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="nextsteps-list" style="margin-bottom:14px"></div>
+        <div class="inline-form">
+          <div class="form-row">
+            <input type="text" id="ns-desc" class="form-input" placeholder="Descripción del próximo paso…" style="flex:1"/>
+            <input type="text" id="ns-owner" class="form-input" placeholder="Responsable" style="width:140px"/>
+            <input type="text" id="ns-due" class="form-input" placeholder="Fecha (ej: 2025-02-01)" style="width:145px"/>
+            <button class="btn btn-primary btn-sm" id="ns-save-btn">＋ Agregar</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="nextsteps-done">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+</main>
+
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>

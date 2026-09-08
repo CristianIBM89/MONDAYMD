@@ -1,0 +1,175 @@
+
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1a1f2e;background:#f0f2f5;padding:32px 20px}
+.page{max-width:760px;margin:0 auto}
+h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.sub{color:#6b7280;font-size:13px;margin-bottom:24px}
+.section{background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.section h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:14px}
+/* FLOW */
+.flow{display:flex;flex-direction:column;gap:0}
+.flow-step{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f1f3f5}
+.flow-step:last-child{border-bottom:none}
+.flow-num{width:28px;height:28px;border-radius:50%;background:#464EB8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.flow-body{flex:1}
+.flow-title{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.flow-desc{color:#6b7280;font-size:12.5px}
+.flow-tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;margin-left:6px}
+.tag-ibm{background:#eef0fb;color:#464EB8}
+.tag-monday{background:#e5f2ff;color:#0073ea}
+.tag-popup{background:#fef3c7;color:#d97706}
+/* POPUP SECTION */
+.popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.popup-card{border:1px solid #e4e7ec;border-radius:8px;padding:14px 16px;background:#f7f8fa}
+.popup-card h3{font-size:13px;font-weight:600;margin-bottom:8px}
+.popup-card ul{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#374151}
+.popup-card li::before{content:"•";margin-right:6px;color:#464EB8;font-weight:700}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;color:#6b7280;font-size:11px;text-transform:uppercase;padding:4px 10px;border-bottom:2px solid #e4e7ec}
+td{padding:8px 10px;border-bottom:1px solid #f1f3f5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+code{background:#f1f3f5;padding:1px 6px;border-radius:4px;font-size:11.5px;font-family:"Consolas",monospace}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-free{background:#dcfce7;color:#16a34a}
+.badge-corp{background:#eef0fb;color:#464EB8}
+/* CREDENTIALS */
+.cred-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f3f5}
+.cred-step:last-child{border-bottom:none}
+.cred-n{width:20px;height:20px;border-radius:50%;background:#e5f2ff;color:#0073ea;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cred-body{flex:1;font-size:13px}
+/* FOOTER */
+.footer{text-align:center;margin-top:24px;padding-top:14px;border-top:1px solid #e4e7ec;font-size:12px;color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>🤖 Teams Meeting Summarizer</h1>
+<p class="sub">Teams → IBM watsonx.ai (Granite) → Bloqueantes &amp; Próximos Pasos → Monday.com · <span class="badge badge-free">Gratis</span> <span class="badge badge-corp">IBM Corporativo</span></p>
+
+
+<div class="section">
+  <h2>Flujo completo</h2>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-body">
+        <div class="flow-title">Reunión en Microsoft Teams</div>
+        <div class="flow-desc">Activa la transcripción durante la reunión: <strong>Más opciones → Iniciar transcripción</strong></div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-body">
+        <div class="flow-title">Exportar transcripción .vtt</div>
+        <div class="flow-desc">Panel Transcripción → (···) → <strong>"Descargar (.vtt)"</strong></div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-body">
+        <div class="flow-title">Subir al Dashboard <span class="flow-tag tag-ibm">IBM watsonx.ai</span></div>
+        <div class="flow-desc">Drag &amp; drop del .vtt → IBM Granite-13b genera: resumen ejecutivo, puntos clave, decisiones, action items, bloqueantes y próximos pasos</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-body">
+        <div class="flow-title">Revisar Bloqueantes &amp; Próximos Pasos <span class="flow-tag tag-popup">Ventana emergente</span></div>
+        <div class="flow-desc">Se abre automáticamente para que el equipo revise lo detectado por IA, añada más, cambie estados o elimine los irrelevantes</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-body">
+        <div class="flow-title">Enviar a Monday.com <span class="flow-tag tag-monday">📊 Nuevo tablero</span></div>
+        <div class="flow-desc">Un clic crea el tablero completo con 4 grupos: Resumen &amp; Decisiones · Action Items · Bloqueantes · Próximos Pasos</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>Ventanas emergentes — Bloqueantes &amp; Próximos Pasos</h2>
+  <div class="popup-grid">
+    <div class="popup-card">
+      <h3>🚧 Bloqueantes</h3>
+      <ul>
+        <li>La IA los detecta automáticamente</li>
+        <li>Cambiar estado: 🔴 Abierto → 🟡 En progreso → 🟢 Resuelto</li>
+        <li>Asignar responsable</li>
+        <li>Añadir bloqueantes manuales</li>
+        <li>Editar o eliminar cualquiera</li>
+      </ul>
+    </div>
+    <div class="popup-card">
+      <h3>🎯 Próximos Pasos</h3>
+      <ul>
+        <li>La IA los detecta del contexto</li>
+        <li>Marcar como ✅ completado</li>
+        <li>Asignar responsable y fecha</li>
+        <li>Añadir pasos manuales</li>
+        <li>Eliminar los irrelevantes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>Modal de reunión — 3 pestañas</h2>
+  <table>
+    <thead><tr><th>Pestaña</th><th>Contenido</th><th>Acciones</th></tr></thead>
+    <tbody>
+      <tr><td>📋 Resumen</td><td>Ejecutivo, puntos clave, decisiones, action items</td><td>⬇ JSON · ⬇ CSV · ↺ Re-procesar</td></tr>
+      <tr><td>🚧 Bloqueantes</td><td>Lista de bloqueantes con estado y responsable</td><td>✏️ Editar · 🗑 Eliminar · ＋ Agregar</td></tr>
+      <tr><td>🎯 Próximos Pasos</td><td>Lista de pasos con fecha y responsable</td><td>☑ Marcar hecho · 🗑 Eliminar · ＋ Agregar</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<div class="section">
+  <h2>Obtener credenciales IBM watsonx.ai (gratis)</h2>
+  <div class="flow">
+    <div class="cred-step"><div class="cred-n">1</div><div class="cred-body">Ve a <strong>cloud.ibm.com</strong> con tu email corporativo <code>@ibm.com</code></div></div>
+    <div class="cred-step"><div class="cred-n">2</div><div class="cred-body">Busca <strong>"watsonx.ai"</strong> → crea instancia → <strong>Plan Lite</strong> (50 000 tokens/mes gratis)</div></div>
+    <div class="cred-step"><div class="cred-n">3</div><div class="cred-body">Instancia → <strong>Service credentials</strong> → New credential → copia <code>apikey</code> → <code>IBM_API_KEY</code></div></div>
+    <div class="cred-step"><div class="cred-n">4</div><div class="cred-body">Ve a <strong>dataplatform.cloud.ibm.com/wx/home</strong> → crea proyecto → copia el Project ID de la URL → <code>IBM_PROJECT_ID</code></div></div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>Obtener credenciales Monday.com (gratis con cuenta existente)</h2>
+  <div class="flow">
+    <div class="cred-step"><div class="cred-n" style="background:#e5f2ff;color:#0073ea">1</div><div class="cred-body">Monday.com → <strong>perfil</strong> → <strong>Developers</strong> → <strong>My Access Tokens</strong> → copia token → <code>MONDAY_API_KEY</code></div></div>
+    <div class="cred-step"><div class="cred-n" style="background:#e5f2ff;color:#0073ea">2</div><div class="cred-body">URL de tu workspace: <code>app.monday.com/boards?workspaceId=<strong>XXXXX</strong></code> → ese número → <code>MONDAY_WORKSPACE_ID</code></div></div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>Setup rápido</h2>
+  <table>
+    <tbody>
+      <tr><td style="width:28px;color:#6b7280">1.</td><td><code>cd teams-meeting-summarizer</code></td></tr>
+      <tr><td>2.</td><td><code>python -m venv venv &amp;&amp; venv\Scripts\activate</code></td></tr>
+      <tr><td>3.</td><td><code>pip install -r requirements.txt</code></td></tr>
+      <tr><td>4.</td><td><code>cp .env.example .env</code> → editar las 4 variables</td></tr>
+      <tr><td>5.</td><td><code>uvicorn main:app --host 127.0.0.1 --port 8000 --reload</code></td></tr>
+      <tr><td>6.</td><td>Abrir <code>http://127.0.0.1:8000</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">Made with IBM Bob</div>
+</div>
+</body>
+</html>

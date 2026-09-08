@@ -1,0 +1,874 @@
+
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agile Team Hub — Solución Integral IBM</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 14px; line-height: 1.6; color: #1f2328; background: #ffffff; }
+  .container { max-width: 760px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 22px; font-weight: 700; color: #1f2328; border-bottom: 2px solid #3b82d4; padding-bottom: 10px; margin-bottom: 8px; }
+  h2 { font-size: 17px; font-weight: 700; color: #1f2328; margin: 32px 0 10px; border-left: 4px solid #3b82d4; padding-left: 10px; }
+  h3 { font-size: 14px; font-weight: 700; color: #1f2328; margin: 20px 0 6px; }
+  h4 { font-size: 13px; font-weight: 600; color: #57606a; margin: 14px 0 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  p { margin-bottom: 10px; color: #1f2328; }
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 3px; }
+  .subtitle { color: #57606a; font-size: 13px; margin-bottom: 28px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; margin-right: 4px; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-yellow { background: #fef9c3; color: #854d0e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .section { margin-bottom: 32px; }
+  .card { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+  .card-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 10px 0 16px; }
+  th { background: #f7f8fa; border: 1px solid #e5e7eb; padding: 7px 10px; text-align: left; font-weight: 600; color: #1f2328; }
+  td { border: 1px solid #e5e7eb; padding: 7px 10px; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .alert { border-left: 4px solid #f59e0b; background: #fffbeb; padding: 10px 14px; border-radius: 4px; margin: 10px 0; font-size: 13px; }
+  .alert-red { border-left-color: #ef4444; background: #fff5f5; }
+  .alert-green { border-left-color: #10b981; background: #f0fdf4; }
+  .alert-blue { border-left-color: #3b82f6; background: #eff6ff; }
+  .toc { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 18px; margin-bottom: 28px; }
+  .toc ul { margin: 6px 0 0 16px; }
+  .toc li { margin-bottom: 2px; font-size: 13px; }
+  .toc a { color: #3b82d4; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .step-num { background: #3b82d4; color: white; border-radius: 50%; min-width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+  .flow-box { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px 14px; margin-bottom: 6px; font-size: 13px; }
+  .flow-arrow { text-align: center; color: #57606a; font-size: 16px; margin: 2px 0; }
+  .code-block { background: #1f2328; color: #e6edf3; font-family: "Cascadia Code", "Courier New", monospace; font-size: 12px; padding: 14px 16px; border-radius: 6px; margin: 10px 0 14px; white-space: pre-wrap; word-break: break-word; line-height: 1.5; }
+  .divider { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .field-chip { background: #ede9fe; color: #5b21b6; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .warn-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 10px 14px; margin: 10px 0; font-size: 13px; }
+  .check { color: #10b981; font-weight: 700; }
+  .cross { color: #ef4444; font-weight: 700; }
+  .warn { color: #f59e0b; font-weight: 700; }
+  footer { border-top: 1px solid #e5e7eb; margin-top: 48px; padding-top: 14px; text-align: center; font-size: 12px; color: #57606a; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Agile Team Hub — Solución Integral IBM</h1>
+<p class="subtitle">Arquitectura, viabilidad, estructura y MVP para gestión de sesiones Agile con Microsoft Teams, Monday.com, Slack e IBM AI · Versión 1.0</p>
+
+<div class="toc">
+  <strong>Tabla de contenido</strong>
+  <ul>
+    <li><a href="#s1">1. Evaluación de viabilidad y licencias</a></li>
+    <li><a href="#s2">2. Arquitectura propuesta</a></li>
+    <li><a href="#s3">3. Flujo completo de información</a></li>
+    <li><a href="#s4">4. Estructura exacta de Monday.com</a></li>
+    <li><a href="#s5">5. Descripción de las imágenes adjuntas</a></li>
+    <li><a href="#s6">6. Diseño de la interfaz de Teams</a></li>
+    <li><a href="#s7">7. Configuración de roles y permisos</a></li>
+    <li><a href="#s8">8. Prompt definitivo para resumir reuniones</a></li>
+    <li><a href="#s9">9. Automatizaciones sin servicios pagos</a></li>
+    <li><a href="#s10">10. Archivos y manifiestos</a></li>
+    <li><a href="#s11">11. Instrucciones de instalación</a></li>
+    <li><a href="#s12">12. Plan de pruebas</a></li>
+    <li><a href="#s13">13. Riesgos y limitaciones</a></li>
+    <li><a href="#s14">14. Alternativas gratuitas</a></li>
+    <li><a href="#s15">15. MVP — Primera versión mínima funcional</a></li>
+  </ul>
+</div>
+
+
+<div class="section" id="s1">
+<h2>1. Evaluación de viabilidad y licencias</h2>
+
+<div class="alert alert-blue">
+  <strong>Premisa:</strong> IBM proporciona a sus empleados licencias Microsoft 365 E3 o E5, acceso a IBM Consulting Advantage (ICA), IBM Cloud con créditos corporativos, y Slack Enterprise Grid. Monday.com puede estar disponible por contrato corporativo o en plan gratuito. La evaluación siguiente distingue con precisión qué está incluido y qué no.
+</div>
+
+<h3>Microsoft 365 / Teams (licencia corporativa IBM)</h3>
+<table>
+  <tr><th>Capacidad</th><th>Disponibilidad</th><th>Notas</th></tr>
+  <tr><td>Microsoft Teams — acceso completo</td><td><span class="badge badge-green">✅ Incluido</span></td><td>M365 E3/E5 IBM</td></tr>
+  <tr><td>Pestañas fijadas en canal (Tab URL)</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Cualquier usuario puede añadir</td></tr>
+  <tr><td>Sideload de app personalizada (por usuario)</td><td><span class="badge badge-yellow">⚠️ Requiere política habilitada</span></td><td>Depende del tenant IBM. Si está deshabilitado, se usa pestaña web</td></tr>
+  <tr><td>App publicada en catálogo interno Teams</td><td><span class="badge badge-yellow">⚠️ Requiere Teams Admin</span></td><td>IT debe aprobar y publicar</td></tr>
+  <tr><td>Adaptive Cards en canal / chat</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Via Incoming Webhook gratuito</td></tr>
+  <tr><td>Power Apps (plan básico)</td><td><span class="badge badge-green">✅ Incluido en E3/E5</span></td><td>Power Apps for Teams — canvas apps integradas</td></tr>
+  <tr><td>Power Automate (conectores estándar)</td><td><span class="badge badge-green">✅ Incluido en E3/E5</span></td><td>HTTP, Office 365, Teams, Forms</td></tr>
+  <tr><td>Power Automate — conectores premium (Monday, Salesforce)</td><td><span class="badge badge-red">❌ Requiere licencia premium</span></td><td>Monday connector es premium</td></tr>
+  <tr><td>SharePoint Online</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Almacenamiento gratuito de datos</td></tr>
+  <tr><td>Microsoft Forms</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Votación, registros de bloqueantes</td></tr>
+  <tr><td>Teams Incoming Webhook</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Para recibir notificaciones de sistemas externos</td></tr>
+</table>
+
+<h3>Monday.com</h3>
+<table>
+  <tr><th>Capacidad</th><th>Plan gratuito</th><th>Notas</th></tr>
+  <tr><td>Tableros (boards)</td><td><span class="badge badge-green">✅ Hasta 3 tableros</span></td><td>Requiere diseño consolidado en 1–2 tableros</td></tr>
+  <tr><td>Seats (usuarios)</td><td><span class="badge badge-green">✅ Hasta 2 asientos</span></td><td>Para equipos de más de 2: se necesita plan Basic ($9/seat) o cuenta corporativa IBM</td></tr>
+  <tr><td>Items por tablero</td><td><span class="badge badge-yellow">⚠️ 1000 items total</span></td><td>Suficiente para MVP</td></tr>
+  <tr><td>Dashboard gerencial</td><td><span class="badge badge-red">❌ No disponible en gratuito</span></td><td>Requiere plan Standard+. Alternativa: vistas filtradas</td></tr>
+  <tr><td>Automatizaciones</td><td><span class="badge badge-red">❌ No en plan gratuito</span></td><td>Plan Basic incluye 250 acciones/mes</td></tr>
+  <tr><td>Integración Monday–Slack</td><td><span class="badge badge-red">❌ Requiere plan Standard</span></td><td>Alternativa: webhook manual o Monday API</td></tr>
+  <tr><td>Monday API (REST/GraphQL)</td><td><span class="badge badge-green">✅ Disponible en todos los planes</span></td><td>Acceso con API key gratuita</td></tr>
+  <tr><td>Vistas (tabla, kanban, calendario)</td><td><span class="badge badge-green">✅ En plan gratuito</span></td><td>Kanban y tabla incluidos</td></tr>
+</table>
+
+<div class="alert alert-red">
+  <strong>Decisión crítica:</strong> El plan gratuito de Monday admite solo 2 asientos. Si el equipo tiene más de 2 personas, se requiere el plan Basic ($9/usuario/mes) o una cuenta corporativa IBM Monday.com. <strong>Verificar con el área de TI IBM si existe contrato corporativo con Monday antes de proceder.</strong>
+</div>
+
+<h3>Slack</h3>
+<table>
+  <tr><th>Capacidad</th><th>Disponibilidad</th><th>Notas</th></tr>
+  <tr><td>IBM usa Slack Enterprise Grid</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Todos los IBMers tienen acceso</td></tr>
+  <tr><td>Incoming Webhooks</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Permite publicar mensajes desde sistemas externos</td></tr>
+  <tr><td>Slash commands / Apps Slack</td><td><span class="badge badge-green">✅ Incluido</span></td><td>Requiere que el Workspace Admin habilite la app</td></tr>
+  <tr><td>Historial completo de mensajes</td><td><span class="badge badge-green">✅ Enterprise Grid</span></td><td>Sin límite de historial</td></tr>
+  <tr><td>Integración con Monday (nativa)</td><td><span class="badge badge-red">❌ Requiere plan Monday Standard</span></td><td>Alternativa: webhook + mensaje generado manualmente</td></tr>
+</table>
+
+<h3>IBM AI — ICA, watsonx y Watson</h3>
+<table>
+  <tr><th>Servicio</th><th>Disponibilidad</th><th>Notas</th></tr>
+  <tr><td>IBM Consulting Advantage (ICA)</td><td><span class="badge badge-green">✅ Disponible para IBMers</span></td><td>Acceso con w3id. Incluye asistentes de IA para consultoría. Verificar acceso en ica.ibm.com</td></tr>
+  <tr><td>watsonx Assistant (IBM Cloud Lite)</td><td><span class="badge badge-yellow">⚠️ Tier gratuito limitado</span></td><td>1000 MAU gratis. Para uso interno de equipo es suficiente</td></tr>
+  <tr><td>watsonx.ai (Prompt Lab)</td><td><span class="badge badge-yellow">⚠️ Requiere proyecto IBM Cloud</span></td><td>Acceso con ibm.com credentials. Plan Lite incluye tokens gratuitos</td></tr>
+  <tr><td>Watson Natural Language Understanding</td><td><span class="badge badge-yellow">⚠️ 30,000 items/mes gratis</span></td><td>IBM Cloud Lite. Suficiente para resúmenes de equipo</td></tr>
+  <tr><td>API REST watsonx.ai (llama-3, granite)</td><td><span class="badge badge-green">✅ Con IBM Cloud API key</span></td><td>Modelos Granite 13B son gratuitos en Lite hasta cuota</td></tr>
+  <tr><td>ICA Summarization / Meeting Assistant</td><td><span class="badge badge-green">✅ Disponible para IBMers</span></td><td>Usar ICA para el prompt de resumen es la opción más directa y aprobada</td></tr>
+</table>
+
+<div class="alert alert-green">
+  <strong>Recomendación de IA:</strong> Usar <strong>IBM Consulting Advantage (ICA)</strong> como motor primario de resumen (acceso con w3id). Como alternativa técnica, usar <strong>watsonx.ai API</strong> (modelo ibm/granite-13b-instruct-v2) con IBM Cloud API key del proyecto corporativo. Ninguno de los dos requiere suscripción adicional.
+</div>
+
+<h3>Resumen de decisiones de licenciamiento</h3>
+<table>
+  <tr><th>Función</th><th>Herramienta elegida</th><th>Costo</th></tr>
+  <tr><td>Interfaz de usuario del equipo</td><td>Power Apps for Teams (canvas)</td><td>Gratis (M365 E3)</td></tr>
+  <tr><td>Almacenamiento de datos</td><td>SharePoint List + Monday API</td><td>Gratis</td></tr>
+  <tr><td>Automatizaciones</td><td>Power Automate (conectores estándar)</td><td>Gratis (E3)</td></tr>
+  <tr><td>Motor de IA / resúmenes</td><td>ICA o watsonx.ai API (Granite)</td><td>Gratis (corporativo)</td></tr>
+  <tr><td>Notificaciones Slack</td><td>Incoming Webhook + copia manual asistida</td><td>Gratis</td></tr>
+  <tr><td>Registro de datos Agile</td><td>Monday.com (verificar contrato IBM)</td><td>Gratis si hay contrato</td></tr>
+  <tr><td>Dashboard gerencial</td><td>Power BI (incluido E3) o vista Monday</td><td>Gratis (E3)</td></tr>
+  <tr><td>Votación / Forms</td><td>Microsoft Forms</td><td>Gratis (E3)</td></tr>
+</table>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s2">
+<h2>2. Arquitectura propuesta</h2>
+
+<div class="card">
+  <div class="card-title">Capas de la arquitectura</div>
+  <p><strong>Capa de presentación:</strong> Power App embebida como pestaña en Teams. El equipo accede desde el canal Agile. Sin instalación de app adicional, sin aprobación de admin si se usa como Tab URL.</p>
+  <p><strong>Capa de lógica:</strong> Power Automate flows orquestan el proceso: reciben datos de la Power App, invocan la API de ICA/watsonx, preparan el resumen, esperan confirmación humana, luego llaman a la Monday API y/o al webhook de Slack.</p>
+  <p><strong>Capa de datos primaria:</strong> SharePoint Lists dentro del mismo tenant IBM. Almacenamiento seguro, sin salida de datos a servicios externos sin autorización. Datos: sesiones, bloqueantes, retrospectivas, showcases, votos.</p>
+  <p><strong>Capa de datos secundaria:</strong> Monday.com como sistema de registro Agile visible para stakeholders. Los datos van a Monday solo con confirmación explícita del usuario.</p>
+  <p><strong>Capa de IA:</strong> IBM Consulting Advantage (ICA) vía navegador para uso manual, o watsonx.ai API para integración programática desde Power Automate.</p>
+  <p><strong>Capa de comunicación:</strong> Slack Incoming Webhook para publicaciones aprobadas. El mensaje es generado por la app y enviado solo con doble confirmación.</p>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">🔵 Microsoft 365 (IBM tenant)</div>
+    <ul>
+      <li>Teams — interfaz principal</li>
+      <li>Power Apps for Teams — UI</li>
+      <li>Power Automate — orquestación</li>
+      <li>SharePoint Lists — datos primarios</li>
+      <li>Microsoft Forms — votaciones</li>
+      <li>Power BI — dashboard gerencial</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">🟡 Sistemas externos (con confirmación)</div>
+    <ul>
+      <li>Monday.com API — registro Agile</li>
+      <li>Slack Incoming Webhook — publicaciones</li>
+      <li>ICA / watsonx.ai API — IA</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Diagrama de componentes (textual)</h3>
+<div class="code-block">
+[USUARIO EN TEAMS]
+       │
+       ▼
+[Power App — Tab fijada en canal Agile]
+       │
+       ├──── Genera Resumen ────► [Power Automate Flow 1]
+       │                                │
+       │                        [watsonx.ai API / ICA]
+       │                                │
+       │                        [Vista previa → Edición]
+       │                                │
+       │                    [Confirmación usuario ✅]
+       │                        ┌───────┴───────┐
+       │                        ▼               ▼
+       │               [SharePoint List]  [Monday API]
+       │                                       │
+       │                           [Preview Slack msg]
+       │                                       │
+       │                           [2ª Confirmación ✅]
+       │                                       ▼
+       │                           [Slack Webhook POST]
+       │
+       ├──── Registrar Bloqueante ──► [SharePoint + Monday API]
+       ├──── Canicas del Humor ──────► [Forms + SharePoint]
+       ├──── Registrar Showcase ────► [SharePoint + Monday API]
+       ├──── Agregar Retrospectiva ──► [SharePoint + Monday API]
+       └──── Ver Dashboard ─────────► [Power BI Embedded]
+</div>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s3">
+<h2>3. Flujo completo de información</h2>
+
+<h3>Flujo A — Generar resumen de reunión</h3>
+<div class="flow-box"><strong>Paso 1</strong> · Usuario abre la Power App desde la pestaña fijada en Teams</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 2</strong> · Selecciona tipo de sesión: Reunión General | Sesión Agile | Retrospectiva | Showcase | Otra</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 3</strong> · Selecciona la iteración / periodo (lista desplegable desde SharePoint)</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 4</strong> · Pega o carga transcripción / notas / acuerdos (campo de texto largo)</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 5</strong> · Presiona "Generar Resumen" → Power Automate envía el texto al endpoint de watsonx.ai o ICA. El prompt estructurado garantiza el formato esperado.</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 6</strong> · La app muestra la vista previa del resumen estructurado</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 7</strong> · Usuario revisa, edita campos individuales o elimina secciones. Todos los campos son editables antes de guardar.</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 8</strong> · Usuario presiona "Confirmar y Guardar" → registro en SharePoint List (timestamp, autor, iteración)</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 9</strong> · Aparece opción: "¿Enviar también a Monday?" → Solo si usuario confirma → Monday API crea item en tablero correspondiente</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 10</strong> · Aparece opción: "¿Generar versión para Slack?" → Se muestra preview del mensaje corto</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 11</strong> · Segunda confirmación explícita: "Publicar en Slack" → POST al Incoming Webhook del canal correspondiente</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box"><strong>Paso 12</strong> · Log de auditoría: quién hizo qué, cuándo, sobre qué sesión → columna en SharePoint</div>
+
+<h3>Flujo B — Registrar Bloqueante</h3>
+<p>Usuario abre formulario → completa campos obligatorios (nombre, tipo, impacto, urgencia) → guarda en SharePoint → opcionalmente envía a Monday → si "Requiere atención gerencial" está marcado, se genera una notificación Adaptive Card al gerente en Teams.</p>
+
+<h3>Flujo C — Canicas del Humor</h3>
+<p>El gerente de iteración activa la votación desde la app → se genera un Microsoft Form con las opciones de color → los integrantes votan (1 voto por persona por sesión, verificado por SharePoint) → al cerrar, la app calcula porcentajes y muestra gráfico → resultado guardado en SharePoint → opcionalmente en Monday → tendencia comparativa disponible en el dashboard.</p>
+
+<h3>Flujo D — Retrospectiva</h3>
+<p>Cada integrante agrega comentarios por categoría (qué se hizo bien / qué salió mal / qué mejorar / preguntas abiertas) → el facilitador puede marcar comentarios como "Acción de mejora" → la acción se convierte en registro con responsable + fecha + estado → seguimiento automático en la siguiente retrospectiva.</p>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s4">
+<h2>4. Estructura exacta de Monday.com</h2>
+
+<div class="alert alert-yellow">
+  <strong>Restricción de plan gratuito:</strong> El plan gratuito de Monday permite máximo 3 tableros y 2 asientos. Para equipos más grandes, verificar si IBM tiene contrato corporativo con Monday. Si no, la estructura completa funciona igualmente en SharePoint Lists con Power BI como dashboard, sin costo adicional.
+</div>
+
+<div class="alert alert-blue">
+  <strong>Estructura recomendada:</strong> Si se dispone de Monday corporativo → 5 tableros conectados bajo el espacio "Agile Team Hub". Si solo hay plan gratuito → 1 tablero maestro dividido en grupos por tipo de registro.
+</div>
+
+<h3>Espacio: Agile Team Hub</h3>
+
+<h4>Tablero 1 — Sesiones y Resúmenes</h4>
+<div class="tag-row">
+  <span class="field-chip">ID Sesión</span><span class="field-chip">Nombre sesión</span><span class="field-chip">Fecha</span><span class="field-chip">Tipo reunión</span><span class="field-chip">Iteración</span><span class="field-chip">Gerente iteración</span><span class="field-chip">Facilitador</span><span class="field-chip">Participantes</span><span class="field-chip">Enlace / Transcripción</span><span class="field-chip">Resumen IA</span><span class="field-chip">Decisiones</span><span class="field-chip">Acuerdos</span><span class="field-chip">Acciones</span><span class="field-chip">Responsable acción</span><span class="field-chip">Fecha límite</span><span class="field-chip">Estado acción</span><span class="field-chip">Aprobado para exportar</span><span class="field-chip">Publicado en Slack</span><span class="field-chip">Creado por</span><span class="field-chip">Fecha creación</span><span class="field-chip">Última edición</span>
+</div>
+<p><strong>Tipos de columna Monday:</strong> Texto largo (resumen, acuerdos), Fecha, Persona, Estado (dropdown), Checkbox (aprobado, publicado), Link, Números (ID).</p>
+
+<h4>Tablero 2 — Bloqueantes</h4>
+<div class="tag-row">
+  <span class="field-chip">Nombre bloqueante</span><span class="field-chip">Descripción</span><span class="field-chip">Reportado por</span><span class="field-chip">Fecha reporte</span><span class="field-chip">Iteración</span><span class="field-chip">Tipo</span><span class="field-chip">Nivel de impacto</span><span class="field-chip">Urgencia</span><span class="field-chip">Responsable gestión</span><span class="field-chip">Estado</span><span class="field-chip">Fecha esperada solución</span><span class="field-chip">Días abierto</span><span class="field-chip">Evidencia / Enlace</span><span class="field-chip">Comentarios</span><span class="field-chip">Requiere atención gerencial</span><span class="field-chip">Fecha cierre</span>
+</div>
+<p><strong>Grupos por estado:</strong> Nuevos | En análisis | En gestión | Escalados | Resueltos.</p>
+<p><strong>Columna "Días abierto":</strong> Fórmula manual en Monday (fecha actual − fecha reporte). En SharePoint se puede automatizar con Power Automate.</p>
+<p><strong>Tipo de bloqueante (dropdown):</strong> Operativo | Técnico | Acceso | Herramienta | Dependencia | Capacidad | Otro.</p>
+<p><strong>Nivel de impacto:</strong> Bajo | Medio | Alto | Crítico. <strong>Urgencia:</strong> Normal | Urgente | Bloqueante total.</p>
+
+<h4>Tablero 3 — Canicas del Humor</h4>
+<div class="tag-row">
+  <span class="field-chip">Iteración</span><span class="field-chip">Fecha sesión</span><span class="field-chip">Gerente iteración</span><span class="field-chip">Nombre votante</span><span class="field-chip">Voto (color/categoría)</span><span class="field-chip">Comentario opcional</span><span class="field-chip">Anónimo</span><span class="field-chip">Timestamp</span>
+</div>
+<p><strong>Vista gerencial:</strong> Tabla de conteos por color + porcentaje por iteración. Comparativa entre iteraciones (gráfico de barras en Power BI).</p>
+<div class="warn-box">
+  <strong>⚠️ Nota sobre los colores y significados:</strong> Las imágenes adjuntas no fueron incluidas en esta solicitud de texto. Por tanto, los nombres, colores y significados de las canicas NO han sido asumidos. <strong>Por favor adjunta las imágenes en el siguiente mensaje</strong> para definir con precisión las categorías de votación antes de configurar este tablero. No se inventará ningún significado.
+</div>
+
+<h4>Tablero 4 — Showcase</h4>
+<div class="tag-row">
+  <span class="field-chip">Iteración</span><span class="field-chip">Iniciativa / Entregable</span><span class="field-chip">Descripción</span><span class="field-chip">Responsable</span><span class="field-chip">Presentador</span><span class="field-chip">Fecha showcase</span><span class="field-chip">Evidencia / Doc / Enlace</span><span class="field-chip">Resultado obtenido</span><span class="field-chip">Valor para el negocio</span><span class="field-chip">Estado</span><span class="field-chip">Retroalimentación recibida</span><span class="field-chip">Próximo paso</span>
+</div>
+
+<h4>Tablero 5 — Retrospectiva</h4>
+<div class="tag-row">
+  <span class="field-chip">Categoría</span><span class="field-chip">Comentario</span><span class="field-chip">Autor</span><span class="field-chip">Anónimo</span><span class="field-chip">Iteración</span><span class="field-chip">Fecha</span><span class="field-chip">Votos</span><span class="field-chip">Prioridad</span><span class="field-chip">Acción de mejora</span><span class="field-chip">Responsable mejora</span><span class="field-chip">Fecha cumplimiento</span><span class="field-chip">Estado mejora</span><span class="field-chip">Seguimiento próxima retro</span>
+</div>
+<p><strong>Grupos (categorías):</strong> ✅ Qué se hizo bien | ❌ Qué salió mal | 🔧 Qué podemos mejorar | ❓ Preguntas abiertas.</p>
+<p>Las acciones de mejora marcadas se convierten en ítems con responsable y fecha. El campo "Seguimiento próxima retro" es un checkbox que filtra los pendientes en la siguiente sesión.</p>
+
+<h4>Dashboard Gerencial</h4>
+<p>Si se dispone de plan Monday Standard: crear un Dashboard con widgets de conteo, gráficos y tablas conectados a los 5 tableros.</p>
+<p>Si solo hay plan gratuito o SharePoint: usar <strong>Power BI</strong> (incluido en M365 E3) conectado a las SharePoint Lists como fuente de datos. Mismo resultado, cero costo adicional.</p>
+
+<h3>Versión reducida (plan gratuito Monday — 1 tablero)</h3>
+<p>Si no hay contrato corporativo Monday: usar <strong>1 tablero maestro</strong> llamado "Agile Team Hub" con grupos que representen cada módulo: Sesiones | Bloqueantes | Canicas | Showcase | Retrospectiva. Columnas compartidas donde aplique. Todas las funciones avanzadas (dashboard, automatizaciones) se implementan en Power BI + Power Automate dentro del ecosistema M365 gratuito.</p>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s5">
+<h2>5. Descripción de las imágenes adjuntas</h2>
+
+<div class="alert alert-red">
+  <strong>Imágenes no recibidas:</strong> En la solicitud actual no se adjuntaron imágenes. Para completar el análisis visual y OCR de las tres imágenes mencionadas (especialmente los colores y significados de las canicas del humor), adjúntalas en el siguiente mensaje. Esta sección se completará inmediatamente con:
+  <ul style="margin-top:6px">
+    <li>Descripción textual completa de cada pantalla</li>
+    <li>Tabla de mapeo: elemento visual → función → componente Monday → campos → vista recomendada → automatización</li>
+    <li>Configuración exacta de las canicas (nombre, color, significado)</li>
+  </ul>
+  No se inventará ningún nombre, color ni significado de las canicas hasta no ver las imágenes.
+</div>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s6">
+<h2>6. Diseño de la interfaz de Teams</h2>
+
+<h3>Recomendación técnica: Power App for Teams (Canvas)</h3>
+<p>Esta es la opción más viable, gratuita y segura para un tenant IBM M365 E3/E5. No requiere aprobación de admin para uso interno dentro del equipo. Se crea directamente desde Teams → canal → pestaña "+" → Power Apps.</p>
+
+<h3>Pantalla principal de la Power App</h3>
+<div class="card">
+  <div class="card-title">Barra superior</div>
+  <p>Logo IBM + nombre "Agile Team Hub" | Iteración actual (etiqueta dinámica desde SharePoint) | Nombre del gerente de iteración actual | Avatar del usuario logueado</p>
+</div>
+<div class="card">
+  <div class="card-title">Grilla de botones principales (3 × 3)</div>
+  <div class="grid-3" style="margin-top:8px">
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">📄 Generar Resumen de Reunión</div>
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">🚧 Registrar Bloqueante</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">🔵 Canicas del Humor</div>
+    <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">🎯 Registrar Showcase</div>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">💬 Añadir Retrospectiva</div>
+    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">✅ Consultar Acciones Pendientes</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">📊 Ver Panel del Gerente</div>
+    <div style="background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">📤 Enviar info a Monday</div>
+    <div style="background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:10px;text-align:center;font-size:12px;font-weight:600">💬 Preparar publicación Slack</div>
+  </div>
+</div>
+
+<h3>Pantalla: Generar Resumen</h3>
+<ul>
+  <li>Dropdown: Tipo de sesión</li>
+  <li>Dropdown: Iteración</li>
+  <li>Campo de texto largo: "Pega aquí la transcripción, notas o acuerdos"</li>
+  <li>Botón primario: "Generar con IA" → llama Power Automate → watsonx/ICA</li>
+  <li>Panel de vista previa (editable campo por campo)</li>
+  <li>Botón: "Guardar en SharePoint" (siempre disponible)</li>
+  <li>Botón: "Enviar a Monday" (requiere confirmación modal)</li>
+  <li>Botón: "Preparar para Slack" (muestra preview, requiere segunda confirmación)</li>
+</ul>
+
+<h3>Pantalla: Registrar Bloqueante</h3>
+<ul>
+  <li>Campos: Nombre, Descripción, Tipo (dropdown), Impacto (dropdown), Urgencia, Responsable, Iteración</li>
+  <li>Toggle: "Requiere atención gerencial"</li>
+  <li>Campo: Fecha esperada de solución</li>
+  <li>Botón: "Registrar Bloqueante" → SharePoint → opcional Monday</li>
+</ul>
+
+<h3>Pantalla: Canicas del Humor</h3>
+<ul>
+  <li>Botones de colores según imágenes (pendiente definición)</li>
+  <li>Campo: comentario opcional</li>
+  <li>Toggle: "Votar anónimamente"</li>
+  <li>Validación: 1 voto por usuario por sesión (verificado contra SharePoint)</li>
+  <li>Resultados en tiempo real: barras de porcentaje por categoría</li>
+  <li>Comparativa con iteración anterior</li>
+</ul>
+
+<h3>Cómo fijar la app para todo el equipo</h3>
+<table>
+  <tr><th>Opción</th><th>Requiere admin</th><th>Pasos</th></tr>
+  <tr><td>Pestaña en canal Agile (Tab URL)</td><td>No</td><td>Canal → + → agregar pestaña → SharePoint / Power Apps. Cualquier miembro del canal puede hacerlo.</td></tr>
+  <tr><td>App fijada en barra lateral de Teams</td><td>Sí (Teams Admin)</td><td>Policy de setup en Teams Admin Center → App Setup Policies → Pin app para todos</td></tr>
+  <tr><td>Cada usuario fija la app manualmente</td><td>No</td><td>Teams → Apps → buscar la app → clic derecho → Pin</td></tr>
+  <tr><td>Publicación en catálogo interno IBM</td><td>Sí (Teams Admin)</td><td>Subir manifest.zip → Teams Admin Center → Manage Apps → Org-wide</td></tr>
+</table>
+<p><strong>Recomendación inmediata (sin admin):</strong> Crear la Power App, compartirla con el equipo, y que el owner del canal la fije como pestaña en el canal Agile. Cada integrante ya tendrá acceso visible al abrir el canal.</p>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s7">
+<h2>7. Configuración de roles y permisos</h2>
+
+<table>
+  <tr><th>Rol</th><th>Acciones permitidas</th><th>Acciones restringidas</th></tr>
+  <tr><td><strong>Integrante del equipo</strong></td><td>Ver resúmenes, registrar bloqueante propio, votar canicas, agregar retro, ver showcase, consultar acciones</td><td>Aprobar exportaciones, ver dashboard gerencial completo, eliminar registros de otros</td></tr>
+  <tr><td><strong>Gerente de iteración</strong></td><td>Todo lo anterior + activar votación de canicas, aprobar resúmenes para exportar, ver panel de bloqueantes, asignar responsables</td><td>Modificar registros históricos, acceder a datos de otros equipos</td></tr>
+  <tr><td><strong>Gerente / Manager</strong></td><td>Ver dashboard completo, ver todos los bloqueantes y escalados, ver tendencia de canicas, ver showcase y retro</td><td>Editar registros directamente (solo vista)</td></tr>
+  <tr><td><strong>Owner de la solución</strong></td><td>Configurar iteraciones, gestionar rotación de gerente, editar opciones de votación, administrar la Power App</td><td>Nada — acceso total a la configuración</td></tr>
+</table>
+
+<h3>Implementación de permisos en SharePoint</h3>
+<ul>
+  <li>SharePoint List → Configuración → Permisos avanzados → grupos por rol</li>
+  <li>Power App usa <code>User().Email</code> para identificar al usuario y mostrar u ocultar controles según el rol en la lista de configuración</li>
+  <li>Las listas de datos tienen permisos de lectura general y escritura solo para el rol correspondiente</li>
+</ul>
+
+<h3>Trazabilidad de exportaciones</h3>
+<p>Cada acción de envío a Monday o Slack queda registrada en una SharePoint List "AuditLog" con: usuario, timestamp, tipo de acción, ID de sesión, estado (enviado / rechazado / editado). No se puede eliminar este log desde la Power App.</p>
+
+<h3>Seguridad de datos IBM</h3>
+<ul>
+  <li>Todos los datos primarios permanecen en el tenant IBM (SharePoint, OneDrive)</li>
+  <li>Los datos enviados a Monday solo incluyen resúmenes estructurados, sin transcripciones completas</li>
+  <li>La API key de watsonx.ai se almacena en Power Automate como variable de entorno segura (no en código)</li>
+  <li>El webhook de Slack se almacena de la misma forma</li>
+  <li>No se utilizan cuentas personales para ningún almacenamiento</li>
+  <li>Monday.com debe usarse con la cuenta corporativa IBM, no con cuenta personal</li>
+</ul>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s8">
+<h2>8. Prompt definitivo para resumir reuniones</h2>
+
+<p>Este prompt debe ser usado con ICA o con la API de watsonx.ai (modelo <code>ibm/granite-13b-instruct-v2</code> o <code>meta-llama/llama-3-1-70b-instruct</code>).</p>
+
+<div class="code-block">
+INSTRUCCIÓN DEL SISTEMA:
+Eres un asistente especializado en documentación de reuniones Agile para equipos de consultoría IBM. 
+Tu función es generar resúmenes estructurados, precisos y profesionales a partir de transcripciones, 
+notas o acuerdos de reuniones. 
+
+REGLAS OBLIGATORIAS:
+1. No inventes ningún dato que no esté presente en el texto original.
+2. Si un campo no puede ser determinado con certeza, usa exactamente: "Pendiente por definir"
+3. No repitas información entre secciones.
+4. El lenguaje debe ser formal, claro y en español.
+5. Las acciones pendientes DEBEN tener responsable y fecha; si no están en el texto, usa "Pendiente por definir".
+6. La versión para Slack debe ser de máximo 5 puntos, lenguaje ejecutivo, sin jerga técnica.
+
+---
+
+TEXTO DE ENTRADA:
+{TRANSCRIPCION_O_NOTAS}
+
+---
+
+TIPO DE SESIÓN: {TIPO_SESION}
+ITERACIÓN: {ITERACION}
+FECHA: {FECHA}
+
+---
+
+GENERA EL SIGUIENTE RESUMEN ESTRUCTURADO EN FORMATO JSON:
+
+{
+  "nombre_sesion": "",
+  "fecha": "",
+  "tipo_sesion": "",
+  "iteracion": "",
+  "participantes": [],
+  "resumen_ejecutivo": "",
+  "temas_tratados": [],
+  "decisiones_tomadas": [],
+  "acuerdos": [],
+  "acciones_pendientes": [
+    {
+      "descripcion": "",
+      "responsable": "",
+      "fecha_limite": "",
+      "estado": "Pendiente"
+    }
+  ],
+  "bloqueantes_identificados": [],
+  "riesgos": [],
+  "preguntas_abiertas": [],
+  "proximos_pasos": [],
+  "informacion_showcase": "",
+  "version_slack": {
+    "encabezado": "",
+    "puntos_clave": [],
+    "decisiones": [],
+    "acciones_con_responsable": [],
+    "bloqueantes_relevantes": [],
+    "proxima_sesion": "",
+    "enlace_registro": "Pendiente por definir"
+  }
+}
+</div>
+
+<h3>Configuración de parámetros watsonx.ai</h3>
+<table>
+  <tr><th>Parámetro</th><th>Valor recomendado</th></tr>
+  <tr><td>model_id</td><td>ibm/granite-13b-instruct-v2</td></tr>
+  <tr><td>max_new_tokens</td><td>2048</td></tr>
+  <tr><td>temperature</td><td>0.1 (baja creatividad = mayor fidelidad)</td></tr>
+  <tr><td>top_p</td><td>0.9</td></tr>
+  <tr><td>repetition_penalty</td><td>1.1</td></tr>
+</table>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s9">
+<h2>9. Automatizaciones sin servicios pagos</h2>
+
+<table>
+  <tr><th>Automatización</th><th>Herramienta</th><th>Trigger</th><th>Acción</th></tr>
+  <tr><td>Notificar al gerente sobre bloqueante crítico</td><td>Power Automate</td><td>Nuevo item SharePoint con impacto = Crítico</td><td>Enviar Adaptive Card al chat de Teams del gerente</td></tr>
+  <tr><td>Recordatorio semanal de acciones pendientes</td><td>Power Automate (scheduled)</td><td>Cada lunes 8am</td><td>Resumen de acciones vencidas → mensaje Teams</td></tr>
+  <tr><td>Aviso de bloqueante vencido</td><td>Power Automate</td><td>Diario, si fecha_limite &lt; hoy y estado ≠ Resuelto</td><td>Notificación Teams al responsable</td></tr>
+  <tr><td>Calcular días abierto de bloqueante</td><td>Power Automate</td><td>Diario</td><td>Actualizar columna "días_abierto" en SharePoint</td></tr>
+  <tr><td>Recordatorio de retrospectiva pendiente</td><td>Power Automate (scheduled)</td><td>Cada fin de sprint</td><td>Mensaje al canal con link a la Power App</td></tr>
+  <tr><td>Rotación de gerente de iteración</td><td>Power Automate + SharePoint</td><td>Manual o primer día del mes</td><td>Actualizar item activo en lista "Gerentes" → notificar nuevo gerente</td></tr>
+  <tr><td>Registro de auditoría post-exportación</td><td>Power Automate</td><td>Acción de envío a Monday / Slack</td><td>Escribir en lista AuditLog con timestamp y usuario</td></tr>
+  <tr><td>Publicación Slack post-aprobación</td><td>Power Automate HTTP</td><td>Aprobación confirmada en Power App</td><td>HTTP POST al Incoming Webhook de Slack</td></tr>
+</table>
+
+<div class="alert alert-green">
+  <strong>Todos los flows anteriores usan únicamente conectores estándar de Power Automate</strong> (Teams, SharePoint, HTTP), incluidos en M365 E3/E5. Ninguno requiere conectores premium ni licencias adicionales.
+</div>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s10">
+<h2>10. Archivos, manifiestos y configuraciones necesarios</h2>
+
+<h3>Estructura de SharePoint Lists requeridas</h3>
+<div class="code-block">
+SharePoint Site: "Agile Team Hub"
+│
+├── Lists/
+│   ├── ATH_Sesiones          → Resúmenes de reuniones
+│   ├── ATH_Bloqueantes       → Registro de bloqueantes
+│   ├── ATH_Canicas           → Votos por sesión
+│   ├── ATH_Showcase          → Entregables del showcase
+│   ├── ATH_Retrospectiva     → Comentarios y acciones
+│   ├── ATH_Iteraciones       → Configuración de sprints
+│   ├── ATH_Gerentes          → Rotación de gerentes
+│   └── ATH_AuditLog          → Trazabilidad de exportaciones
+│
+└── Pages/
+    └── dashboard.aspx        → Página con Power BI embebido
+</div>
+
+<h3>Manifest de la Power App (Teams)</h3>
+<div class="code-block">
+// manifest.json — Teams App Package
+{
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "{{GUID-GENERADO}}",
+  "packageName": "com.ibm.agileteamhub",
+  "developer": {
+    "name": "IBM Agile Team",
+    "websiteUrl": "https://ibm.com",
+    "privacyUrl": "https://ibm.com/privacy",
+    "termsOfUseUrl": "https://ibm.com/terms"
+  },
+  "name": { "short": "Agile Team Hub", "full": "IBM Agile Team Hub" },
+  "description": {
+    "short": "Gestión Agile del equipo IBM",
+    "full": "Resúmenes de reuniones, bloqueantes, canicas, showcase y retrospectiva para el equipo Agile IBM."
+  },
+  "icons": { "outline": "outline.png", "color": "color.png" },
+  "accentColor": "#1f70c1",
+  "staticTabs": [
+    {
+      "entityId": "agileHub",
+      "name": "Agile Hub",
+      "contentUrl": "https://{{TENANT}}.sharepoint.com/sites/AgileTeamHub/_layouts/15/PowerAppsEmbedded.aspx?appId={{APP-ID}}",
+      "scopes": ["personal", "team"]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": ["*.sharepoint.com", "*.powerapps.com"]
+}
+</div>
+
+<h3>Power Automate Flow — Llamada a watsonx.ai API</h3>
+<div class="code-block">
+// HTTP Action en Power Automate
+Method: POST
+URI: https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29
+
+Headers:
+  Authorization: Bearer {{watsonx_api_token}}
+  Content-Type: application/json
+
+Body:
+{
+  "model_id": "ibm/granite-13b-instruct-v2",
+  "input": "@{variables('prompt_completo')}",
+  "parameters": {
+    "max_new_tokens": 2048,
+    "temperature": 0.1,
+    "top_p": 0.9,
+    "repetition_penalty": 1.1
+  },
+  "project_id": "{{IBM_PROJECT_ID}}"
+}
+
+// Almacenar API key como Environment Variable en Power Automate (nunca en texto plano)
+// Environment Variable Name: WATSONX_API_KEY
+// Type: Secret
+</div>
+
+<h3>Power Automate Flow — POST a Slack</h3>
+<div class="code-block">
+// HTTP Action — Slack Incoming Webhook
+Method: POST
+URI: @{variables('slack_webhook_url')}
+
+Headers:
+  Content-Type: application/json
+
+Body:
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": { "type": "plain_text", "text": "📋 @{variables('nombre_sesion')}" }
+    },
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "@{variables('resumen_slack')}" }
+    },
+    {
+      "type": "context",
+      "elements": [{
+        "type": "mrkdwn",
+        "text": "Publicado por @{triggerBody()?['author']} · @{utcNow()}"
+      }]
+    }
+  ]
+}
+
+// El webhook URL se almacena como Environment Variable segura en Power Automate
+</div>
+
+<h3>Estructura de la lista ATH_Gerentes (rotación)</h3>
+<div class="code-block">
+Columnas:
+  - Nombre (Persona)
+  - Mes_Inicio (Fecha)
+  - Mes_Fin (Fecha)
+  - Estado (Activo / Próximo / Completado)
+  - Sesiones_Facilitadas (Número)
+  - Email (Texto)
+
+Procedimiento manual de rotación:
+  1. Owner cambia estado del gerente actual a "Completado"
+  2. Cambia estado del próximo gerente a "Activo"
+  3. Power Automate detecta el cambio y envía notificación al nuevo gerente
+  4. El dashboard se actualiza automáticamente con el nuevo nombre
+</div>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s11">
+<h2>11. Instrucciones de instalación paso a paso</h2>
+
+<h3>Fase 1 — Preparar SharePoint (30 min)</h3>
+<div class="step"><div class="step-num">1</div><div>Ir a sharepoint.com con cuenta IBM → Crear nuevo sitio de equipo → Nombre: "Agile Team Hub"</div></div>
+<div class="step"><div class="step-num">2</div><div>Crear las 8 listas SharePoint con los campos definidos en la sección 10 (usar plantilla personalizada)</div></div>
+<div class="step"><div class="step-num">3</div><div>Configurar permisos: compartir el sitio con todos los integrantes del equipo (rol: Miembro). El gerente y el owner tienen rol de Propietario.</div></div>
+<div class="step"><div class="step-num">4</div><div>Crear la primera iteración en ATH_Iteraciones y el primer gerente en ATH_Gerentes</div></div>
+
+<h3>Fase 2 — Configurar IBM Cloud / watsonx (20 min)</h3>
+<div class="step"><div class="step-num">1</div><div>Ir a cloud.ibm.com con credenciales IBM (w3id) → Crear proyecto en watsonx.ai</div></div>
+<div class="step"><div class="step-num">2</div><div>Generar API key: cloud.ibm.com → Manage → Access → API Keys → Create</div></div>
+<div class="step"><div class="step-num">3</div><div>Anotar: API Key, Project ID, región (us-south o eu-de)</div></div>
+<div class="step"><div class="step-num">4</div><div>Probar el prompt en Prompt Lab de watsonx.ai con una transcripción de ejemplo</div></div>
+
+<h3>Fase 3 — Configurar Slack Webhook (10 min)</h3>
+<div class="step"><div class="step-num">1</div><div>En Slack: ir al canal donde se publicarán los resúmenes → Configuración → Integraciones → Incoming Webhooks</div></div>
+<div class="step"><div class="step-num">2</div><div>Crear nuevo webhook → Copiar la URL generada</div></div>
+<div class="step"><div class="step-num">3</div><div>Guardar la URL como Environment Variable en Power Automate (no en texto visible)</div></div>
+
+<h3>Fase 4 — Crear la Power App (45 min)</h3>
+<div class="step"><div class="step-num">1</div><div>En Teams → canal Agile → + pestaña → Power Apps → Crear nueva app</div></div>
+<div class="step"><div class="step-num">2</div><div>Conectar fuentes de datos: SharePoint (sitio Agile Team Hub) → seleccionar las 8 listas</div></div>
+<div class="step"><div class="step-num">3</div><div>Crear pantalla principal con los 9 botones según diseño de la sección 6</div></div>
+<div class="step"><div class="step-num">4</div><div>Crear cada sub-pantalla (Resumen, Bloqueante, Canicas, Showcase, Retro, Acciones, Dashboard)</div></div>
+<div class="step"><div class="step-num">5</div><div>Conectar botón "Generar con IA" al Power Automate flow de watsonx</div></div>
+<div class="step"><div class="step-num">6</div><div>Conectar botón "Publicar en Slack" al Power Automate flow de Slack (con confirmación)</div></div>
+<div class="step"><div class="step-num">7</div><div>Guardar y publicar la app → Compartir con el equipo</div></div>
+
+<h3>Fase 5 — Configurar Power Automate flows (30 min)</h3>
+<div class="step"><div class="step-num">1</div><div>Crear Flow "ATH-Resumen-IA": disparado desde Power Apps → llama HTTP watsonx → devuelve JSON → guarda en SharePoint</div></div>
+<div class="step"><div class="step-num">2</div><div>Crear Flow "ATH-Publicar-Slack": disparado desde Power Apps → HTTP POST al webhook → registra en AuditLog</div></div>
+<div class="step"><div class="step-num">3</div><div>Crear Flow "ATH-Bloqueante-Critico": trigger SharePoint → Teams notification</div></div>
+<div class="step"><div class="step-num">4</div><div>Crear Flow "ATH-Recordatorio-Semanal": scheduled → filtra acciones vencidas → Teams message</div></div>
+<div class="step"><div class="step-num">5</div><div>Agregar API key de watsonx y webhook URL como Environment Variables en Power Automate</div></div>
+
+<h3>Fase 6 — Fijar para el equipo (5 min)</h3>
+<div class="step"><div class="step-num">1</div><div>En el canal Agile de Teams → + pestaña → Power Apps → seleccionar "Agile Team Hub" → Guardar</div></div>
+<div class="step"><div class="step-num">2</div><div>Notificar al equipo que la pestaña está disponible en el canal</div></div>
+<div class="step"><div class="step-num">3</div><div>Si se necesita ícono en la barra lateral: solicitar al Teams Admin que fije la app via App Setup Policy</div></div>
+
+<h3>Fase 7 — Configurar Monday.com (20 min)</h3>
+<div class="step"><div class="step-num">1</div><div>Verificar si existe cuenta Monday corporativa IBM → si sí, crear espacio "Agile Team Hub" con los 5 tableros</div></div>
+<div class="step"><div class="step-num">2</div><div>Obtener Monday API key: cuenta Monday → Developer → API → Generate Key</div></div>
+<div class="step"><div class="step-num">3</div><div>Agregar Monday API key como Environment Variable en Power Automate</div></div>
+<div class="step"><div class="step-num">4</div><div>Crear Board IDs de cada tablero y registrarlos en ATH_Iteraciones de SharePoint</div></div>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s12">
+<h2>12. Plan de pruebas</h2>
+
+<table>
+  <tr><th>#</th><th>Caso de prueba</th><th>Resultado esperado</th><th>Prioridad</th></tr>
+  <tr><td>1</td><td>Usuario pega transcripción y presiona "Generar con IA"</td><td>JSON estructurado retornado y mostrado en vista previa</td><td>Alta</td></tr>
+  <tr><td>2</td><td>Usuario edita campo "Responsable" en el resumen generado</td><td>El cambio se refleja en el registro guardado</td><td>Alta</td></tr>
+  <tr><td>3</td><td>Usuario presiona "Enviar a Monday" sin confirmación</td><td>Modal de confirmación aparece; no se envía sin aprobación</td><td>Alta</td></tr>
+  <tr><td>4</td><td>Usuario registra bloqueante con impacto = Crítico</td><td>Gerente recibe notificación Adaptive Card en Teams</td><td>Alta</td></tr>
+  <tr><td>5</td><td>Dos usuarios intentan votar canicas en la misma sesión</td><td>Solo se acepta 1 voto por usuario por sesión</td><td>Alta</td></tr>
+  <tr><td>6</td><td>Usuario presiona "Publicar en Slack" sin segunda confirmación</td><td>Segunda pantalla de confirmación aparece obligatoriamente</td><td>Alta</td></tr>
+  <tr><td>7</td><td>Mensaje publicado en Slack</td><td>Registro en AuditLog con usuario, timestamp e ID de sesión</td><td>Alta</td></tr>
+  <tr><td>8</td><td>Rotación de gerente: cambio de estado en ATH_Gerentes</td><td>Nuevo gerente recibe notificación; dashboard actualiza nombre</td><td>Media</td></tr>
+  <tr><td>9</td><td>Usuario sin rol de gerente intenta activar votación</td><td>Botón de activación no visible para ese rol</td><td>Media</td></tr>
+  <tr><td>10</td><td>Flow de recordatorio semanal</td><td>Mensaje con acciones vencidas enviado al canal a las 8am del lunes</td><td>Media</td></tr>
+  <tr><td>11</td><td>Transcripción sin responsables ni fechas</td><td>Resumen generado con "Pendiente por definir" en esos campos</td><td>Alta</td></tr>
+  <tr><td>12</td><td>Exportación a Monday con API key inválida</td><td>Mensaje de error claro; no se pierde el registro en SharePoint</td><td>Media</td></tr>
+</table>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s13">
+<h2>13. Riesgos y limitaciones</h2>
+
+<table>
+  <tr><th>Riesgo</th><th>Probabilidad</th><th>Impacto</th><th>Mitigación</th></tr>
+  <tr><td>Política IBM no permite sideload de apps en Teams</td><td>Media</td><td>Medio</td><td>Usar Tab URL en canal. No requiere sideload.</td></tr>
+  <tr><td>Monday.com sin contrato corporativo IBM (solo 2 seats)</td><td>Alta</td><td>Alto</td><td>Usar SharePoint Lists como sistema primario + Power BI para dashboard. Monday como secundario opcional.</td></tr>
+  <tr><td>Cuota de watsonx.ai Lite superada</td><td>Media</td><td>Medio</td><td>Usar ICA manualmente para el prompt. Alternativa: copy-paste del JSON generado en ICA.</td></tr>
+  <tr><td>Slack Enterprise Grid restringe webhooks entrantes</td><td>Baja</td><td>Alto</td><td>Coordinar con Slack Workspace Admin para habilitar el webhook del canal. Es política de configuración, no licencia.</td></tr>
+  <tr><td>Power Automate HTTP connector bloqueado por política</td><td>Baja</td><td>Alto</td><td>Usar conector estándar de Power Automate en lugar de HTTP si IBM restringe llamadas HTTP externas.</td></tr>
+  <tr><td>Privacidad: transcripciones enviadas a watsonx</td><td>Alta</td><td>Alto</td><td>watsonx.ai en IBM Cloud es aprobado para uso interno IBM. Nunca enviar datos a servicios externos no aprobados. Documentar en política del equipo.</td></tr>
+  <tr><td>Anonimato en votos de canicas no garantizable al 100%</td><td>Media</td><td>Medio</td><td>El owner de SharePoint podría ver los registros. Documentar y acordar con el equipo el nivel de anonimato real.</td></tr>
+</table>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s14">
+<h2>14. Alternativas gratuitas para funciones no disponibles</h2>
+
+<table>
+  <tr><th>Función no disponible</th><th>Alternativa gratuita</th></tr>
+  <tr><td>Monday dashboard (plan Standard requerido)</td><td>Power BI Desktop + SharePoint Lists como fuente. Publicar en Teams como reporte embebido.</td></tr>
+  <tr><td>Monday automatizaciones (plan Basic+)</td><td>Power Automate con conectores estándar M365. Misma funcionalidad, sin costo.</td></tr>
+  <tr><td>Monday–Slack integración nativa</td><td>Power Automate HTTP → Slack Incoming Webhook. Gratuito con E3.</td></tr>
+  <tr><td>Conector premium de Monday en Power Automate</td><td>Monday REST API vía acción HTTP estándar. Mismas operaciones con API key.</td></tr>
+  <tr><td>App Teams publicada en catálogo (requiere admin)</td><td>Power App fijada como Tab en el canal Agile. Sin aprobación admin.</td></tr>
+  <tr><td>Votación anónima garantizada</td><td>Microsoft Forms con opción anónima. Los resultados se agregan sin identificar al votante en la vista pública.</td></tr>
+  <tr><td>watsonx.ai cuota agotada</td><td>ICA (IBM Consulting Advantage) vía navegador. Copy-paste del resumen generado hacia la app. Workflow asistido sin API.</td></tr>
+  <tr><td>Monday multi-tablero (plan gratuito: 3 tableros)</td><td>1 tablero maestro con grupos por módulo + SharePoint como sistema primario completo.</td></tr>
+</table>
+</div>
+
+
+<hr class="divider" />
+<div class="section" id="s15">
+<h2>15. MVP — Primera versión mínima funcional</h2>
+
+<div class="alert alert-blue">
+  <strong>Principio MVP:</strong> La primera versión debe estar operativa en 1–2 días de trabajo, usando únicamente lo que ya está disponible sin dependencias externas. No requiere Monday, no requiere watsonx API, no requiere admin de Teams.
+</div>
+
+<h3>MVP v1.0 — Scope mínimo</h3>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">✅ Incluido en MVP</div>
+    <ul>
+      <li>Power App con pantalla principal (9 botones)</li>
+      <li>Pantalla: Generar Resumen (prompt manual vía ICA, resultado pegado en app)</li>
+      <li>Pantalla: Registrar Bloqueante (SharePoint)</li>
+      <li>Pantalla: Canicas del Humor (Forms + SharePoint)</li>
+      <li>Pestaña fijada en canal Agile de Teams</li>
+      <li>AuditLog básico en SharePoint</li>
+      <li>Notificación Teams por bloqueante crítico (Power Automate)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">🔜 Fase 2 (semana 2–3)</div>
+    <ul>
+      <li>Integración API watsonx.ai (resumen automático)</li>
+      <li>Pantalla Showcase + Retrospectiva</li>
+      <li>Envío a Monday con confirmación</li>
+      <li>Publicación a Slack con doble confirmación</li>
+      <li>Dashboard Power BI</li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">🔜 Fase 3 (semana 4+)</div>
+    <ul>
+      <li>Rotación automática de gerente de iteración</li>
+      <li>Recordatorios automáticos semanales</li>
+      <li>Comparativa de canicas entre iteraciones</li>
+      <li>Flujo completo con imágenes de canicas confirmadas</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">⏳ Pendiente confirmación</div>
+    <ul>
+      <li>Colores y significados de canicas (requiere imágenes)</li>
+      <li>Contrato Monday corporativo IBM</li>
+      <li>Política de sideload en tenant IBM</li>
+      <li>Acceso a watsonx.ai confirmado con w3id</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Pasos inmediatos para comenzar el MVP hoy</h3>
+<div class="step"><div class="step-num">1</div><div>Confirmar con TI IBM si existe cuenta corporativa Monday.com</div></div>
+<div class="step"><div class="step-num">2</div><div>Verificar acceso a watsonx.ai en cloud.ibm.com con tu cuenta IBM</div></div>
+<div class="step"><div class="step-num">3</div><div>Verificar acceso a ICA en ica.ibm.com con tu w3id</div></div>
+<div class="step"><div class="step-num">4</div><div>Crear el sitio SharePoint "Agile Team Hub" y las listas ATH_Sesiones y ATH_Bloqueantes</div></div>
+<div class="step"><div class="step-num">5</div><div>Crear la Power App en Teams (canal Agile → + → Power Apps)</div></div>
+<div class="step"><div class="step-num">6</div><div>Adjuntar las imágenes de las canicas para definir los colores y completar la sección 5</div></div>
+
+<div class="alert alert-green" style="margin-top:20px">
+  <strong>Próximo paso recomendado:</strong> Adjunta las tres imágenes mencionadas en el mensaje original. Con ellas se completará la sección 5 (análisis visual), se definirán los colores y significados de las canicas, y se generará la configuración completa del tablero de votación y el componente visual de la Power App.
+</div>
+</div>
+
+<footer>
+  <p>Made with IBM Bob</p>
+</footer>
+
+</div>
+</body>
+</html>

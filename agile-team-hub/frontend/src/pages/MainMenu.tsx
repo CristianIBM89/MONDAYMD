@@ -9,16 +9,16 @@ interface Props {
 }
 
 const MENU_ITEMS = [
-  { to: '/summary',  icon: '📄', label: 'Procesar resumen\nde Teams' },
-  { to: '/sessions', icon: '🗂️', label: 'Consultar\nresúmenes' },
-  { to: '/blocker',  icon: '🚧', label: 'Registrar\nbloqueante' },
-  { to: '/dashboard',icon: '🖥️', label: 'Bloqueantes\nactivos' },
-  { to: '/iteration',icon: '🗓️', label: 'Iteración\nactual' },
+  { to: '/summary',           icon: '📄', label: 'Procesar resumen\nde Teams' },
+  { to: '/sessions',          icon: '🗂️', label: 'Consultar\nresúmenes' },
+  { to: '/blocker',           icon: '🚧', label: 'Registrar\nbloqueante' },
+  { to: '/dashboard',         icon: '🖥️', label: 'Bloqueantes\nactivos' },
+  { to: '/iteration-manager', icon: '🗓️', label: 'Gestionar\niteración' },
   { to: '/iteration?marbles=1', icon: '🔵', label: 'Evidencia\nde canicas' },
-  { to: '/showcase', icon: '🎯', label: 'Showcase' },
-  { to: '/retro',    icon: '💬', label: 'Retrospectiva' },
-  { to: '/manager',  icon: '📊', label: 'Panel del\ngerente' },
-  { to: '/slack/latest', icon: '📢', label: 'Preparar\npublicación Slack' },
+  { to: '/showcase',          icon: '🎯', label: 'Showcase' },
+  { to: '/retro',             icon: '💬', label: 'Retrospectiva' },
+  { to: '/manager',           icon: '📊', label: 'Panel del\ngerente' },
+  { to: '/slack/latest',      icon: '📢', label: 'Preparar\npublicación Slack' },
 ];
 
 export default function MainMenu({ user, iteration, serviceStatus }: Props) {

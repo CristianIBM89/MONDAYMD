@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint de 3 Meses: Idiomas e Inteligencia Artificial</title>
+  <style>
+    /* Reset and Typography */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1f2328;
+      background-color: #f6f8fa;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 35px;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Headers */
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1f2328;
+      margin-bottom: 8px;
+      border-bottom: 2px solid #e1e4e8;
+      padding-bottom: 12px;
+    }
+    h2 {
+      font-size: 19px;
+      font-weight: 600;
+      color: #24292f;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #e1e4e8;
+      padding-bottom: 6px;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2328;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+
+    /* Paragraphs and Lists */
+    p {
+      margin-bottom: 12px;
+      color: #24292f;
+    }
+    ul, ol {
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Badges & Accents */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-english {
+      background-color: #ddf4ff;
+      color: #0969da;
+      border: 1px solid #54aeff;
+    }
+    .badge-italian {
+      background-color: #dafbe1;
+      color: #1a7f37;
+      border: 1px solid #4ac26b;
+    }
+    .badge-ai {
+      background-color: #f5f0ff;
+      color: #8a3ffc;
+      border: 1px solid #d4bbff;
+    }
+    .badge-time {
+      background-color: #f6f8fa;
+      color: #57606a;
+      border: 1px solid #d0d7de;
+    }
+    .badge-phase {
+      background-color: #ffe1b3;
+      color: #b05a00;
+      border: 1px solid #ffc107;
+    }
+
+    /* Card Panels */
+    .card {
+      background-color: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #1f2328;
+      border-bottom: 1px dashed #d0d7de;
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Tables & Calendar Almanac */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #d0d7de;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      background-color: #f6f8fa;
+      font-weight: 600;
+      color: #57606a;
+    }
+    
+    /* Calendar Tracker */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+      margin-bottom: 24px;
+    }
+    .calendar-header {
+      font-weight: 600;
+      text-align: center;
+      background-color: #f6f8fa;
+      padding: 6px;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #57606a;
+    }
+    .calendar-day {
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: 8px;
+      min-height: 125px;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .calendar-day.rest {
+      background-color: #f6f8fa;
+      color: #57606a;
+      min-height: 125px;
+    }
+    .day-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: #57606a;
+      margin-bottom: 4px;
+    }
+    .day-tasks {
+      font-size: 10.5px;
+      line-height: 1.35;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 3px;
+    }
+    .task-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-en { background-color: #0969da; }
+    .dot-it { background-color: #1a7f37; }
+    .dot-ai { background-color: #8a3ffc; }
+
+    /* Highlight box */
+    .highlight-box {
+      background-color: #fff8c5;
+      border: 1px solid #d4a72c;
+      border-radius: 6px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    /* Links style */
+    a {
+      color: #0969da;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+      color: #054da4;
+    }
+
+    /* Link list item inside table */
+    .resource-link {
+      display: inline-block;
+      margin-top: 4px;
+      background-color: #f0f4f9;
+      color: #0969da;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid #d0e3fc;
+    }
+    .resource-link:hover {
+      background-color: #d0e3fc;
+    }
+    .resource-link.ai-link {
+      background-color: #f6f2ff;
+      color: #8a3ffc;
+      border: 1px solid #e8daff;
+    }
+    .resource-link.ai-link:hover {
+      background-color: #e8daff;
+    }
+
+    /* Print Button */
+    .print-button-container {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+    .btn-print {
+      background-color: #0969da;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-print:hover {
+      background-color: #0c63ce;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff;
+        padding: 0;
+      }
+      .container {
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+        padding: 0;
+      }
+      .print-button-container {
+        display: none;
+      }
+    }
+
+    /* Muted Footer */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #57606a;
+      margin-top: 35px;
+      padding-top: 14px;
+      border-top: 1px solid #e1e4e8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Botón de Imprimir / Guardar en PDF -->
+  <div class="print-button-container">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ Guardar como PDF / Imprimir
+    </button>
+  </div>
+
+  <h1>Sprint de 3 Meses: Idiomas e Inteligencia Artificial</h1>
+  <p>Este plan de desarrollo profesional intensivo de <strong>4 horas diarias (Lunes a Sábado)</strong> está diseñado para lograr un dominio bilingüe conversacional y prepararte para ser un experto en Inteligencia Artificial aplicada en 90 días.</p>
+
+  <div class="highlight-box">
+    <strong>🎯 Tu Nueva Rutina de 4 Horas Diarias:</strong> 2 horas de inmersión en Inglés + 1 hora de Inteligencia Artificial técnica + 1 hora de Italiano (como recreación mental). ¡Haz clic en los enlaces para acceder a cada lección interactiva gratuita!
+  </div>
+
+  <!-- Fases de 90 días -->
+  <h2>🚀 Cronograma de 3 Meses (Idiomas + Inteligencia Artificial)</h2>
+  
+  <div class="card">
+    <div class="card-title">
+      <span><span class="badge badge-phase">Mes 1 (Días 1-30)</span> Fundamentos de IA & Input de Idiomas</span>
+      <div>
+        <span class="badge badge-english">Inglés: 2h</span>
+        <span class="badge badge-ai">IA: 1h</span>
+      </div>
+    </div>
+    <p><strong>Meta del Mes:</strong> Consolidar comprensión auditiva del inglés y dominar los conceptos básicos de Machine Learning, LLMs y Prompt Engineering.</p>
+    <ul>
+      <li><strong>IA Enfoque (1h):</strong> Fundamentos de Inteligencia Artificial Generativa y Prompting avanzado.</li>
+      <li><strong>Inglés (2h):</strong> 1h gramática estructurada + 1h listening inmersivo (conectar oído).</li>
+      <li><strong>Italiano (1h):</strong> Estructuras básicas del habla y vocabulario de supervivencia diario.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span><span class="badge badge-phase">Mes 2 (Días 31-60)</span> Implementación de IA & Producción de Idiomas</span>
+      <div>
+        <span class="badge badge-english">Inglés: 2h</span>
+        <span class="badge badge-ai">IA: 1h</span>
+      </div>
+    </div>
+    <p><strong>Meta del Mes:</strong> Hablar inglés de forma estructurada e implementar modelos de IA sencillos usando Python y herramientas No-Code.</p>
+    <ul>
+      <li><strong>IA Enfoque (1h):</strong> Python básico para IA, manipulación de datos y creación de agentes de conversación sencillos.</li>
+      <li><strong>Inglés (2h):</strong> Shadowing conversacional + diario en inglés para desbloquear el habla.</li>
+      <li><strong>Italiano (1h):</strong> Conjugación regular en presente y vocabulario de relaciones interpersonales.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span><span class="badge badge-phase">Mes 3 (Días 61-90)</span> Agentes Autónomos de IA & Fluidez Profesional</span>
+      <div>
+        <span class="badge badge-english">Inglés: 2h</span>
+        <span class="badge badge-ai">IA: 1h</span>
+      </div>
+    </div>
+    <p><strong>Meta del Mes:</strong> Crear aplicaciones de IA complejas (RAG, Agentes AI) y hablar inglés fluido en entornos laborales.</p>
+    <ul>
+      <li><strong>IA Enfoque (1h):</strong> Arquitectura RAG (Retrieval-Augmented Generation), uso de APIs de OpenAI/Anthropic y orquestación de agentes con LangChain/CrewAI.</li>
+      <li><strong>Inglés (2h):</strong> Simulación de entrevistas de trabajo en inglés, debates complejos y presentaciones técnicas.</li>
+      <li><strong>Italiano (1h):</strong> Comprensión fluida de contenidos y conversaciones estructuradas.</li>
+    </ul>
+  </div>
+
+
+  <!-- El Almanaque Semanal -->
+  <h2>📅 Estructura del Almanaque Diario con Enlaces Directos de Estudio</h2>
+  <p>Sigue este plan diario estructurado de lunes a sábado. Haz clic en los enlaces de cada celda para ir al material interactivo gratuito.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 12%;">Día</th>
+        <th style="width: 31%;"><span class="badge badge-english">Inglés (2h Total)</span></th>
+        <th style="width: 31%;"><span class="badge badge-ai">Inteligencia Artificial (1h Total)</span></th>
+        <th style="width: 26%;"><span class="badge badge-italian">Italiano (1h Total)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Lunes</strong></td>
+        <td>
+          <strong>Gramática (1h):</strong> Simple Past vs Continuous.<br>
+          <a class="resource-link" href="https://www.perfect-english-grammar.com/past-simple-past-continuous-exercise-1.html" target="_blank">🔗 Ejercicios Interactivos</a><br>
+          <strong>Inmersión (1h):</strong> Podcast BBC.<br>
+          <a class="resource-link" href="https://www.bbc.co.uk/learningenglish/english/features/6-minute-english" target="_blank">🔗 Podcast BBC (6-Min)</a>
+        </td>
+        <td>
+          <strong>Fundamentos de GenAI:</strong> Qué es la IA Generativa, LLMs y Redes Neuronales.<br>
+          <a class="resource-link ai-link" href="https://www.deeplearning.ai/courses/generative-ai-for-everyone/" target="_blank">🔗 Curso: GenAI for Everyone (DeepLearning.AI)</a>
+        </td>
+        <td>
+          <strong>Fundamentos:</strong> Saludos y autopresentación.<br>
+          <a class="resource-link" href="https://www.youtube.com/watch?v=kYc-O-uO7Ww" target="_blank">🔗 Clase de Saludos</a><br>
+          <a class="resource-link" href="https://www.duolingo.com" target="_blank">🔗 Duolingo Web</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Martes</strong></td>
+        <td>
+          <strong>Shadowing Activo (1h):</strong> Imitar nativos.<br>
+          <a class="resource-link" href="https://www.youtube.com/watch?v=GVwfX_V0Q3I" target="_blank">🔗 Shadowing en TED</a><br>
+          <strong>Input (1h):</strong> Series subtituladas.<br>
+          <a class="resource-link" href="https://ororo.tv/es" target="_blank">🔗 Series (Ororo.tv)</a>
+        </td>
+        <td>
+          <strong>Prompt Engineering Avanzado:</strong> Técnicas Few-Shot, Chain-of-Thought y System Prompts.<br>
+          <a class="resource-link ai-link" href="https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" target="_blank">🔗 Prompting Developers (DeepLearning.AI)</a>
+        </td>
+        <td>
+          <strong>Vocabulario:</strong> Números, comida y compras.<br>
+          <a class="resource-link" href="https://www.impariamoitaliano.com/numeri.htm" target="_blank">🔗 Ejercicios Números</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Miércoles</strong></td>
+        <td>
+          <strong>Gramática (1h):</strong> Present Perfect vs Past.<br>
+          <a class="resource-link" href="https://www.perfect-english-grammar.com/present-perfect-or-past-simple-1.html" target="_blank">🔗 Ejercicios Interactivos</a><br>
+          <strong>Escritura (1h):</strong> Diario personal.<br>
+          <a class="resource-link" href="https://www.wordreference.com/" target="_blank">🔗 Diccionario Oxford</a>
+        </td>
+        <td>
+          <strong>Python para Inteligencia Artificial:</strong> Variables, bucles y lógica básica en Jupyter Notebooks.<br>
+          <a class="resource-link ai-link" href="https://www.kaggle.com/learn/python" target="_blank">🔗 Curso Interactivo de Python (Kaggle Learn)</a>
+        </td>
+        <td>
+          <strong>Verbos Auxiliares:</strong> Essere y Avere en presente.<br>
+          <a class="resource-link" href="https://www.impariamoitaliano.com/presente_essere_avere.htm" target="_blank">🔗 Ejercicios Essere/Avere</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Jueves</strong></td>
+        <td>
+          <strong>Lectura Dinámica (1h):</strong> Noticias reales.<br>
+          <a class="resource-link" href="https://www.engoo.com/app/daily-news" target="_blank">🔗 Noticias Engoo por Nivel</a><br>
+          <strong>Habla (1h):</strong> Grábate hablando.<br>
+          <a class="resource-link" href="https://vocaroo.com/" target="_blank">🔗 Grabadora Vocaroo</a>
+        </td>
+        <td>
+          <strong>Machine Learning Esencial:</strong> Modelos predictivos, clasificación y árboles de decisión.<br>
+          <a class="resource-link ai-link" href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">🔗 Curso: Intro to Machine Learning (Kaggle)</a>
+        </td>
+        <td>
+          <strong>Comprensión Auditiva:</strong> Italiano real.<br>
+          <a class="resource-link" href="https://www.youtube.com/@italianoautomatico" target="_blank">🔗 Canal Italiano Automatico</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Viernes</strong></td>
+        <td>
+          <strong>Condicionales (1h):</strong> 1st and 2nd Conditionals.<br>
+          <a class="resource-link" href="https://www.perfect-english-grammar.com/conditional-exercises.html" target="_blank">🔗 Ejercicios Condicionales</a><br>
+          <strong>Input Activo (1h):</strong> Charlas motivadoras.<br>
+          <a class="resource-link" href="https://www.ted.com/talks" target="_blank">🔗 TED Talks Subtituladas</a>
+        </td>
+        <td>
+          <strong>APIs de IA & Integración RAG:</strong> Cómo conectar bases de datos externas a LLMs (Retrieval-Augmented Gen).<br>
+          <a class="resource-link ai-link" href="https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/" target="_blank">🔗 Curso: Building Systems with LLMs</a>
+        </td>
+        <td>
+          <strong>Estructuras Regulares:</strong> Verbos terminados en -ARE.<br>
+          <a class="resource-link" href="https://www.impariamoitaliano.com/presente_are.htm" target="_blank">🔗 Práctica de Verbos</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Sábado</strong></td>
+        <td>
+          <strong>Simulación (1h):</strong> Entrevistas difíciles.<br>
+          <a class="resource-link" href="https://www.youtube.com/watch?v=PCWVi5pAa30" target="_blank">🔗 Simulación de Entrevistas</a><br>
+          <strong>Repetición (1h):</strong> Repaso Anki.<br>
+          <a class="resource-link" href="https://apps.ankiweb.net/" target="_blank">🔗 Descargar Anki</a>
+        </td>
+        <td>
+          <strong>Agentes Autónomos de IA:</strong> Concepto de agentes (CrewAI / AutoGPT) que resuelven tareas en bucle.<br>
+          <a class="resource-link ai-link" href="https://www.deeplearning.ai/short-courses/multi-ai-agent-systems-with-crewai/" target="_blank">🔗 Curso: Multi-Agent Systems with CrewAI</a>
+        </td>
+        <td>
+          <strong>Integración:</strong> Repaso oral general.<br>
+          <a class="resource-link" href="https://www.duolingo.com" target="_blank">🔗 Repaso Duolingo</a>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Domingo</strong></td>
+        <td colspan="3" style="text-align: center; background-color: #f6f8fa; font-weight: 600; padding: 15px;">
+          💤 DESCANSO COGNITIVO TOTAL (Recargar baterías para la siguiente semana de inmersión)
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- Planificador Visual / Tracker -->
+  <h2>📊 Almanaque de Seguimiento de Inmersión (90 Días - 4 Horas Diarias)</h2>
+  <p>Marca las casillas de verificación cada vez que completes una sesión diaria. ¡Mantener la constancia es el secreto del éxito!</p>
+
+  <div class="calendar-grid">
+    <!-- Header -->
+    <div class="calendar-header">Lunes</div>
+    <div class="calendar-header">Martes</div>
+    <div class="calendar-header">Miércoles</div>
+    <div class="calendar-header">Jueves</div>
+    <div class="calendar-header">Viernes</div>
+    <div class="calendar-header">Sábado</div>
+    <div class="calendar-header">Domingo</div>
+
+    <!-- Semana 1 -->
+    <div class="calendar-day">
+      <div class="day-num">DÍA 1</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h Teórico</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h Activo</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h Técnica</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h Repaso</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 2</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 3</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 4</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 5</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 6</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day rest">
+      <div class="day-num">DÍA 7</div>
+      <div class="day-tasks">
+        <div class="task-item">💤 Relax!</div>
+      </div>
+    </div>
+
+    <!-- Semana 2 -->
+    <div class="calendar-day">
+      <div class="day-num">DÍA 8</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 9</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 10</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 11</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 12</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day">
+      <div class="day-num">DÍA 13</div>
+      <div class="day-tasks">
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-en"></span> EN 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-ai"></span> IA 1h</div>
+        <div class="task-item"><input type="checkbox"> <span class="task-dot dot-it"></span> IT 1h</div>
+      </div>
+    </div>
+    <div class="calendar-day rest">
+      <div class="day-num">DÍA 14</div>
+      <div class="day-tasks">
+        <div class="task-item">💤 Relax!</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Consejos de Éxito -->
+  <h2>🔥 Las 3 Claves de Oro de la Inmersión Profesional</h2>
+  <ul>
+    <li><strong>Combina habilidades:</strong> Haz tus proyectos de Python y tus Prompts de IA completamente en inglés. Así harás inmersión activa combinando ambas disciplinas de forma orgánica.</li>
+    <li><strong>Configura tu entorno de desarrollo en Inglés:</strong> Visual Studio Code, ChatGPT, Jupyter Notebooks o cualquier software de IA debe estar parametrizado en inglés.</li>
+    <li><strong>Construye un portafolio público:</strong> A medida que completes tus proyectos en Kaggle o DeepLearning.AI, súbelos a GitHub en un repositorio detallado y escrito en inglés. ¡Esto acelerará tu empleabilidad!</li>
+  </ul>
+
+</div>
+
+<div class="footer">
+  Hecho con IBM Bob
+</div>
+
+</body>
+</html>

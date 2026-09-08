@@ -1,0 +1,16 @@
+{
+  "name": "catalog-chatbot",
+  "version": "1.0.0",
+  "description": "API local para clasificacion de materiales con Taxonomy Cemex",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@e965/xlsx": "0.20.3",
+    "express": "5.1.0"
+  }
+}

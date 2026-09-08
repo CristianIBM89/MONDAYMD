@@ -704,6 +704,91 @@ export async function getBlockersList(): Promise<BlockerRecord[]> {
 }
 
 
+// ─── ITERATION: create ───────────────────────────────────────────
+// Column IDs for ATH — Iteraciones (discovered via diagnose-monday.js)
+const ITERACIONES_COLS = {
+  gerenteNombre: 'text_mm702cc0',
+  gerenteEmail:  'text_mm70nqx4',
+  fechaInicio:   'date_mm70p021',
+  fechaFin:      'date_mm702dgs',
+};
+
+export interface IterationCreatePayload {
+  nombre: string;
+  gerenteNombre: string;
+  gerenteEmail: string;
+  fechaInicio: string;
+  fechaFin: string;
+  userEmail: string;
+}
+
+export async function createIterationInMonday(
+  payload: IterationCreatePayload
+): Promise<{ id: string }> {
+  const mutation = gql`
+    mutation CreateIteration($boardId: ID!, $itemName: String!, $columnValues: JSON!) {
+      create_item(board_id: $boardId, item_name: $itemName, column_values: $columnValues) { id }
+    }
+  `;
+  const columnValues: Record<string, unknown> = {
+    [ITERACIONES_COLS.gerenteNombre]: payload.gerenteNombre,
+    [ITERACIONES_COLS.gerenteEmail]:  payload.gerenteEmail,
+    status: { index: 1 },   // index 1 = Activo
+  };
+  if (payload.fechaInicio) columnValues[ITERACIONES_COLS.fechaInicio] = { date: payload.fechaInicio };
+  if (payload.fechaFin)    columnValues[ITERACIONES_COLS.fechaFin]    = { date: payload.fechaFin };
+
+  const data = (await mondayClient.request(mutation, {
+    boardId: config.MONDAY_ITERATIONS_BOARD_ID,
+    itemName: payload.nombre,
+    columnValues: JSON.stringify(columnValues),
+  })) as { create_item: { id: string } };
+
+  await auditLog({ user: payload.userEmail, action: 'MONDAY_CREATE_ITERATION', detail: `item=${data.create_item.id} nombre=${payload.nombre}`, result: 'success' });
+  return { id: data.create_item.id };
+}
+
+export async function closeIterationInMonday(
+  itemId: string,
+  userEmail: string
+): Promise<void> {
+  const mutation = gql`
+    mutation CloseIteration($boardId: ID!, $itemId: ID!, $columnValues: JSON!) {
+      change_multiple_column_values(board_id: $boardId, item_id: $itemId, column_values: $columnValues) { id }
+    }
+  `;
+  await mondayClient.request(mutation, {
+    boardId: config.MONDAY_ITERATIONS_BOARD_ID,
+    itemId,
+    columnValues: JSON.stringify({ status: { index: 0 } }),   // index 0 = Cerrado/Done
+  });
+  await auditLog({ user: userEmail, action: 'MONDAY_CLOSE_ITERATION', detail: `item=${itemId}`, result: 'success' });
+}
+
+export async function updateIterationInMonday(
+  itemId: string,
+  fields: { gerenteNombre?: string; gerenteEmail?: string; fechaInicio?: string; fechaFin?: string },
+  userEmail: string
+): Promise<void> {
+  const mutation = gql`
+    mutation UpdateIteration($boardId: ID!, $itemId: ID!, $columnValues: JSON!) {
+      change_multiple_column_values(board_id: $boardId, item_id: $itemId, column_values: $columnValues) { id }
+    }
+  `;
+  const columnValues: Record<string, unknown> = {};
+  if (fields.gerenteNombre !== undefined) columnValues[ITERACIONES_COLS.gerenteNombre] = fields.gerenteNombre;
+  if (fields.gerenteEmail  !== undefined) columnValues[ITERACIONES_COLS.gerenteEmail]  = fields.gerenteEmail;
+  if (fields.fechaInicio   !== undefined) columnValues[ITERACIONES_COLS.fechaInicio]   = { date: fields.fechaInicio };
+  if (fields.fechaFin      !== undefined) columnValues[ITERACIONES_COLS.fechaFin]      = { date: fields.fechaFin };
+
+  await mondayClient.request(mutation, {
+    boardId: config.MONDAY_ITERATIONS_BOARD_ID,
+    itemId,
+    columnValues: JSON.stringify(columnValues),
+  });
+  await auditLog({ user: userEmail, action: 'MONDAY_UPDATE_ITERATION', detail: `item=${itemId}`, result: 'success' });
+}
+
 // ─── Dry-run: validate board IDs ─────────────────────────────────
 export async function validateBoardIds(): Promise<Record<string, boolean>> {
   const boardIds = {

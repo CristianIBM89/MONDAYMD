@@ -1,0 +1,68 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "com.empresa.meeting-summarizer",
+  "packageName": "com.empresa.meeting-summarizer",
+
+  "developer": {
+    "name": "Tu Empresa",
+    "websiteUrl": "http://127.0.0.1:8000",
+    "privacyUrl": "http://127.0.0.1:8000",
+    "termsOfUseUrl": "http://127.0.0.1:8000"
+  },
+
+  "name": {
+    "short": "Resumen IA",
+    "full": "Meeting Summarizer con IBM watsonx.ai"
+  },
+
+  "description": {
+    "short": "Activa el resumen automático de esta reunión",
+    "full": "Activa la grabación del resumen de la reunión. Al terminar, IBM watsonx.ai generará automáticamente el resumen, action items, bloqueantes y próximos pasos, y los enviará a Monday.com."
+  },
+
+  "icons": {
+    "color": "icon-color.png",
+    "outline": "icon-outline.png"
+  },
+
+  "accentColor": "#464EB8",
+
+  "configurableTabs": [],
+
+  "staticTabs": [],
+
+  "meetingExtensionDefinition": {
+    "scenes": [],
+    "supportsStreaming": false
+  },
+
+  "configurableTabs": [
+    {
+      "configurationUrl": "http://127.0.0.1:8000/teams-tab/config",
+      "canUpdateConfiguration": false,
+      "scopes": ["groupChat"],
+      "context": [
+        "meetingSidePanel",
+        "meetingChatTab",
+        "meetingDetailsTab"
+      ]
+    }
+  ],
+
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+
+  "validDomains": [
+    "127.0.0.1:8000",
+    "localhost:8000"
+  ],
+
+  "webApplicationInfo": {
+    "id": "com.empresa.meeting-summarizer",
+    "resource": "http://127.0.0.1:8000"
+  }
+}
