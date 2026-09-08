@@ -8,7 +8,7 @@ const configSchema = z.object({
   HOST: z.string().default(process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   APP_URL: z.string().url().default('http://localhost:3001'),
-  CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  CORS_ORIGIN: z.string().default('https://ath-frontend-96ym.onrender.com'),
 
   // watsonx
   WATSONX_API_KEY: z.string().min(1),
