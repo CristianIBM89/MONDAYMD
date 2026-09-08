@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { generateJWT } from '../middleware/auth';
-import { config } from '../config';
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/auth/dev-token — generates a signed JWT for web standalone mode or development
