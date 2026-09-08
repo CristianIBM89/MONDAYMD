@@ -81,10 +81,14 @@ function App() {
 
         if (health.status === 'fulfilled') {
           const h = health.value;
+          const s = h.services;
+          const isMondayOk = typeof s?.monday === 'object' ? Boolean(s.monday.configured) : Boolean(s?.monday);
+          const isWatsonxOk = typeof s?.watsonx === 'object' ? Boolean(s.watsonx.configured) : Boolean(s?.watsonx);
+          const isSlackOk = typeof s?.slack === 'object' ? Boolean(s.slack.configured) : Boolean(s?.slack);
           setServiceStatus({
-            monday: Boolean(h.services?.monday?.configured ?? h.services?.monday),
-            watsonx: Boolean(h.services?.watsonx?.configured ?? h.services?.watsonx),
-            slack: Boolean(h.services?.slack?.configured ?? h.services?.slack),
+            monday: isMondayOk,
+            watsonx: isWatsonxOk,
+            slack: isSlackOk,
           });
         }
 

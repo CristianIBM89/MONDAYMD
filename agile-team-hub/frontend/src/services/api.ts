@@ -32,8 +32,22 @@ async function request<T>(
   return data;
 }
 
+export interface HealthServices {
+  watsonx?: { configured?: boolean; region?: string; model?: string } | boolean;
+  monday?: { configured?: boolean } | boolean;
+  slack?: { configured?: boolean } | boolean;
+  graph?: { configured?: boolean } | boolean;
+}
+
+export interface HealthResponse {
+  status: string;
+  version: string;
+  timestamp: string;
+  services: HealthServices;
+}
+
 export const api = {
-  health: () => request<{ status: string; services: Record<string, unknown> }>('GET', '/api/health'),
+  health: () => request<HealthResponse>('GET', '/api/health'),
 
   // Iterations
   getActiveIteration: () => request<{ iteration: unknown }>('GET', '/api/iterations/active'),
