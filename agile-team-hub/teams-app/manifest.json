@@ -1,0 +1,67 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "a3f7c2d1-8e4b-4f9a-b6c5-1d2e3f4a5b6c",
+  "developer": {
+    "name": "Agile Team Hub — IBM Internal",
+    "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
+    "privacyUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/privacy.html",
+    "termsOfUseUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/terms.html"
+  },
+  "name": {
+    "short": "Agile Hub",
+    "full": "Agile Team Hub"
+  },
+  "description": {
+    "short": "Resúmenes, bloqueantes, showcase y retrospectiva.",
+    "full": "Agile Team Hub centraliza la gestión Agile del equipo IBM: procesa resúmenes de Teams con watsonx.ai, registra bloqueantes, gestiona el showcase, la retrospectiva y el gerente de iteración. Todo con confirmación humana antes de guardar en Monday.com."
+  },
+  "icons": {
+    "color": "icon-color.png",
+    "outline": "icon-outline.png"
+  },
+  "accentColor": "#0f62fe",
+  "staticTabs": [
+    {
+      "entityId": "agileHubHome",
+      "name": "Agile Hub",
+      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
+      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "agileHubSessions",
+      "name": "Resúmenes",
+      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/sessions",
+      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/sessions",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "agileHubBlockers",
+      "name": "Bloqueantes",
+      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/blocker",
+      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/blocker",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "agileHubManager",
+      "name": "Panel gerente",
+      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/manager",
+      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/manager",
+      "scopes": ["personal"]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/tab-config.html",
+      "canUpdateConfiguration": true,
+      "scopes": ["team", "groupchat"],
+      "context": ["channelTab", "privateChatTab"]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": [
+    "contracts-ordering-cooperation-separated.trycloudflare.com"
+  ]
+}

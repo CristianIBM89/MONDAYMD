@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Configuración — Agile Team Hub</title>
+<script src="https://res.cdn.office.net/teams-js/2.24.0/js/MicrosoftTeams.min.js"></script>
+<style>
+  body { font-family: -apple-system, "Segoe UI", sans-serif; padding: 24px; color: #1f2328; }
+  h2 { font-size: 18px; margin-bottom: 16px; }
+  .btn { background: #0f62fe; color: white; border: none; padding: 10px 24px; border-radius: 4px; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h2>Configurar Agile Team Hub</h2>
+<p>Haz clic en Guardar para agregar Agile Team Hub como pestaña en este canal.</p>
+<button class="btn" onclick="saveConfig()">Guardar configuración</button>
+<script>
+  microsoftTeams.app.initialize().then(() => {
+    microsoftTeams.pages.config.registerOnSaveHandler(function(saveEvent) {
+      microsoftTeams.pages.config.setConfig({
+        suggestedDisplayName: 'Agile Hub',
+        entityId: 'agileHubChannel',
+        contentUrl: window.location.origin + '/',
+        websiteUrl: window.location.origin + '/'
+      });
+      saveEvent.notifySuccess();
+    });
+    microsoftTeams.pages.config.setValidityState(true);
+  });
+  function saveConfig() {
+    // Teams SDK handles the save via the registered handler above
+  }
+</script>
+</body>
+</html>

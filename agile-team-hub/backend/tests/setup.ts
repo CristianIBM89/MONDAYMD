@@ -1,0 +1,26 @@
+// Test environment setup — load mock env vars before config is imported
+process.env.NODE_ENV = 'test';
+process.env.PORT = '3099';
+process.env.HOST = '127.0.0.1';
+process.env.APP_URL = 'http://localhost:3099';
+process.env.CORS_ORIGIN = 'http://localhost:3000';
+process.env.WATSONX_API_KEY = 'test-watsonx-key';
+process.env.WATSONX_PROJECT_ID = 'test-project-id';
+process.env.WATSONX_MODEL_ID = 'ibm/granite-3-8b-instruct';
+process.env.WATSONX_REGION = 'us-south';
+process.env.WATSONX_API_VERSION = '2024-05-31';
+process.env.WATSONX_TIMEOUT = '5000';
+process.env.MONDAY_API_TOKEN = 'test-monday-token';
+process.env.MONDAY_API_VERSION = '2024-10';
+process.env.MONDAY_SESSIONS_BOARD_ID = '111111111';
+process.env.MONDAY_BLOCKERS_BOARD_ID = '222222222';
+process.env.MONDAY_ITERATIONS_BOARD_ID = '333333333';
+process.env.MONDAY_SHOWCASE_BOARD_ID = '444444444';
+process.env.MONDAY_RETRO_BOARD_ID = '555555555';
+process.env.JWT_SECRET = 'test-jwt-secret-minimum-32-characters-long';
+process.env.AUDIT_LOG_ENABLED = 'false';
+process.env.SLACK_WEBHOOK_URL = '';
+process.env.SLACK_BOT_TOKEN = '';
+process.env.SLACK_CHANNEL_ID = '';
+process.env.GRAPH_CLIENT_ID = '';
+process.env.MAX_FILE_SIZE_MB = '10';
