@@ -34,12 +34,12 @@ def validate_manifest(manifest_path):
     return errors
 
 def main():
-    print("=== Generador de paquete Teams — Agile Team Hub ===\n")
+    print("=== Generador de paquete Teams - Agile Team Hub ===\n")
 
     # Check all required files exist
     missing = [f for f in REQUIRED_FILES if not os.path.exists(os.path.join(SCRIPT_DIR, f))]
     if missing:
-        print(f"❌ Archivos faltantes: {missing}")
+        print(f"[ERROR] Archivos faltantes: {missing}")
         print("   Ejecuta primero: python generate-icons.py")
         sys.exit(1)
 
@@ -47,9 +47,9 @@ def main():
     manifest_path = os.path.join(SCRIPT_DIR, 'manifest.json')
     warnings = validate_manifest(manifest_path)
     if warnings:
-        print("⚠️  ADVERTENCIAS en manifest.json (el ZIP se generará pero NO será funcional hasta corregirlas):")
+        print("[WARN] ADVERTENCIAS en manifest.json (el ZIP se generará pero NO será funcional hasta corregirlas):")
         for w in warnings:
-            print(f"   • {w}")
+            print(f"   * {w}")
         print()
 
     # Build ZIP
@@ -60,25 +60,16 @@ def main():
         for fname in REQUIRED_FILES:
             full = os.path.join(SCRIPT_DIR, fname)
             zf.write(full, fname)
-            print(f"   ✅ Incluido: {fname} ({os.path.getsize(full):,} bytes)")
+            print(f"   [OK] Incluido: {fname} ({os.path.getsize(full):,} bytes)")
 
-    print(f"\n✅ Paquete generado: {OUTPUT_ZIP}")
-    print(f"   Tamaño: {os.path.getsize(OUTPUT_ZIP):,} bytes")
+    print(f"\n[OK] Paquete generado: {OUTPUT_ZIP}")
+    print(f"   Tamano: {os.path.getsize(OUTPUT_ZIP):,} bytes")
     print()
-    print("📋 Pasos para enviarlo a la organización:")
+    print("Pasos para cargarlo en Teams:")
     print("   1. Abre Microsoft Teams")
     print("   2. Ve a Apps (barra lateral izquierda)")
-    print("   3. Haz clic en 'Administrar tus aplicaciones'")
-    print("   4. Selecciona 'Enviar una aplicación a su organización'")
-    print("   5. Sube el archivo AgileTeamHub.zip")
-    print("   6. Añade una descripción y contacto de soporte")
-    print("   7. Haz clic en Enviar")
-    print("   8. TI recibirá la solicitud para aprobación")
-    print()
-    print("📌 Método alternativo (instalación personal, si la política lo permite):")
-    print("   1. Teams → Apps → Administrar tus aplicaciones → Cargar una aplicación")
-    print("   2. Selecciona 'Cargar una aplicación personalizada'")
-    print("   3. Sube AgileTeamHub.zip")
+    print("   3. Administrar tus aplicaciones -> Cargar una aplicacion personalizada")
+    print("   4. Selecciona AgileTeamHub.zip")
 
 if __name__ == '__main__':
     main()

@@ -5,9 +5,9 @@
   "id": "a3f7c2d1-8e4b-4f9a-b6c5-1d2e3f4a5b6c",
   "developer": {
     "name": "Agile Team Hub — IBM Internal",
-    "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
-    "privacyUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/privacy.html",
-    "termsOfUseUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/terms.html"
+    "websiteUrl": "https://ath-frontend-96ym.onrender.com",
+    "privacyUrl": "https://ath-frontend-96ym.onrender.com/privacy.html",
+    "termsOfUseUrl": "https://ath-frontend-96ym.onrender.com/terms.html"
   },
   "name": {
     "short": "Agile Hub",
@@ -26,35 +26,35 @@
     {
       "entityId": "agileHubHome",
       "name": "Agile Hub",
-      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
-      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com",
+      "contentUrl": "https://ath-frontend-96ym.onrender.com",
+      "websiteUrl": "https://ath-frontend-96ym.onrender.com",
       "scopes": ["personal"]
     },
     {
       "entityId": "agileHubSessions",
       "name": "Resúmenes",
-      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/sessions",
-      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/sessions",
+      "contentUrl": "https://ath-frontend-96ym.onrender.com/sessions",
+      "websiteUrl": "https://ath-frontend-96ym.onrender.com/sessions",
       "scopes": ["personal"]
     },
     {
       "entityId": "agileHubBlockers",
       "name": "Bloqueantes",
-      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/blocker",
-      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/blocker",
+      "contentUrl": "https://ath-frontend-96ym.onrender.com/blocker",
+      "websiteUrl": "https://ath-frontend-96ym.onrender.com/blocker",
       "scopes": ["personal"]
     },
     {
       "entityId": "agileHubManager",
       "name": "Panel gerente",
-      "contentUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/manager",
-      "websiteUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/manager",
+      "contentUrl": "https://ath-frontend-96ym.onrender.com/manager",
+      "websiteUrl": "https://ath-frontend-96ym.onrender.com/manager",
       "scopes": ["personal"]
     }
   ],
   "configurableTabs": [
     {
-      "configurationUrl": "https://contracts-ordering-cooperation-separated.trycloudflare.com/tab-config.html",
+      "configurationUrl": "https://ath-frontend-96ym.onrender.com/tab-config.html",
       "canUpdateConfiguration": true,
       "scopes": ["team", "groupchat"],
       "context": ["channelTab", "privateChatTab"]
@@ -62,6 +62,6 @@
   ],
   "permissions": ["identity", "messageTeamMembers"],
   "validDomains": [
-    "contracts-ordering-cooperation-separated.trycloudflare.com"
+    "ath-frontend-96ym.onrender.com"
   ]
 }

@@ -46,8 +46,21 @@ export async function buildApp() {
   });
 
   // CORS
+  const allowedOrigins = config.CORS_ORIGIN.split(',').map((o) => o.trim());
   await app.register(fastifyCors, {
-    origin: config.CORS_ORIGIN,
+    origin: (origin, cb) => {
+      // allow requests with no origin (like mobile apps, curl, or same-origin)
+      if (!origin) return cb(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.trycloudflare.com') ||
+        origin.endsWith('.onrender.com') ||
+        origin === 'http://localhost:3000'
+      ) {
+        return cb(null, true);
+      }
+      return cb(new Error('Not allowed by CORS'), false);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
