@@ -54,10 +54,9 @@ function App() {
           token = (await getTeamsAuthToken()) ?? '';
         }
 
-        // Fallback: development mode OR standalone web mode (REACT_APP_STANDALONE_MODE=true)
+        // Fallback: development mode OR standalone web mode (when opened outside Teams)
         // Generates a properly signed JWT using Web Crypto API
-        const standaloneMode = process.env.REACT_APP_STANDALONE_MODE === 'true';
-        if (!token && (process.env.NODE_ENV === 'development' || standaloneMode)) {
+        if (!token) {
           email = email || 'usuario@ibm.com';
           name = name || 'Usuario IBM';
           token = await generateDevToken(email, name);

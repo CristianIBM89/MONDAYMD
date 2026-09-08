@@ -1,7 +1,9 @@
 // API client for Agile Team Hub backend
 // All external calls (watsonx, Monday, Slack) go through the backend — never called directly from the frontend.
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:3001';
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL && process.env.REACT_APP_BACKEND_URL.trim() !== '')
+  ? process.env.REACT_APP_BACKEND_URL.replace(/\/+$/, '')
+  : 'https://ath-backend-1ls9.onrender.com';
 
 let authToken: string | null = null;
 

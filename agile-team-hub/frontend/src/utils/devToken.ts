@@ -25,8 +25,6 @@ function b64url(obj: object): string {
 }
 
 export async function generateDevToken(email: string, name: string): Promise<string> {
-  const isStandalone = process.env.REACT_APP_STANDALONE_MODE === 'true';
-  if (process.env.NODE_ENV !== 'development' && !isStandalone) return '';
   const header  = b64url({ alg: 'HS256', typ: 'JWT' });
   const payload = b64url({
     sub: email, email, name,
