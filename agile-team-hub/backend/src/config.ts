@@ -3,7 +3,8 @@ import { z } from 'zod';
 
 const configSchema = z.object({
   PORT: z.coerce.number().default(3001),
-  // In production (Render/Code Engine) must be 0.0.0.0 — set via env var
+  // Production (Render/Code Engine): HOST must be 0.0.0.0
+  // Development: 127.0.0.1 for security
   HOST: z.string().default(process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   APP_URL: z.string().url().default('http://localhost:3001'),
