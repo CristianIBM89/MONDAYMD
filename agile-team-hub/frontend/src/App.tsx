@@ -55,11 +55,19 @@ function App() {
         }
 
         // Fallback: development mode OR standalone web mode (when opened outside Teams)
-        // Generates a properly signed JWT using Web Crypto API
+        // Obtains a verified token directly from the backend auth service
         if (!token) {
           email = email || 'usuario@ibm.com';
           name = name || 'Usuario IBM';
-          token = await generateDevToken(email, name);
+          try {
+            const authRes = await api.getDevToken(email, name);
+            if (authRes.token) {
+              token = authRes.token;
+            }
+          } catch {
+            // If network or server error, fallback to client-side token
+            token = await generateDevToken(email, name);
+          }
         }
 
         if (!token) {

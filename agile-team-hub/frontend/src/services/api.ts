@@ -50,6 +50,8 @@ export interface HealthResponse {
 
 export const api = {
   health: () => request<HealthResponse>('GET', '/api/health'),
+  getDevToken: (email?: string, name?: string) =>
+    request<{ token: string }>('POST', '/api/auth/dev-token', { email, name }),
 
   // Iterations
   getActiveIteration: () => request<{ iteration: unknown }>('GET', '/api/iterations/active'),
