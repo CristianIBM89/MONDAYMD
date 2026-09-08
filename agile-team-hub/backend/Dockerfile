@@ -29,5 +29,5 @@ USER athub
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:${PORT:-3001}/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-EXPOSE 3001
+EXPOSE ${PORT:-10000}
 CMD ["node", "dist/server.js"]
