@@ -11,7 +11,9 @@ const PORT   = process.env.PORT || 3000;
 // Token de Monday.com — configurar en .env (local) o en Railway Environment
 const MONDAY_TOKEN = (process.env.MONDAY_TOKEN || process.env.MONDAY_KEY || process.env.MONDAY_API_KEY || "").trim();
 if (!MONDAY_TOKEN) {
-  console.error("WARN: Variable de entorno MONDAY_TOKEN no definida. El dashboard mostrará error al cargar datos.");
+  console.error("WARN: MONDAY_TOKEN no definida. Variables disponibles:", Object.keys(process.env).filter(k => !k.includes("SECRET")).join(", "));
+} else {
+  console.log("INFO: MONDAY_TOKEN encontrado — longitud:", MONDAY_TOKEN.length, "| inicio:", MONDAY_TOKEN.substring(0, 10) + "...");
 }
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 
@@ -56,9 +58,10 @@ function mondayQuery(query) {
       res.on("end", () => {
         try {
           const json = JSON.parse(d);
-          if (json.errors) return reject(new Error(json.errors.map(e => e.message).join(", ")));
+          if (json.errors) return reject(new Error("Monday API error: " + json.errors.map(e => e.message).join(", ")));
+          if (!json.data)  return reject(new Error("Monday API: respuesta inesperada: " + d.substring(0, 200)));
           resolve(json.data);
-        } catch(e) { reject(e); }
+        } catch(e) { reject(new Error("JSON parse error: " + e.message + " | raw: " + d.substring(0,200))); }
       });
     });
     req.on("error", reject); req.write(body); req.end();
