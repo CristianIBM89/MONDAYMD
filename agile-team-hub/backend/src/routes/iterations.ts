@@ -14,12 +14,17 @@ import { MultipartFile } from '@fastify/multipart';
 export async function iterationRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/iterations/active
   app.get('/active', async (_req: FastifyRequest, reply: FastifyReply) => {
-    const iteration = await getActiveIteration();
-    if (!iteration) {
-      reply.send({ iteration: null, warning: 'No hay iteración activa en Monday. Crea un elemento con estado "Activo" en el tablero de iteraciones.' });
-      return;
+    try {
+      const iteration = await getActiveIteration();
+      if (!iteration) {
+        reply.send({ iteration: null, warning: 'No hay iteración activa en Monday. Crea un elemento con estado "Activo" en el tablero de iteraciones.' });
+        return;
+      }
+      reply.send({ iteration });
+    } catch (err) {
+      _req.log.error({ err }, 'Error en getActiveIteration');
+      reply.status(500).send({ iteration: null, error: 'Error al consultar Monday' });
     }
-    reply.send({ iteration });
   });
 
   // GET /api/iterations
