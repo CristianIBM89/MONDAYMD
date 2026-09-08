@@ -80,14 +80,9 @@ function App() {
         setUser({ email, name, isInsideTeams: isTeams });
         notifyTeamsAppLoaded();
 
-        // Load health + active iteration in parallel
-        const [health, iterRes] = await Promise.allSettled([
-          api.health(),
-          api.getActiveIteration(),
-        ]);
-
-        if (health.status === 'fulfilled') {
-          const h = health.value;
+        // Load health first, then active iteration
+        try {
+          const h = await api.health();
           const s = h.services;
           const isMondayOk = typeof s?.monday === 'object' ? Boolean(s.monday.configured) : Boolean(s?.monday);
           const isWatsonxOk = typeof s?.watsonx === 'object' ? Boolean(s.watsonx.configured) : Boolean(s?.watsonx);
@@ -97,11 +92,16 @@ function App() {
             watsonx: isWatsonxOk,
             slack: isSlackOk,
           });
+        } catch (hErr) {
+          console.error('Error al consultar /api/health:', hErr);
         }
 
-        if (iterRes.status === 'fulfilled') {
-          const it = (iterRes.value as { iteration: ActiveIteration | null }).iteration;
+        try {
+          const iterRes = await api.getActiveIteration();
+          const it = (iterRes as { iteration: ActiveIteration | null }).iteration;
           if (it) setIteration(it);
+        } catch (iErr) {
+          console.error('Error al consultar /api/iterations/active:', iErr);
         }
       } catch (err) {
         setError(`Error iniciando la aplicación: ${err instanceof Error ? err.message : String(err)}`);
