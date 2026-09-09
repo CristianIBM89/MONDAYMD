@@ -112,14 +112,13 @@ export async function processWithWatsonx(
 
   const endpoint = `https://${config.WATSONX_REGION}.ml.cloud.ibm.com/ml/v1/text/generation?version=${config.WATSONX_API_VERSION}`;
 
-  // Model cascade — verified active Sep 2026 via test-models.mjs
-  // llama-3-3-70b: active (may hit free tier limit)
-  // granite-3-2-8b, granite-3-8b, mistral-large: active (rate limit 2req/s, not deprecated)
+  // Model cascade — mistralai/mistral-large removed (404 - deprecated by watsonx.ai)
+  // Replaced with ibm/granite-3-3-8b-instruct (Granite 3.3, actively maintained)
   const MODEL_CASCADE = [
-    config.WATSONX_MODEL_ID,           // primary: meta-llama/llama-3-3-70b-instruct
+    config.WATSONX_MODEL_ID,           // primary: meta-llama/llama-3-3-70b-instruct (or env override)
     'ibm/granite-3-2-8b-instruct',     // fallback 1: confirmed active
     'ibm/granite-3-8b-instruct',       // fallback 2: confirmed active
-    'mistralai/mistral-large',         // fallback 3: confirmed active
+    'ibm/granite-3-3-8b-instruct',     // fallback 3: Granite 3.3 series, active
   ];
 
   const buildBody = (modelId: string) => ({
@@ -168,7 +167,14 @@ export async function processWithWatsonx(
   if (!res || !res.ok) {
     const errText = await res!.text();
     await auditLog({ user: userEmail, action: 'WATSONX_ERROR', detail: `HTTP ${res!.status}`, result: 'error' });
-    throw new Error(`watsonx.ai respondió con error ${res!.status}: ${errText.slice(0, 300)}`);
+    // Friendly message for common errors
+    let friendlyMsg = `watsonx.ai respondió con error ${res!.status}: ${errText.slice(0, 300)}`;
+    if (errText.includes('consumption_limit_reached')) {
+      friendlyMsg = 'Se alcanzó el límite de uso gratuito de watsonx.ai para este mes. Opciones: (1) Esperar renovación mensual, (2) Actualizar el plan en cloud.ibm.com, (3) Usar otra API Key IBM en la configuración de Render.';
+    } else if (errText.includes('model_not_supported')) {
+      friendlyMsg = 'El modelo de IA configurado no está disponible en tu cuenta de watsonx.ai. Contacta al administrador para actualizar WATSONX_MODEL_ID en Render.';
+    }
+    throw new Error(friendlyMsg);
   }
 
   const raw = (await res.json()) as { results?: Array<{ generated_text: string }> };
