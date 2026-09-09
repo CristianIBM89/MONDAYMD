@@ -173,8 +173,9 @@ export default function MainMenu({ user, iteration, serviceStatus }: Props) {
           {/* Service status pills */}
           <div style={{ display: 'flex', gap: 8 }}>
             {[
-              { label: 'Monday', ok: serviceStatus.monday },
+              { label: 'Monday',  ok: serviceStatus.monday },
               { label: 'watsonx', ok: serviceStatus.watsonx },
+              { label: 'Slack',   ok: serviceStatus.slack },
             ].map(s => (
               <span key={s.label} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
