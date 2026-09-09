@@ -99,38 +99,34 @@ const MENU_ITEMS = [
   { to: '/slack/latest',        Icon: Icons.Slack,     label: 'Slack\nPublication',       color: '#4e2b79' },
 ];
 
-// ── IBM logo — official 8-bar stripe style ────────────────────────
+// ── IBM logo SVG ──────────────────────────────────────────────────
+// IBM logo — official 8-bar horizontal stripe wordmark
 const IBMLogo = () => (
-  <svg width="52" height="20" viewBox="0 0 52 20" xmlns="http://www.w3.org/2000/svg">
+  <svg width="52" height="20" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
     {/* I */}
-    <rect x="0"  y="0"  width="8" height="2.2" fill="white"/>
-    <rect x="0"  y="4"  width="8" height="2.2" fill="white"/>
-    <rect x="0"  y="8"  width="8" height="2.2" fill="white"/>
-    <rect x="0"  y="12" width="8" height="2.2" fill="white"/>
-    <rect x="0"  y="16" width="8" height="2.2" fill="white"/>
+    <rect x="0"   y="0"   width="80"  height="24" fill="white"/>
+    <rect x="0"   y="44"  width="80"  height="24" fill="white"/>
+    <rect x="0"   y="88"  width="80"  height="24" fill="white"/>
+    <rect x="0"   y="132" width="80"  height="24" fill="white"/>
+    <rect x="0"   y="176" width="80"  height="24" fill="white"/>
     {/* B */}
-    <rect x="11" y="0"  width="8" height="2.2" fill="white"/>
-    <rect x="11" y="4"  width="10" height="2.2" fill="white"/>
-    <rect x="11" y="8"  width="9"  height="2.2" fill="white"/>
-    <rect x="11" y="12" width="10" height="2.2" fill="white"/>
-    <rect x="11" y="16" width="8" height="2.2" fill="white"/>
-    <rect x="19" y="1"  width="2.2" height="3" fill="white"/>
-    <rect x="19" y="9"  width="2.2" height="3" fill="white"/>
-    <rect x="20" y="5"  width="2.2" height="3" fill="white"/>
-    <rect x="20" y="13" width="2.2" height="3" fill="white"/>
+    <rect x="110" y="0"   width="80"  height="24" fill="white"/>
+    <rect x="110" y="44"  width="100" height="24" fill="white"/>
+    <rect x="110" y="88"  width="100" height="24" fill="white"/>
+    <rect x="110" y="132" width="100" height="24" fill="white"/>
+    <rect x="110" y="176" width="80"  height="24" fill="white"/>
+    <rect x="190" y="0"   width="24"  height="44" fill="white"/>
+    <rect x="190" y="88"  width="24"  height="44" fill="white"/>
+    <rect x="190" y="132" width="24"  height="44" fill="white"/>
     {/* M */}
-    <rect x="24" y="0"  width="8" height="2.2" fill="white"/>
-    <rect x="24" y="4"  width="8" height="2.2" fill="white"/>
-    <rect x="24" y="8"  width="8" height="2.2" fill="white"/>
-    <rect x="24" y="12" width="8" height="2.2" fill="white"/>
-    <rect x="24" y="16" width="8" height="2.2" fill="white"/>
-    <rect x="32" y="0"  width="8" height="2.2" fill="white"/>
-    <rect x="32" y="4"  width="8" height="2.2" fill="white"/>
-    <rect x="32" y="8"  width="8" height="2.2" fill="white"/>
-    <rect x="32" y="12" width="8" height="2.2" fill="white"/>
-    <rect x="32" y="16" width="8" height="2.2" fill="white"/>
-    <rect x="28" y="0"  width="4" height="2.2" fill="white"/>
-    <rect x="28" y="4"  width="4" height="2.2" fill="white"/>
+    <rect x="240" y="0"   width="24"  height="200" fill="white"/>
+    <rect x="436" y="0"   width="24"  height="200" fill="white"/>
+    <rect x="240" y="0"   width="220" height="24"  fill="white"/>
+    <rect x="240" y="44"  width="220" height="24"  fill="white"/>
+    <rect x="240" y="88"  width="220" height="24"  fill="white"/>
+    <rect x="240" y="132" width="220" height="24"  fill="white"/>
+    <rect x="240" y="176" width="220" height="24"  fill="white"/>
+    <rect x="316" y="24"  width="28"  height="24"  fill="white"/>
   </svg>
 );
 
@@ -163,21 +159,18 @@ export default function MainMenu({ user, iteration, serviceStatus }: Props) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Service status pills */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             {[
-              { label: 'Monday',  ok: serviceStatus.monday },
+              { label: 'Monday', ok: serviceStatus.monday },
               { label: 'watsonx', ok: serviceStatus.watsonx },
-              { label: 'Slack',   ok: serviceStatus.slack, warn: true },
             ].map(s => (
               <span key={s.label} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
-                fontSize: 11,
-                color: s.ok ? '#42be65' : s.warn ? '#f1c21b' : '#ff8389',
-                background: s.ok ? 'rgba(66,190,101,.15)' : s.warn ? 'rgba(241,194,27,.1)' : 'rgba(255,131,137,.15)',
+                fontSize: 11, color: s.ok ? '#42be65' : '#ff8389',
+                background: s.ok ? 'rgba(66,190,101,.15)' : 'rgba(255,131,137,.15)',
                 padding: '2px 8px', borderRadius: 10,
-                border: `1px solid ${s.ok ? 'rgba(66,190,101,.25)' : s.warn ? 'rgba(241,194,27,.2)' : 'rgba(255,131,137,.25)'}`,
               }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.ok ? '#42be65' : s.warn ? '#f1c21b' : '#ff8389', display: 'inline-block' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.ok ? '#42be65' : '#ff8389', display: 'inline-block' }} />
                 {s.label}
               </span>
             ))}
