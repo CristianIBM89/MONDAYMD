@@ -100,33 +100,45 @@ const MENU_ITEMS = [
 ];
 
 // ── IBM logo SVG ──────────────────────────────────────────────────
-// IBM logo — official 8-bar horizontal stripe wordmark
+// IBM Eye-Bee-M logo (Paul Rand rebus: eye + bee + M stripes)
 const IBMLogo = () => (
-  <svg width="52" height="20" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
-    {/* I */}
-    <rect x="0"   y="0"   width="80"  height="24" fill="white"/>
-    <rect x="0"   y="44"  width="80"  height="24" fill="white"/>
-    <rect x="0"   y="88"  width="80"  height="24" fill="white"/>
-    <rect x="0"   y="132" width="80"  height="24" fill="white"/>
-    <rect x="0"   y="176" width="80"  height="24" fill="white"/>
-    {/* B */}
-    <rect x="110" y="0"   width="80"  height="24" fill="white"/>
-    <rect x="110" y="44"  width="100" height="24" fill="white"/>
-    <rect x="110" y="88"  width="100" height="24" fill="white"/>
-    <rect x="110" y="132" width="100" height="24" fill="white"/>
-    <rect x="110" y="176" width="80"  height="24" fill="white"/>
-    <rect x="190" y="0"   width="24"  height="44" fill="white"/>
-    <rect x="190" y="88"  width="24"  height="44" fill="white"/>
-    <rect x="190" y="132" width="24"  height="44" fill="white"/>
-    {/* M */}
-    <rect x="240" y="0"   width="24"  height="200" fill="white"/>
-    <rect x="436" y="0"   width="24"  height="200" fill="white"/>
-    <rect x="240" y="0"   width="220" height="24"  fill="white"/>
-    <rect x="240" y="44"  width="220" height="24"  fill="white"/>
-    <rect x="240" y="88"  width="220" height="24"  fill="white"/>
-    <rect x="240" y="132" width="220" height="24"  fill="white"/>
-    <rect x="240" y="176" width="220" height="24"  fill="white"/>
-    <rect x="316" y="24"  width="28"  height="24"  fill="white"/>
+  <svg width="90" height="28" viewBox="0 0 90 28" xmlns="http://www.w3.org/2000/svg">
+    {/* EYE */}
+    <g transform="translate(0,2)">
+      {/* white eyeball */}
+      <ellipse cx="13" cy="13" rx="13" ry="9" fill="white"/>
+      {/* brown iris */}
+      <circle cx="13" cy="13" r="5.5" fill="#8B6914"/>
+      {/* pupil */}
+      <circle cx="13" cy="13" r="3" fill="#111111"/>
+      {/* red eyelid top arc */}
+      <path d="M2,10 Q13,1 24,10" fill="#C0392B" stroke="none"/>
+    </g>
+    {/* BEE */}
+    <g transform="translate(31,0)">
+      {/* left wing */}
+      <ellipse cx="6" cy="10" rx="7" ry="4" fill="#2E7D32" opacity="0.9" transform="rotate(-20,6,10)"/>
+      {/* right wing */}
+      <ellipse cx="22" cy="10" rx="7" ry="4" fill="#2E7D32" opacity="0.9" transform="rotate(20,22,10)"/>
+      {/* body stripes */}
+      <rect x="8" y="6"  width="12" height="4" rx="2" fill="#F39C12"/>
+      <rect x="8" y="12" width="12" height="4" rx="2" fill="#F39C12"/>
+      <rect x="8" y="18" width="12" height="4" rx="2" fill="#F39C12"/>
+      {/* head — two pink circles */}
+      <circle cx="11" cy="4"  r="3" fill="#C0392B"/>
+      <circle cx="17" cy="4"  r="3" fill="#C0392B"/>
+    </g>
+    {/* M — IBM blue horizontal stripes */}
+    <g transform="translate(62,2)">
+      <clipPath id="mshape">
+        <polygon points="0,0 28,0 28,24 22,24 14,10 6,24 0,24"/>
+      </clipPath>
+      <rect x="0" y="0"  width="28" height="4"  fill="#1F70C1" clipPath="url(#mshape)"/>
+      <rect x="0" y="6"  width="28" height="4"  fill="#1F70C1" clipPath="url(#mshape)"/>
+      <rect x="0" y="12" width="28" height="4"  fill="#1F70C1" clipPath="url(#mshape)"/>
+      <rect x="0" y="18" width="28" height="4"  fill="#1F70C1" clipPath="url(#mshape)"/>
+      <rect x="0" y="22" width="28" height="4"  fill="#1F70C1" clipPath="url(#mshape)"/>
+    </g>
   </svg>
 );
 
