@@ -112,12 +112,14 @@ export async function processWithWatsonx(
 
   const endpoint = `https://${config.WATSONX_REGION}.ml.cloud.ibm.com/ml/v1/text/generation?version=${config.WATSONX_API_VERSION}`;
 
-  // Model cascade: try each in order on 429 (rate limit) or 404 (deprecated)
-  // All verified active on IBM watsonx.ai free tier as of Sep 2026
+  // Model cascade — verified active Sep 2026 via test-models.mjs
+  // llama-3-3-70b: active (may hit free tier limit)
+  // granite-3-2-8b, granite-3-8b, mistral-large: active (rate limit 2req/s, not deprecated)
   const MODEL_CASCADE = [
-    config.WATSONX_MODEL_ID,                        // primary: meta-llama/llama-3-3-70b-instruct
-    'meta-llama/llama-3-2-11b-vision-instruct',     // fallback 1: smaller Llama, less contention
-    'meta-llama/llama-3-1-8b-instruct',             // fallback 2: Llama 8B
+    config.WATSONX_MODEL_ID,           // primary: meta-llama/llama-3-3-70b-instruct
+    'ibm/granite-3-2-8b-instruct',     // fallback 1: confirmed active
+    'ibm/granite-3-8b-instruct',       // fallback 2: confirmed active
+    'mistralai/mistral-large',         // fallback 3: confirmed active
   ];
 
   const buildBody = (modelId: string) => ({
