@@ -199,7 +199,7 @@ export async function createSessionInMonday(
     result: 'success',
   });
 
-  return { id: data.create_item.id, url: `https://monday.com${data.create_item.url}` };
+  return { id: data.create_item.id, url: `https://ibm.monday.com${data.create_item.url}` };
 }
 
 export async function updateSessionSlackStatus(
@@ -312,7 +312,7 @@ export async function createBlockerInMonday(
     result: 'success',
   });
 
-  return { id: data.create_item.id, url: `https://monday.com${data.create_item.url}`, alreadyExisted: false };
+  return { id: data.create_item.id, url: `https://ibm.monday.com${data.create_item.url}`, alreadyExisted: false };
 }
 
 export async function attachFileToBlocker(
