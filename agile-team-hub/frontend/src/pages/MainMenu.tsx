@@ -99,21 +99,38 @@ const MENU_ITEMS = [
   { to: '/slack/latest',        Icon: Icons.Slack,     label: 'Slack\nPublication',       color: '#4e2b79' },
 ];
 
-// ── IBM logo SVG ──────────────────────────────────────────────────
+// ── IBM logo — official 8-bar stripe style ────────────────────────
 const IBMLogo = () => (
-  <svg width="40" height="16" viewBox="0 0 80 32" fill="white" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="4" width="12" height="4"/><rect x="0" y="12" width="12" height="4"/><rect x="0" y="20" width="12" height="4"/>
-    <rect x="16" y="4" width="4" height="4"/><rect x="16" y="12" width="4" height="4"/><rect x="16" y="20" width="4" height="4"/>
-    <rect x="24" y="4" width="4" height="4"/><rect x="24" y="12" width="4" height="4"/><rect x="24" y="20" width="4" height="4"/>
-    <rect x="20" y="0" width="4" height="4"/><rect x="20" y="24" width="4" height="4"/>
-    <rect x="32" y="4" width="12" height="20"/><rect x="40" y="0" width="4" height="4"/><rect x="40" y="24" width="4" height="4"/>
-    <rect x="48" y="4" width="4" height="8"/><rect x="48" y="20" width="4" height="8"/>
-    <rect x="52" y="0" width="4" height="4"/><rect x="52" y="24" width="4" height="4"/>
-    <rect x="56" y="4" width="4" height="8"/><rect x="56" y="20" width="4" height="8"/>
-    <rect x="60" y="12" width="4" height="8"/>
-    <rect x="64" y="4" width="12" height="4"/><rect x="64" y="20" width="12" height="4"/>
-    <rect x="64" y="12" width="4" height="4"/><rect x="72" y="12" width="4" height="4"/>
-    <rect x="68" y="8" width="4" height="4"/><rect x="68" y="16" width="4" height="4"/>
+  <svg width="52" height="20" viewBox="0 0 52 20" xmlns="http://www.w3.org/2000/svg">
+    {/* I */}
+    <rect x="0"  y="0"  width="8" height="2.2" fill="white"/>
+    <rect x="0"  y="4"  width="8" height="2.2" fill="white"/>
+    <rect x="0"  y="8"  width="8" height="2.2" fill="white"/>
+    <rect x="0"  y="12" width="8" height="2.2" fill="white"/>
+    <rect x="0"  y="16" width="8" height="2.2" fill="white"/>
+    {/* B */}
+    <rect x="11" y="0"  width="8" height="2.2" fill="white"/>
+    <rect x="11" y="4"  width="10" height="2.2" fill="white"/>
+    <rect x="11" y="8"  width="9"  height="2.2" fill="white"/>
+    <rect x="11" y="12" width="10" height="2.2" fill="white"/>
+    <rect x="11" y="16" width="8" height="2.2" fill="white"/>
+    <rect x="19" y="1"  width="2.2" height="3" fill="white"/>
+    <rect x="19" y="9"  width="2.2" height="3" fill="white"/>
+    <rect x="20" y="5"  width="2.2" height="3" fill="white"/>
+    <rect x="20" y="13" width="2.2" height="3" fill="white"/>
+    {/* M */}
+    <rect x="24" y="0"  width="8" height="2.2" fill="white"/>
+    <rect x="24" y="4"  width="8" height="2.2" fill="white"/>
+    <rect x="24" y="8"  width="8" height="2.2" fill="white"/>
+    <rect x="24" y="12" width="8" height="2.2" fill="white"/>
+    <rect x="24" y="16" width="8" height="2.2" fill="white"/>
+    <rect x="32" y="0"  width="8" height="2.2" fill="white"/>
+    <rect x="32" y="4"  width="8" height="2.2" fill="white"/>
+    <rect x="32" y="8"  width="8" height="2.2" fill="white"/>
+    <rect x="32" y="12" width="8" height="2.2" fill="white"/>
+    <rect x="32" y="16" width="8" height="2.2" fill="white"/>
+    <rect x="28" y="0"  width="4" height="2.2" fill="white"/>
+    <rect x="28" y="4"  width="4" height="2.2" fill="white"/>
   </svg>
 );
 
@@ -146,18 +163,21 @@ export default function MainMenu({ user, iteration, serviceStatus }: Props) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Service status pills */}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
             {[
-              { label: 'Monday', ok: serviceStatus.monday },
+              { label: 'Monday',  ok: serviceStatus.monday },
               { label: 'watsonx', ok: serviceStatus.watsonx },
+              { label: 'Slack',   ok: serviceStatus.slack, warn: true },
             ].map(s => (
               <span key={s.label} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
-                fontSize: 11, color: s.ok ? '#42be65' : '#ff8389',
-                background: s.ok ? 'rgba(66,190,101,.15)' : 'rgba(255,131,137,.15)',
+                fontSize: 11,
+                color: s.ok ? '#42be65' : s.warn ? '#f1c21b' : '#ff8389',
+                background: s.ok ? 'rgba(66,190,101,.15)' : s.warn ? 'rgba(241,194,27,.1)' : 'rgba(255,131,137,.15)',
                 padding: '2px 8px', borderRadius: 10,
+                border: `1px solid ${s.ok ? 'rgba(66,190,101,.25)' : s.warn ? 'rgba(241,194,27,.2)' : 'rgba(255,131,137,.25)'}`,
               }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.ok ? '#42be65' : '#ff8389', display: 'inline-block' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.ok ? '#42be65' : s.warn ? '#f1c21b' : '#ff8389', display: 'inline-block' }} />
                 {s.label}
               </span>
             ))}
