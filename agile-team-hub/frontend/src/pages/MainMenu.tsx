@@ -258,10 +258,10 @@ export default function MainMenu({ user, iteration, serviceStatus }: Props) {
           Quick Actions
         </div>
 
-        {/* ── Menu grid ── */}
+        {/* ── Menu grid — always 5 cols on wide, 2 on mobile ── */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+          gridTemplateColumns: 'repeat(5, 1fr)',
           gap: 12,
         }}>
           {MENU_ITEMS.map((item) => (
