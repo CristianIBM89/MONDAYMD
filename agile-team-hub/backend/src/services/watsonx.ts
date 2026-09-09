@@ -112,9 +112,13 @@ export async function processWithWatsonx(
 
   const endpoint = `https://${config.WATSONX_REGION}.ml.cloud.ibm.com/ml/v1/text/generation?version=${config.WATSONX_API_VERSION}`;
 
-  // Use primary model from config; fall back to granite if 429 persists
-  const primaryModel   = config.WATSONX_MODEL_ID;
-  const fallbackModel  = 'ibm/granite-3-1-8b-instruct';
+  // Model cascade: try each in order on 429 (rate limit) or 404 (deprecated)
+  // All verified active on IBM watsonx.ai free tier as of Sep 2026
+  const MODEL_CASCADE = [
+    config.WATSONX_MODEL_ID,                        // primary: meta-llama/llama-3-3-70b-instruct
+    'meta-llama/llama-3-2-11b-vision-instruct',     // fallback 1: smaller Llama, less contention
+    'meta-llama/llama-3-1-8b-instruct',             // fallback 2: Llama 8B
+  ];
 
   const buildBody = (modelId: string) => ({
     model_id: modelId,
@@ -124,29 +128,39 @@ export async function processWithWatsonx(
       temperature: 0.05,
       top_p: 0.9,
       repetition_penalty: 1.05,
-      stop_sequences: ['<|end_of_text|>'],
+      stop_sequences: ['<|end_of_text|>', '<|eot_id|>'],
     },
     project_id: config.WATSONX_PROJECT_ID,
   });
 
-  // Retry up to 4 times on 429: first 2 with primary model, then switch to fallback
+  // Try each model; advance to next on 429 (rate limit) or 404 (model deprecated/removed)
   let res: Response | null = null;
-  for (let attempt = 1; attempt <= 4; attempt++) {
-    const modelId = attempt <= 2 ? primaryModel : fallbackModel;
-    res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildBody(modelId)),
-      signal: AbortSignal.timeout(config.WATSONX_TIMEOUT),
-    });
-    if (res.status !== 429) break;
-    if (attempt < 4) {
-      const waitMs = attempt * 20_000;   // 20s, 40s, 60s — longer recovery for free tier
-      await auditLog({ user: userEmail, action: 'WATSONX_RETRY', detail: `attempt=${attempt} model=${modelId} wait=${waitMs}ms`, result: 'error' });
-      await new Promise((r) => setTimeout(r, waitMs));
-      // Refresh IAM token in case it expired during wait
-      token = await getIamToken();
+  let usedModel = MODEL_CASCADE[0];
+  for (let i = 0; i < MODEL_CASCADE.length; i++) {
+    usedModel = MODEL_CASCADE[i];
+    // On 429 retry same model up to 2 times with backoff before moving on
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildBody(usedModel)),
+        signal: AbortSignal.timeout(config.WATSONX_TIMEOUT),
+      });
+      if (res.status === 429 && attempt < 2) {
+        const waitMs = attempt * 20_000;
+        await auditLog({ user: userEmail, action: 'WATSONX_RETRY', detail: `model=${usedModel} attempt=${attempt} wait=${waitMs}ms`, result: 'error' });
+        await new Promise((r) => setTimeout(r, waitMs));
+        token = await getIamToken();
+        continue;
+      }
+      break;
     }
+    // Move to next model on 429 (still rate limited) or 404 (model not found/deprecated)
+    if (res!.status === 429 || res!.status === 404) {
+      await auditLog({ user: userEmail, action: 'WATSONX_MODEL_FALLBACK', detail: `from=${usedModel} status=${res!.status}`, result: 'error' });
+      continue;
+    }
+    break;
   }
 
   if (!res || !res.ok) {
