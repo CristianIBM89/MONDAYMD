@@ -42,12 +42,12 @@ async function getIamToken(): Promise<string> {
   return tokenCache.token;
 }
 
-// Llama 3.x chat template tokens
-const SYS_OPEN  = '<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n';
-const SYS_CLOSE = '\n<|eot_id|>';
-const USR_OPEN  = '<|start_header_id|>user<|end_header_id|>\n';
-const USR_CLOSE = '\n<|eot_id|>';
-const AST_OPEN  = '<|start_header_id|>assistant<|end_header_id|>\n';
+// Granite / generic chat template tokens (works for both Llama and Granite)
+const SYS_OPEN  = '<|start_of_role|>system<|end_of_role|>';
+const SYS_CLOSE = '<|end_of_text|>';
+const USR_OPEN  = '<|start_of_role|>user<|end_of_role|>';
+const USR_CLOSE = '<|end_of_text|>';
+const AST_OPEN  = '<|start_of_role|>assistant<|end_of_role|>';
 
 const SYSTEM_INSTRUCTION = `Eres un asistente especializado en documentación ejecutiva de reuniones Agile para equipos IBM.
 Tu ÚNICA función es extraer, clasificar y estructurar la información que ya existe en el texto proporcionado.
@@ -112,32 +112,37 @@ export async function processWithWatsonx(
 
   const endpoint = `https://${config.WATSONX_REGION}.ml.cloud.ibm.com/ml/v1/text/generation?version=${config.WATSONX_API_VERSION}`;
 
-  const body = {
-    model_id: config.WATSONX_MODEL_ID,
+  // Use primary model from config; fall back to granite if 429 persists
+  const primaryModel   = config.WATSONX_MODEL_ID;
+  const fallbackModel  = 'ibm/granite-3-1-8b-instruct';
+
+  const buildBody = (modelId: string) => ({
+    model_id: modelId,
     input: prompt,
     parameters: {
       max_new_tokens: 4096,
       temperature: 0.05,
       top_p: 0.9,
       repetition_penalty: 1.05,
-      stop_sequences: ['<|eot_id|>'],   // Stop at end-of-turn for Llama chat template
+      stop_sequences: ['<|end_of_text|>'],
     },
     project_id: config.WATSONX_PROJECT_ID,
-  };
+  });
 
-  // Retry up to 3 times on 429 (rate limit) with exponential backoff
+  // Retry up to 4 times on 429: first 2 with primary model, then switch to fallback
   let res: Response | null = null;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    const modelId = attempt <= 2 ? primaryModel : fallbackModel;
     res = await fetch(endpoint, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(buildBody(modelId)),
       signal: AbortSignal.timeout(config.WATSONX_TIMEOUT),
     });
     if (res.status !== 429) break;
-    if (attempt < 3) {
-      const waitMs = attempt * 15_000;   // 15s, 30s — Llama 70B free tier needs longer recovery
-      await auditLog({ user: userEmail, action: 'WATSONX_RETRY', detail: `attempt=${attempt} wait=${waitMs}ms`, result: 'success' });
+    if (attempt < 4) {
+      const waitMs = attempt * 20_000;   // 20s, 40s, 60s — longer recovery for free tier
+      await auditLog({ user: userEmail, action: 'WATSONX_RETRY', detail: `attempt=${attempt} model=${modelId} wait=${waitMs}ms`, result: 'error' });
       await new Promise((r) => setTimeout(r, waitMs));
       // Refresh IAM token in case it expired during wait
       token = await getIamToken();
