@@ -482,7 +482,7 @@ tbody tr:hover td{background:#f9f9f9}
     <div class="topbar-title">Dashboard · Workspace MD</div>
     <div class="topbar-sub">ibm.monday.com &nbsp;·&nbsp; 2 tableros monitoreados</div>
   </div>
-  <div class="topbar-date">28/09/2026, 4:22 p. m.</div>
+  <div class="topbar-date">28/09/2026, 4:31 p. m.</div>
 </header>
 
 <!-- ══ DECK ══ -->
@@ -997,41 +997,15 @@ tbody tr:hover td{background:#f9f9f9}
 <script>
 var PROXY_URL = 'https://mondaymd-proxy.cristian-avilan.workers.dev';
 
-function getStoredToken(){return sessionStorage.getItem('gh_token');}
-function initAuth(){
-  var hash=window.location.hash;
-  if(hash.startsWith('#token=')){
-    var t=hash.slice(7);
-    sessionStorage.setItem('gh_token',t);
-    history.replaceState(null,'',window.location.pathname+window.location.search);
-    return t;
-  }
-  return getStoredToken();
-}
-function requireAuth(){
-  var t=initAuth();
-  if(!t){window.location.href=PROXY_URL+'/auth/login';return null;}
-  return t;
-}
-// mondayFetch: reemplaza fetch('https://api.monday.com/v2', ...) en todo el archivo
-// Sin API token. Sin credenciales hardcodeadas. Solo la URL pública del Worker.
+// mondayFetch: proxy seguro — el token de Monday vive en Cloudflare Secrets
+// Sin credenciales en el navegador. Sin autenticación requerida (piloto interno).
 function mondayFetch(query){
-  var t=requireAuth();
-  if(!t)return Promise.reject(new Error('Not authenticated'));
   return fetch(PROXY_URL+'/api/monday',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({query:query})
-  }).then(function(r){
-    if(r.status===401){
-      sessionStorage.removeItem('gh_token');
-      window.location.href=PROXY_URL+'/auth/login';
-      return Promise.reject(new Error('Session expired'));
-    }
-    return r;
   });
 }
-document.addEventListener('DOMContentLoaded',function(){requireAuth();});
 </script>
 
 <script>
